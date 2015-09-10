@@ -30,7 +30,7 @@
     """,
     'author': 'J & G Infosystems',
     'website': 'www.jginfosystems.com',
-    'depends': ['base','sale','crm'],
+    'depends': ['base'],
     'data': [
              'crm_lead_view.xml',
              ],

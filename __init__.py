@@ -1,2 +1,2 @@
 import crm_lead
-import product_product
+import product

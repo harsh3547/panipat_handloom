@@ -1,10 +1,16 @@
 from openerp.osv import fields, osv
 from datetime import datetime
-import crm
 
+AVAILABLE_PRIORITIES = [
+    ('0', 'Very Low'),
+    ('1', 'Low'),
+    ('2', 'Normal'),
+    ('3', 'High'),
+    ('4', 'Very High'),
+]
 
-class crm_lead(osv.osv):
-    _name = "crm.lead"
+class panipat_crm_lead(osv.osv):
+    _name = "panipat.crm.lead"
 
     def on_change_partner_id(self, cr, uid, ids, partner_id, context=None):
         values = {}
@@ -27,39 +33,25 @@ class crm_lead(osv.osv):
             }
         return {'value': values}
 
-    def on_change_user(self, cr, uid, ids, user_id, context=None):
-        """ When changing the user, also set a section_id or restrict section id
-            to the ones user_id is member of. """
-        section_id = self._get_default_section_id(cr, uid, user_id=user_id, context=context) or False
-        if user_id and self.pool['res.users'].has_group(cr, uid, 'base.group_multi_salesteams') and not section_id:
-            section_ids = self.pool.get('crm.case.section').search(cr, uid, ['|', ('user_id', '=', user_id), ('member_ids', '=', user_id)], context=context)
-            if section_ids:
-                section_id = section_ids[0]
-        return {'value': {'section_id': section_id}}
+    def onchange_state(self, cr, uid, ids, state_id, context=None):
+        if state_id:
+            country_id=self.pool.get('res.country.state').browse(cr, uid, state_id, context).country_id.id
+            return {'value':{'country_id':country_id}}
+        return {}
+    
     _columns = {
+        'partner_name': fields.char(string="Company Name"),
         'partner_id': fields.many2one('res.partner', 'Partner', ondelete='set null', track_visibility='onchange',
             select=True, help="Linked partner (optional). Usually created when converting the lead."),
-
-        'id': fields.integer('ID', readonly=True),
         'name': fields.char('Subject', required=True, select=1),
-        'date_action_last': fields.datetime('Last Action', readonly=1),
-        'date_action_next': fields.datetime('Next Action', readonly=1),
         'email_from': fields.char('Email', size=128, help="Email address of the contact", select=1),
-        'section_id': fields.many2one('crm.case.section', 'Sales Team',
-                        select=True, track_visibility='onchange', help='When sending mails, the default email address is taken from the sales team.'),
         'create_date': fields.datetime('Creation Date', readonly=True),
-        'email_cc': fields.text('Global CC', help="These email addresses will be added to the CC field of all inbound and outbound emails for this record before being sent. Separate multiple email addresses with a comma"),
         'description': fields.text('Notes'),
-        'write_date': fields.datetime('Update Date', readonly=True),
         'contact_name': fields.char('Contact Name', size=64),
-        'partner_name': fields.char("Customer Name", size=64,help='The name of the future partner company that will be created while converting the lead into opportunity', select=1),
-        'type': fields.selection([ ('lead','Lead'), ('opportunity','Opportunity'), ],'Type', select=True, help="Type is used to separate Leads and Opportunities"),
-        'priority': fields.selection(crm.AVAILABLE_PRIORITIES, 'Priority', select=True),
+        'priority': fields.selection(AVAILABLE_PRIORITIES, 'Priority', select=True),
         'user_id': fields.many2one('res.users', 'Salesperson', select=True, track_visibility='onchange'),
         'current_date': fields.datetime('Date',Readonly=True),
-        'product_line': fields.one2many('product.template','crm_lead_id',string="Products"),
-
-        # Fields for address, due to separation from crm and res.partner
+        'product_line': fields.one2many('panipat.product','crm_lead_id',string="Products"),
         'street': fields.char('Street'),
         'street2': fields.char('Street2'),
         'zip': fields.char('Zip', change_default=True, size=24),
@@ -70,15 +62,9 @@ class crm_lead(osv.osv):
         'fax': fields.char('Fax'),
         'mobile': fields.char('Mobile'),
         'title': fields.many2one('res.partner.title', 'Title'),
-        'company_id': fields.many2one('res.company', 'Company', select=1),
-        'payment_mode': fields.many2one('crm.payment.mode', 'Payment Mode', \
-                            domain="[('section_id','=',section_id)]"),
-        'planned_cost': fields.float('Planned Costs'),
-        'meeting_count': fields.function(_meeting_count, string='# Meetings', type='integer'),
+        'sequence': fields.char()
     }
 
     _defaults = {
-        'active': 1,
-        'type': 'lead',
         'current_date': fields.datetime.now
     }
