@@ -13,11 +13,9 @@ class panipat_crm_lead(osv.osv):
     _name = "panipat.crm.lead"
 
     def create(self,cr,uid,vals,context=None):
-        print "----------------------------vals",vals
         if vals.get('sequence','/')=='/':
             print "in sequnece"
             vals['sequence']=self.pool.get('ir.sequence').get(cr,uid,'CRM.Lead.Order.No',context=None) or '/'
-        print "----------------------------vals",vals
         return super(panipat_crm_lead,self).create(cr,uid,vals,context=None)
     
                                                   
