@@ -1,7 +1,7 @@
 from openerp.osv import fields, osv
 
-class panipat_product(osv.osv):
-    _name = "panipat.product"
+class panipat_crm_product(osv.osv):
+    _name = "panipat.crm.product"
     
     _columns = {
         'product_id': fields.many2one('product.product',string="product"),

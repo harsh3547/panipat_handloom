@@ -1,2 +1,2 @@
-import crm_lead
-import product
+import panipat_crm_lead
+import panipat_crm_product

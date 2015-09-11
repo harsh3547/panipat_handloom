@@ -12,6 +12,15 @@ AVAILABLE_PRIORITIES = [
 class panipat_crm_lead(osv.osv):
     _name = "panipat.crm.lead"
 
+    def create(self,cr,uid,vals,context=None):
+        print "----------------------------vals",vals
+        if vals.get('sequence','/')=='/':
+            print "in sequnece"
+            vals['sequence']=self.pool.get('ir.sequence').get(cr,uid,'CRM.Lead.Order.No',context=None) or '/'
+        print "----------------------------vals",vals
+        return super(panipat_crm_lead,self).create(cr,uid,vals,context=None)
+    
+                                                  
     def on_change_partner_id(self, cr, uid, ids, partner_id, context=None):
         values = {}
         if partner_id:
@@ -51,7 +60,7 @@ class panipat_crm_lead(osv.osv):
         'priority': fields.selection(AVAILABLE_PRIORITIES, 'Priority', select=True),
         'user_id': fields.many2one('res.users', 'Salesperson', select=True, track_visibility='onchange'),
         'current_date': fields.datetime('Date',Readonly=True),
-        'product_line': fields.one2many('panipat.product','crm_lead_id',string="Products"),
+        'product_line': fields.one2many('panipat.crm.product','crm_lead_id',string="Products"),
         'street': fields.char('Street'),
         'street2': fields.char('Street2'),
         'zip': fields.char('Zip', change_default=True, size=24),
@@ -62,9 +71,10 @@ class panipat_crm_lead(osv.osv):
         'fax': fields.char('Fax'),
         'mobile': fields.char('Mobile'),
         'title': fields.many2one('res.partner.title', 'Title'),
-        'sequence': fields.char()
+        'sequence': fields.char(string="Order No.")
     }
 
     _defaults = {
-        'current_date': fields.datetime.now
+        'create_date': fields.datetime.now,
+        'sequence':'/'
     }
