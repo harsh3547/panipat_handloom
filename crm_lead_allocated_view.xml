@@ -17,34 +17,40 @@
         <field name="arch" type="xml">
             <form string="Leads Form">
                 <header>
-                    <button name="schedule_employee" string="Schedule Employee" type="object" class="oe_highlight" domain="['&amp;',('state','!=','done'),('state','!=','ongoing')]}"/>
-                    <button name="quotation" string="Quotation" type="object" class="oe_highlight" domain="['&amp;',('state','!=','done'),('state','!=','draft')]}" />
+                    <button name="schedule_employee" string="Schedule Employee" type="object" class="oe_highlight" attrs = "{'invisible':['|',('state','=','done'),('state','=','ongoing')]}"/>
+                    <button name="quotation" string="Quotation" type="object" class="oe_highlight" attrs = "{'invisible':['|',('state','=','done'),('state','=','draft')]}" />
                 	<field name="state" widget="statusbar" />
                 </header>
                 <sheet>
                 	<div>
                        	<group> 
                        		<group>
-                       			<label for="sequence" />
-                       			<h2><field name="sequence" readonly="1" /></h2>
-                       			<label for="create_date" />
-                       			<h2><field name="create_date"/></h2>
+                       			<field name="create_date"/>
+                       			<field name="scheduled_time" />
+                       			<field name="scheduled_hours" widget="float_time" />
+                       			
                        		</group>
                        		<group>
-                       			<label for="sequence" />
-                       			<h2><field name="allocation_no" readonly="1" /></h2>
+                       			<field name="sequence" />
+                       			<field name="allocation_no" readonly="1" />
                        		</group>
                        	</group>
-                       	<label for="name" class="oe_edit_only"/>
-                       	<h1><field name="name" readonly="1"/></h1>
                      </div>
                     <group>
                         <group>
-                            <field name="partner_name" string="Company Name"/>
                             <!-- Preload all the partner's information -->
                             <field name="partner_id" string="Customer" readonly="1" />
                         </group>
+                        
                     </group>
+                   	<group>
+                   		<field name="employee_line">
+                   			<tree editable="bottom">
+                   				<field name="employee_id" />
+                   			</tree>
+                   		</field>
+                   	</group>
+                    
                     <notebook colspan="4">
                     <page string="Internal Notes">
                         <field name="description"/>
@@ -63,7 +69,6 @@
                 <tree string="Leads">
                     <field name="create_date"/>
                     <field name="allocation_no" />
-                    <field name="name"/>
                     <field name="scheduled_time" />
                     <field name="scheduled_hours" />
                 </tree>
@@ -76,7 +81,6 @@
             <field name="model">crm.lead.allocated</field>
             <field name="arch" type="xml">
                 <search string="Search Allocated Leads">
-                    <field name="name" />
                     <field name="partner_id" operator="child_of"/>
                     <field name="create_date"/>
                     <field name="scheduled_time" />

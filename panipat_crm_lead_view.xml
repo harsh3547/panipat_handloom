@@ -17,7 +17,7 @@
         <field name="arch" type="xml">
             <form string="Leads Form">
                 <header>
-                    <button name="confirm_and_allocate" string="Confirm and Allocate" type="object" class="oe_highlight"/>
+                    <button name="confirm_and_allocate" string="Confirm and Allocate" type="object" class="oe_highlight" attrs = "{'invisible':[('state','=','done')]}"/>
                 	<field name="state" widget="statusbar" />
                 </header>
                 <sheet>
