@@ -34,6 +34,7 @@
     'data': [
              'panipat_crm_lead_data.xml',
              'panipat_crm_lead_view.xml',
+             'crm_lead_allocated_view.xml'
              ],
     'demo': [],
     'test': [],

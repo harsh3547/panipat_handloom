@@ -17,7 +17,8 @@
         <field name="arch" type="xml">
             <form string="Leads Form">
                 <header>
-                    <button name="%(action_panipat_crm_lead)d" string="Confirm and Allocate" type="action" class="oe_highlight"/>
+                    <button name="confirm_and_allocate" string="Confirm and Allocate" type="object" class="oe_highlight"/>
+                	<field name="state" widget="statusbar" />
                 </header>
                 <sheet>
                 	<div>

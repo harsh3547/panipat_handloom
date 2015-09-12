@@ -11,13 +11,42 @@ AVAILABLE_PRIORITIES = [
 
 class panipat_crm_lead(osv.osv):
     _name = "panipat.crm.lead"
-
+    rec_name = 'sequence'
+    
+    def write(self,cr,uid,ids,vals,context=None):
+        print "^^^^^^^^^^^^^^^^^^^^^^^^^^^",id,vals
+        return super(panipat_crm_lead,self).write(cr,uid,ids,vals,context=None)
+    
     def create(self,cr,uid,vals,context=None):
         if vals.get('sequence','/')=='/':
             print "in sequnece"
             vals['sequence']=self.pool.get('ir.sequence').get(cr,uid,'CRM.Lead.Order.No',context=None) or '/'
         return super(panipat_crm_lead,self).create(cr,uid,vals,context=None)
     
+    def confirm_and_allocate(self,cr,uid,id,context=None):
+        print "***************"
+        self.write(cr,uid,id,{'state':'done'},context=None)
+        carry_fields = self.read(cr,uid,id,['partner_name','sequence','partner_id','name'],context=None)
+        
+        print "carry fields.......................................",carry_fields
+        carry_fields[0].pop('id')
+        vals=carry_fields[0]
+        if vals.get('partner_id',False) :
+            vals['partner_id'] = vals.get('partner_id')[0]
+        vals.update({'state':'draft'})
+        print "---------------",vals
+        
+        allocated_id=self.pool.get('crm.lead.allocated').create(cr,uid,vals,context=None)
+        print "---------------=================",allocated_id
+        return {
+            'name': 'Allocated Leads',
+            'view_type': 'form',
+            'view_mode': 'tree, form',
+            'res_model': 'crm.lead.allocated',
+            'res_id': allocated_id,
+            'domain': [('state', '=', 'done')],
+            'type': 'ir.actions.act_window',
+        }
                                                   
     def on_change_partner_id(self, cr, uid, ids, partner_id, context=None):
         values = {}
@@ -69,10 +98,12 @@ class panipat_crm_lead(osv.osv):
         'fax': fields.char('Fax'),
         'mobile': fields.char('Mobile'),
         'title': fields.many2one('res.partner.title', 'Title'),
-        'sequence': fields.char(string="Order No.")
+        'sequence': fields.char(string="Order No."),
+        'state': fields.selection(string="State",selection=[('draft','Draft'),('done','Done')]),
     }
 
     _defaults = {
         'create_date': fields.datetime.now,
-        'sequence':'/'
+        'sequence':'/',
+        'state': 'draft',
     }
