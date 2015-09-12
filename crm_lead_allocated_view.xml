@@ -12,7 +12,7 @@
         </record>
         
         <record model="ir.ui.view" id="panipat_crm_case_form_view_leads_allocated">
-        <field name="name">CRM - Leads Form</field>
+        <field name="name">CRM - Leads Allocated Form</field>
         <field name="model">crm.lead.allocated</field>
         <field name="arch" type="xml">
             <form string="Leads Form">
@@ -26,9 +26,6 @@
                        	<group> 
                        		<group>
                        			<field name="create_date"/>
-                       			<field name="scheduled_time" />
-                       			<field name="scheduled_hours" widget="float_time" />
-                       			
                        		</group>
                        		<group>
                        			<field name="sequence" />
@@ -47,6 +44,8 @@
                    		<field name="employee_line">
                    			<tree editable="bottom">
                    				<field name="employee_id" />
+                   				<field name="scheduled_time" />
+                       			<field name="scheduled_hours" widget="float_time" />
                    			</tree>
                    		</field>
                    	</group>
@@ -67,10 +66,9 @@
             <field name="model">crm.lead.allocated</field>
             <field name="arch" type="xml">
                 <tree string="Leads">
-                    <field name="create_date"/>
+                    <field name="partner_id"/>
+                    <field name="sequence" />
                     <field name="allocation_no" />
-                    <field name="scheduled_time" />
-                    <field name="scheduled_hours" />
                 </tree>
             </field>
         </record>
@@ -83,8 +81,8 @@
                 <search string="Search Allocated Leads">
                     <field name="partner_id" operator="child_of"/>
                     <field name="create_date"/>
-                    <field name="scheduled_time" />
-                    
+                    <field name="sequence" />
+                    <field name="allocation_no" />
                     <separator/>
                     <group>
                         <filter string="Creation Month" domain="[]" context="{'group_by':'create_date'}"/>

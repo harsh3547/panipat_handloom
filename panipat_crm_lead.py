@@ -21,31 +21,30 @@ class panipat_crm_lead(osv.osv):
         if vals.get('sequence','/')=='/':
             print "in sequnece"
             vals['sequence']=self.pool.get('ir.sequence').get(cr,uid,'CRM.Lead.Order.No',context=None) or '/'
+        print "valssssssssssssssssssssssssssssssss",vals
         return super(panipat_crm_lead,self).create(cr,uid,vals,context=None)
     
     def confirm_and_allocate(self,cr,uid,id,context=None):
-        print "***************"
         self.write(cr,uid,id,{'state':'done'},context=None)
         carry_fields = self.read(cr,uid,id,['sequence','partner_id'],context=None)
-        
         print "carry fields.......................................",carry_fields
         crm_id = carry_fields[0].pop('id')
         vals=carry_fields[0]
         if vals.get('partner_id',False) :
             vals['partner_id'] = vals.get('partner_id')[0]
-            vals['sequence'] = crm_id
+        vals['sequence'] = crm_id
         vals.update({'state':'draft'})
         print "---------------",vals
         
         allocated_id=self.pool.get('crm.lead.allocated').create(cr,uid,vals,context=None)
         print "---------------=================",allocated_id
         return {
-            'name': 'Allocated Leads',
+            'name': 'CRM - Leads Allocated Form',
             'view_type': 'form',
-            'view_id': allocated_id,
             'view_mode': 'form',
             'res_model': 'crm.lead.allocated',
             'type': 'ir.actions.act_window',
+            'res_id': allocated_id,
         }
                                                   
     def on_change_partner_id(self, cr, uid, ids, partner_id, context=None):
