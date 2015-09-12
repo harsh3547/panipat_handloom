@@ -25,15 +25,16 @@
                        	<group> 
                        		<group>
                        			<label for="sequence" />
-                       			<h2><field name="sequence" readonly="1" /></h2>
+                       			<h3><field name="sequence" readonly="1" /></h3>
                        		</group>
                        		<group>
                        			<label for="create_date" />
-                       			<h2><field name="create_date"/></h2>
+                       			<h3><field name="create_date"/></h3>
                        		</group>
+                       		<label for="name" class="oe_edit_only"/>
+                       	<h2><field name="name" placeholder="Describe the lead..."/></h2>
                        	</group>
-                       	<label for="name" class="oe_edit_only"/>
-                       	<h1><field name="name" placeholder="Describe the lead..."/></h1>
+                       	
                      </div>
                     <group>
                         <group>
