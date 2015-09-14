@@ -94,43 +94,5 @@
 	
 	<menuitem id="submenu_item_allocated_leads" name="Allocated Leads" parent="panipat_main_menu_item" sequence="1" action="action_panipat_crm_lead_allocated"/>
 
-    <record id="action_panipat_employee_scheduler_gantt" model="ir.actions.act_window">
-            <field name="name">Employee Scheduler</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">panipat.employee</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">gantt,tree,form,</field>
-    </record>
-    
-    <record id="panipat_employee_form_view" model="ir.ui.view" >
-    	<field name="name">panipat.employee.form.view</field>
-    	<field name="model">panipat.employee</field>
-    	<field name="arch" type="xml">
-    		<form string="Panipat Employee Form View">
-    			<sheet>
-    				<group>
-    					<field name="employee_id"/>
-    					<field name="crm_lead_allocated_id" />
-    					<field name="scheduled_time" />
-    					<field name="scheduled_hours"/>
-    				</group>
-    			</sheet>
-    		</form>
-    	</field>
-    </record>
-    
-    <record id="panipat_employee_scheduler_gantt" model="ir.ui.view">
-        <field name="name">panipat.employee.scheduler.gantt</field>
-        <field name="model">panipat.employee</field>
-        <field name="arch" type="xml">
-            <gantt date_delay="scheduled_hours" date_start="scheduled_time" string="Operations" default_group_by="crm_lead_allocated_id">
-            </gantt>
-        </field>
-    </record>
-    
-    
-    
-    <menuitem id="submenu_item_employee_gantt" name="Employee Scheduler" parent="panipat_main_menu_item" sequence="2" action="action_panipat_employee_scheduler_gantt"/>
-    
     </data>
 </openerp>

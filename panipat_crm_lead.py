@@ -13,31 +13,24 @@ class panipat_crm_lead(osv.osv):
     _name = "panipat.crm.lead"
     _rec_name = 'sequence'
     
-    def write(self,cr,uid,ids,vals,context=None):
-        print "^^^^^^^^^^^^^^^^^^^^^^^^^^^",id,vals
-        return super(panipat_crm_lead,self).write(cr,uid,ids,vals,context=None)
     
     def create(self,cr,uid,vals,context=None):
         if vals.get('sequence','/')=='/':
             print "in sequnece"
             vals['sequence']=self.pool.get('ir.sequence').get(cr,uid,'CRM.Lead.Order.No',context=None) or '/'
-        print "valssssssssssssssssssssssssssssssss",vals
         return super(panipat_crm_lead,self).create(cr,uid,vals,context=None)
     
     def confirm_and_allocate(self,cr,uid,id,context=None):
         self.write(cr,uid,id,{'state':'done'},context=None)
         carry_fields = self.read(cr,uid,id,['sequence','partner_id'],context=None)
-        print "carry fields.......................................",carry_fields
         crm_id = carry_fields[0].pop('id')
         vals=carry_fields[0]
         if vals.get('partner_id',False) :
             vals['partner_id'] = vals.get('partner_id')[0]
         vals['sequence'] = crm_id
         vals.update({'state':'draft'})
-        print "---------------",vals
         
         allocated_id=self.pool.get('crm.lead.allocated').create(cr,uid,vals,context=None)
-        print "---------------=================",allocated_id
         return {
             'name': 'CRM - Leads Allocated Form',
             'view_type': 'form',
@@ -99,6 +92,7 @@ class panipat_crm_lead(osv.osv):
         'title': fields.many2one('res.partner.title', 'Title'),
         'sequence': fields.char(string="Order No."),
         'state': fields.selection(string="State",selection=[('draft','Draft'),('done','Done')]),
+        'allocation_no': fields.many2one('crm.lead.allocated',string="Allocation No."),
     }
 
     _defaults = {

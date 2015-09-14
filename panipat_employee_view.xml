@@ -1,0 +1,73 @@
+<openerp>
+	<data>
+	    <record id="panipat_employee_search_view" model="ir.ui.view">
+            <field name="name">panipat.employee.search.view</field>
+            <field name="model">panipat.employee</field>
+            <field name="arch" type="xml">
+                <search string="group by employee_id">
+                    <field name="employee_id"  />
+   					<field name="crm_lead_allocated_id" />
+   					<field name="scheduled_time" />
+   					<field name="scheduled_hours"/>
+                    <group expand="1" string="Group By">
+                   		 <filter string="Employee" icon="terp-accessories-archiver" context="{'group_by':'employee_id'}" name="group_by_employee"/>
+                 	</group>
+
+               </search>
+            </field>
+        </record>
+        
+        <record id="action_panipat_employee_scheduler_gantt" model="ir.actions.act_window">
+            <field name="name">Employee Scheduler</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">panipat.employee</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">gantt,tree,form,</field>
+            <field name="context">{'search_default_group_by_employee': True}</field>
+	    </record>
+	    
+	    <record id="panipat_employee_tree_view" model="ir.ui.view" >
+	    	<field name="name">panipat.employee.tree.view</field>
+	    	<field name="model">panipat.employee</field>
+	    	<field name="arch" type="xml">
+	    		<tree string="Panipat Employee tree View" create="0" delete="0" >
+	    			<field name="employee_id" invisible="1" groups="base.group_multi_company"/>
+   					<field name="crm_lead_allocated_id" />
+   					<field name="scheduled_time" />
+   					<field name="scheduled_hours"/>
+				</tree>
+	    	</field>
+	    </record>
+    
+    <record id="panipat_employee_form_view" model="ir.ui.view" >
+    	<field name="name">panipat.employee.form.view</field>
+    	<field name="model">panipat.employee</field>
+    	<field name="arch" type="xml">
+    		<form string="Panipat Employee Form View">
+    			<sheet>
+    				<group>
+    					<field name="employee_id"/>
+    					<field name="crm_lead_allocated_id" />
+    					<field name="scheduled_time" />
+    					<field name="scheduled_hours"/>
+    				</group>
+    			</sheet>
+    		</form>
+    	</field>
+    </record>
+    
+    <record id="panipat_employee_scheduler_gantt" model="ir.ui.view">
+        <field name="name">panipat.employee.scheduler.gantt</field>
+        <field name="model">panipat.employee</field>
+        <field name="arch" type="xml">
+            <gantt date_delay="scheduled_hours" date_start="scheduled_time" string="Operations" default_group_by="employee_id">
+            </gantt>
+        </field>
+    </record>
+    
+    
+    
+    <menuitem id="submenu_item_employee_gantt" name="Employee Scheduler" parent="panipat_main_menu_item" sequence="2" action="action_panipat_employee_scheduler_gantt"/>
+    
+	</data>
+</openerp>
