@@ -13,13 +13,23 @@ class crm_lead_allocated(osv.osv):
         self.write(cr,uid,id,{'state':'ongoing',
                               'allocation_no':seq},context=None)
         order_no = self.read(cr,uid,id,['sequence'],context=None)
+        print "-----------------------------",order_no
+        seq_no = order_no[0].get('sequence',False)
+        print "-----------------------------seq",seq_no
         crm_obj = self.pool.get('panipat.crm.lead')
-        crm_id = crm_obj.search(cr,uid,[('sequence','=',order_no[0].get('sequence')[1])],context=None)
-        crm_obj.write(cr,uid,crm_id,{'allocation_no':id[0]},context=None)
+        if seq_no:
+            crm_id = crm_obj.search(cr,uid,[('sequence','=',seq_no)],context=None)
+            crm_obj.write(cr,uid,crm_id,{'allocation_no':id[0]},context=None)
         return True
     
     def quotation(self,cr,uid,id,context=None):
         return True
+    
+    def unlink(self,cr,uid,ids,context):
+        delete_ids = self.pool.get('panipat.employee').search(cr,uid,[('crm_lead_allocated_id','in',ids)],context=None)
+        if delete_ids :
+            self.pool.get('panipat.employee').unlink(cr,uid,delete_ids,context)
+        return super(crm_lead_allocated,self).unlink(cr,uid,ids,context)
     
     _columns = {
         'partner_id': fields.many2one('res.partner', 'Partner'),

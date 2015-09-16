@@ -22,7 +22,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">panipat.employee</field>
             <field name="view_type">form</field>
-            <field name="view_mode">gantt,tree,form,</field>
+            <field name="view_mode">gantt,tree</field>
             <field name="context">{'search_default_group_by_employee': True}</field>
 	    </record>
 	    
@@ -30,7 +30,7 @@
 	    	<field name="name">panipat.employee.tree.view</field>
 	    	<field name="model">panipat.employee</field>
 	    	<field name="arch" type="xml">
-	    		<tree string="Panipat Employee tree View" create="0" delete="0" >
+	    		<tree string="Panipat Employee tree View" create="0" >
 	    			<field name="employee_id" invisible="1" groups="base.group_multi_company"/>
    					<field name="crm_lead_allocated_id" />
    					<field name="scheduled_time" />
@@ -43,13 +43,16 @@
     	<field name="name">panipat.employee.form.view</field>
     	<field name="model">panipat.employee</field>
     	<field name="arch" type="xml">
-    		<form string="Panipat Employee Form View">
+    		<form string="Panipat Employee Form View" create="0">
     			<sheet>
+    				<group>
     				<group>
     					<field name="employee_id"/>
     					<field name="crm_lead_allocated_id" />
     					<field name="scheduled_time" />
     					<field name="scheduled_hours"/>
+    				</group>
+    				<group></group>
     				</group>
     			</sheet>
     		</form>
@@ -60,7 +63,7 @@
         <field name="name">panipat.employee.scheduler.gantt</field>
         <field name="model">panipat.employee</field>
         <field name="arch" type="xml">
-            <gantt date_delay="scheduled_hours" date_start="scheduled_time" string="Operations" default_group_by="employee_id">
+            <gantt date_delay="scheduled_hours" date_start="scheduled_time" string="Operations" default_group_by="employee_id" create="0">
             </gantt>
         </field>
     </record>
