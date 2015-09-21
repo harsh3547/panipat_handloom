@@ -13,9 +13,7 @@ class crm_lead_allocated(osv.osv):
         self.write(cr,uid,id,{'state':'ongoing',
                               'allocation_no':seq},context=None)
         order_no = self.read(cr,uid,id,['sequence'],context=None)
-        print "-----------------------------",order_no
         seq_no = order_no[0].get('sequence',False)
-        print "-----------------------------seq",seq_no
         crm_obj = self.pool.get('panipat.crm.lead')
         if seq_no:
             crm_id = crm_obj.search(cr,uid,[('sequence','=',seq_no)],context=None)
@@ -23,6 +21,25 @@ class crm_lead_allocated(osv.osv):
         return True
     
     def quotation(self,cr,uid,id,context=None):
+        vals = {}
+        values = []
+        self.write(cr,uid,id,{'state':'done'},context=None)
+        
+        read_dict = self.read(cr,uid,id,['sequence'],context=None)[0]
+        sequence = read_dict.get('sequence','/')[1]
+        lead_id = self.pool.get('panipat.crm.lead').search(cr,uid,[('sequence','=',sequence)],context=None)
+        if lead_id:
+            lead_obj = self.pool.get('panipat.crm.lead').browse(cr,uid,lead_id,context=None)
+            if  lead_obj.product_line :
+                for i in lead_obj.product_line :
+                    values.append((0,0,{'product_id':i.product_id.id,
+                                    'name':i.description,
+                                    }))
+            vals.update({'order_line':values})
+            if lead_obj.partner_id.id:
+                    vals.update({'partner_id':lead_obj.partner_id.id})  
+        quotation_id = self.pool.get('sale.order').create(cr,uid,vals,context=None)
+        
         return True
     
     def unlink(self,cr,uid,ids,context):

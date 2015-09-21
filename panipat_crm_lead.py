@@ -1,5 +1,6 @@
 from openerp.osv import fields, osv
 from datetime import datetime
+from openerp.tools.translate import _
 
 AVAILABLE_PRIORITIES = [
     ('0', 'Very Low'),
@@ -29,16 +30,43 @@ class panipat_crm_lead(osv.osv):
             vals['partner_id'] = vals.get('partner_id')[0]
         vals['sequence'] = crm_id
         vals.update({'state':'draft'})
-        
         allocated_id=self.pool.get('crm.lead.allocated').create(cr,uid,vals,context=None)
-        return {
-            'name': 'CRM - Leads Allocated Form',
-            'view_type': 'form',
-            'view_mode': 'form',
-            'res_model': 'crm.lead.allocated',
-            'type': 'ir.actions.act_window',
-            'res_id': allocated_id,
-        }
+        print "------------------------------",allocated_id
+        return True
+    
+    def view_allocation_order(self,cr,uid,id,context=None):
+        sequence=self.read(cr,uid,id,['sequence'],context=None)[0].get('sequence')
+        allocated_ids=self.pool.get('crm.lead.allocated').search(cr,uid,[('sequence','=',sequence)],context=None)
+        if allocated_ids :
+            if len(allocated_ids) == 1 :
+                return {
+                'name': 'CRM - Leads Allocated Form',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'crm.lead.allocated',
+                'type': 'ir.actions.act_window',
+                'res_id': allocated_ids[0],
+                }
+            else :
+                return {
+                'name': 'CRM - Leads Allocated Form',
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'res_model': 'crm.lead.allocated',
+                'type': 'ir.actions.act_window',
+                'domain':[('id','in',allocated_ids)],
+                }
+        else :
+            return {
+                    'type': 'ir.actions.client',
+                    'tag': 'action_warn',
+                    'name': 'Warning',
+                    'params': {
+                               'title': 'Warning!',
+                               'text': 'Allocated Lead is not available .',
+                               }
+                    }
+        
                                                   
     def on_change_partner_id(self, cr, uid, ids, partner_id, context=None):
         values = {}
@@ -70,7 +98,7 @@ class panipat_crm_lead(osv.osv):
     _columns = {
         'partner_name': fields.char(string="Company Name"),
         'partner_id': fields.many2one('res.partner', 'Partner', ondelete='set null', track_visibility='onchange',
-            select=True, help="Linked partner (optional). Usually created when converting the lead."),
+            select=True, help="Linked partner (optional). Usually created when converting the lead.",required=True),
         'name': fields.char('Subject', required=True, select=1),
         'email_from': fields.char('Email', size=128, help="Email address of the contact", select=1),
         'create_date': fields.datetime('Creation Date', readonly=True),

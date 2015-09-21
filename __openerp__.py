@@ -30,12 +30,13 @@
     """,
     'author': 'J & G Infosystems',
     'website': 'www.jginfosystems.com',
-    'depends': ['base'],
+    'depends': ['base','hr'],
     'data': [
              'panipat_crm_lead_data.xml',
              'panipat_crm_lead_view.xml',
              'panipat_employee_view.xml',
-             'crm_lead_allocated_view.xml'
+             'crm_lead_allocated_view.xml',
+             'panipat_quotation_view.xml',
              ],
     'demo': [],
     'test': [],

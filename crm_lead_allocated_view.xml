@@ -18,7 +18,7 @@
             <form string="Leads Form">
                 <header>
                     <button name="schedule_employee" string="Schedule Employee" type="object" class="oe_highlight" attrs = "{'invisible':['|',('state','=','done'),('state','=','ongoing')]}"/>
-                    <button name="quotation" string="Quotation" type="object" class="oe_highlight" attrs = "{'invisible':['|',('state','=','done'),('state','=','draft')]}" />
+                    <button name="quotation" string="Make Quotation" type="object" class="oe_highlight" attrs = "{'invisible':['|',('state','=','done'),('state','=','draft')]}" />
                 	<field name="state" widget="statusbar" />
                 </header>
                 <sheet>
