@@ -14,6 +14,39 @@ class panipat_crm_lead(osv.osv):
     _name = "panipat.crm.lead"
     _rec_name = 'sequence'
     
+    def _get_amount_paid(self,cr,uid,ids,name, arg,context=None):
+        
+        res = {}
+        amount_paid = 0.0
+        voucher_obj = self.pool.get('account.voucher')
+        for id in ids:
+            voucher_ids = voucher_obj.search(cr,uid,[('crm_lead_id','=',id)],context=None)
+            print "voucher_ids-----------------------------",voucher_ids
+            for obj in voucher_obj.browse(cr,uid,voucher_ids,context=None) :
+                amount_paid += obj.amount
+            res[id] = amount_paid
+        print "===============res===",res
+        return res
+    
+    def lead_amount_paid_records(self,cr,uid,id,context=None):
+        print "**********",id
+        dummy, view_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'account_voucher', 'view_vendor_receipt_form')
+        print 'view_id: view_id,--------------------------------------',view_id
+        obj = self.browse(cr,uid,id,context=None)
+        print "obj.id---------------",obj.id
+        return {
+            'name':'view_vendor_receipt_form',
+            'view_mode': 'form',
+            'view_type': 'form,tree',
+            'view_id': view_id,
+            'res_model': 'account.voucher',
+            'type': 'ir.actions.act_window',
+            'context': {
+                'default_partner_id': obj.partner_id.id ,
+                'crm_lead_id':obj.id,
+                'search_disable_custom_filters': False
+            }
+        }
     
     def create(self,cr,uid,vals,context=None):
         if vals.get('sequence','/')=='/':
@@ -121,10 +154,12 @@ class panipat_crm_lead(osv.osv):
         'sequence': fields.char(string="Order No."),
         'state': fields.selection(string="State",selection=[('draft','Draft'),('done','Done')]),
         'allocation_no': fields.many2one('crm.lead.allocated',string="Allocation No."),
+        'total_paid_amount':fields.function(_get_amount_paid,type='float',string="Payment"),
     }
 
     _defaults = {
         'create_date': fields.datetime.now,
         'sequence':'/',
         'state': 'draft',
+        'total_paid_amount':15.00,
     }

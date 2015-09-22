@@ -22,6 +22,11 @@
                 	<field name="state" widget="statusbar" />
                 </header>
                 <sheet>
+                	<div class="oe_right oe_button_box" name="buttons">
+                        <button name="lead_amount_paid_records" string="Advance" class="oe_inline oe_stat_button" type="object"  icon="fa-usd">
+                            <div><field name="total_paid_amount" nolabel="1"/></div>
+                        </button>
+                    </div>
                 	<div>
                        	<group> 
                        		<group>
