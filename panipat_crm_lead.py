@@ -29,24 +29,20 @@ class panipat_crm_lead(osv.osv):
         return res
     
     def lead_amount_paid_records(self,cr,uid,id,context=None):
-        print "**********",id
-        dummy, view_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'account_voucher', 'view_vendor_receipt_form')
-        print 'view_id: view_id,--------------------------------------',view_id
         obj = self.browse(cr,uid,id,context=None)
-        print "obj.id---------------",obj.id
+        voucher_ids = self.pool.get('account.voucher').search(cr,uid,[('crm_lead_id','=',id[0])])
         return {
-            'name':'view_vendor_receipt_form',
-            'view_mode': 'form',
-            'view_type': 'form,tree',
-            'view_id': view_id,
-            'res_model': 'account.voucher',
-            'type': 'ir.actions.act_window',
-            'context': {
-                'default_partner_id': obj.partner_id.id ,
-                'crm_lead_id':obj.id,
-                'search_disable_custom_filters': False
-            }
-        }
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'res_model': 'account.voucher',
+                'type': 'ir.actions.act_window',
+                'domain':[('id','in',voucher_ids)],
+                'context': {
+                            'default_partner_id': obj.partner_id.id ,
+                            'crm_lead_id':obj.id,
+                            'search_disable_custom_filters': False
+                            }
+                }
     
     def create(self,cr,uid,vals,context=None):
         if vals.get('sequence','/')=='/':
