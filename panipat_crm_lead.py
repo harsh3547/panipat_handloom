@@ -38,6 +38,8 @@ class panipat_crm_lead(osv.osv):
                 'type': 'ir.actions.act_window',
                 'domain':[('id','in',voucher_ids)],
                 'context': {
+                            'tree_view_ref':'account_voucher.view_voucher_tree',
+                            'form_view_ref':'account_voucher.view_vendor_receipt_form',
                             'default_partner_id': obj.partner_id.id ,
                             'crm_lead_id':obj.id,
                             'search_disable_custom_filters': False
@@ -157,5 +159,5 @@ class panipat_crm_lead(osv.osv):
         'create_date': fields.datetime.now,
         'sequence':'/',
         'state': 'draft',
-        'total_paid_amount':15.00,
+        'total_paid_amount':00.00,
     }
