@@ -5,8 +5,8 @@ class account_voucher(osv.osv):
     
     def create(self,cr,uid,vals,context=None):
         
-        print "context-----------------------------",context
-        vals['crm_lead_id'] = context.get('active_id',False)
+        print "context-----------------------------",context,vals
+        vals['crm_lead_id'] = context.get('crm_lead_id',False)
         vals['type']= 'receipt'
         print "vals-----------------------------",vals
         return super(account_voucher,self).create(cr,uid,vals,context=None)
