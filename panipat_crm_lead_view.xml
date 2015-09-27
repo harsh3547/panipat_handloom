@@ -18,13 +18,14 @@
             <form string="Leads Form">
                 <header>
                     <button name="confirm_and_allocate" string="Confirm and Allocate" type="object" class="oe_highlight" attrs = "{'invisible':[('state','=','done')]}"/>
-                	<button name="view_allocation_order" string="View Allocation Order" type="object" class="oe_highlight" attrs = "{'invisible':[('state','!=','done')]}"/>
-                	<field name="state" widget="statusbar" />
+                	<button name="view_allocation_order" string="View Allocation Order" type="object" class="oe_highlight" attrs = "{'invisible':[('state','!=','done')]}">
+            	        <field name="state" widget="statusbar" />
+                    </button>
                 </header>
                 <sheet>
                 	<div class="oe_right oe_button_box" name="buttons">
-                        <button name="lead_amount_paid_records" string="Advance" class="oe_inline oe_stat_button" type="object"  icon="fa-usd">
-                            <div><field name="total_paid_amount" nolabel="1"/></div>
+                        <button name="lead_amount_paid_records"  class="oe_inline oe_stat_button" type="object"  icon="fa-money">
+                            <div><strong><field name="total_paid_amount" widget="monetary"/></strong><br/><strong>Advance</strong></div>
                         </button>
                     </div>
                 	<div>
@@ -108,9 +109,8 @@
                     <field name="create_date"/>
                     <field name="sequence"/>
                     <field name="name"/>
-                    <field name="contact_name"/>
-                    <field name="user_id" />
-                    <field name="partner_id"/>
+                    <field name="partner_id" string="Customer"/>
+                    <field name="priority"/>
                 </tree>
             </field>
         </record>
