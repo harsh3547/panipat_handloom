@@ -15,9 +15,7 @@ class crm_lead_allocated(osv.osv):
         order_no = self.read(cr,uid,id,['sequence'],context=None)
         seq_no = order_no[0].get('sequence',False)
         crm_obj = self.pool.get('panipat.crm.lead')
-        if seq_no:
-            crm_id = crm_obj.search(cr,uid,[('sequence','=',seq_no)],context=None)
-            crm_obj.write(cr,uid,crm_id,{'allocation_no':id[0]},context=None)
+        
         return True
     
     def quotation(self,cr,uid,id,context=None):

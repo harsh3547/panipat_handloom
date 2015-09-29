@@ -33,8 +33,6 @@
                        		<group>
                        			<label for="sequence" />
                        			<h3><field name="sequence" readonly="1" /></h3>
-                       			<label for="allocation_no" />
-                       			<h3><field name="allocation_no" readonly="1"  /></h3>
                        		</group>
                        		<group>
                        			<label for="create_date" />

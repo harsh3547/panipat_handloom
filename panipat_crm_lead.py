@@ -149,9 +149,8 @@ class panipat_crm_lead(osv.osv):
         'fax': fields.char('Fax'),
         'mobile': fields.char('Mobile'),
         'title': fields.many2one('res.partner.title', 'Title'),
-        'sequence': fields.char(string="Order No."),
-        'state': fields.selection(string="State",selection=[('draft','Draft'),('done','Done')]),
-        'allocation_no': fields.many2one('crm.lead.allocated',string="Allocation No."),
+        'sequence': fields.char(string="Order No.",copy=False),
+        'state': fields.selection(string="State",selection=[('draft','Draft'),('done','Done')],copy=False),
         'total_paid_amount':fields.function(_get_amount_paid,type='float',string="Payment"),
     }
 
