@@ -17,10 +17,11 @@
         <field name="arch" type="xml">
             <form string="Leads Form">
                 <header>
-                    <button name="confirm_and_allocate" string="Confirm and Allocate" type="object" class="oe_highlight" attrs = "{'invisible':[('state','=','done')]}"/>
-                	<button name="view_allocation_order" string="View Allocation Order" type="object" class="oe_highlight" attrs = "{'invisible':[('state','!=','done')]}">
-            	        <field name="state" widget="statusbar" />
-                    </button>
+                    <div>
+                        <button name="confirm_and_allocate" string="Confirm and Allocate" type="object" class="oe_highlight" attrs = "{'invisible':[('state','=','done')]}"/>
+                    	<button name="view_allocation_order" string="View Allocation Order" type="object" class="oe_highlight" attrs = "{'invisible':[('state','!=','done')]}" />
+                	    <field name="state" widget="statusbar"/>    
+                    </div>
                 </header>
                 <sheet>
                 	<div class="oe_right oe_button_box" name="buttons">
