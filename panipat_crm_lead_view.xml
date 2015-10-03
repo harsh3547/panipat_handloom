@@ -23,7 +23,7 @@
                 	    <field name="state" widget="statusbar"/>    
                     </div>
                 </header>
-                <sheet>
+               
                 	<div class="oe_right oe_button_box" name="buttons">
                         <button name="lead_amount_paid_records"  class="oe_inline oe_stat_button" type="object"  icon="fa-money">
                             <div><strong><field name="total_paid_amount" widget="monetary"/></strong><br/><strong>Advance</strong></div>
@@ -81,20 +81,27 @@
                             <field name="priority" widget="priority"/>
                         </group>
                     </group>
-					<group>
-						<field name="product_line"  >
+					<div>
+                        <label for="product_line"/>
+                        <field name="product_line" >
 							<tree editable="bottom" >
+                                <field name="sequence" widget="handle"/>
 								<field name="product_id"/>
 								<field name="description"/>
 							</tree>
 						</field>
-					</group>
+                    </div>
                     <notebook colspan="4">
-                    <page string="Internal Notes">
-                        <field name="description"/>
-                    </page>
-                    </notebook>
-                </sheet>
+                        <page string="Notes">
+                            <div>
+                                <field name="description" placeholder="Extra Notes ......."/>
+                            </div>
+                        </page>
+                        <page string="Extra Info">
+
+                        </page>
+                    
+               
             </form>
         </field>
         </record>

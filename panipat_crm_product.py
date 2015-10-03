@@ -4,6 +4,7 @@ class panipat_crm_product(osv.osv):
     _name = "panipat.crm.product"
     
     _columns = {
+    	'sequence':fields.integer(),
         'product_id': fields.many2one('product.product',string="product"),
         'crm_lead_id': fields.many2one('panipat.crm.lead'),
         'description':fields.text(string="Description"),

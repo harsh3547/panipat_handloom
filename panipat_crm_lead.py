@@ -121,7 +121,7 @@ class panipat_crm_lead(osv.osv):
         if partner_id:
             partner = self.pool.get('res.partner').browse(cr, uid, partner_id, context=context)
             values = {
-                'partner_name': partner.parent_id.name if partner.parent_id else partner.name,
+                'partner_name': partner.parent_id.name if partner.parent_id else '',
                 'contact_name': partner.name if partner.parent_id else False,
                 'title': partner.title and partner.title.id or False,
                 'street': partner.street,
@@ -134,6 +134,7 @@ class panipat_crm_lead(osv.osv):
                 'mobile': partner.mobile,
                 'fax': partner.fax,
                 'zip': partner.zip,
+                'user_id': partner.user_id and partner.user_id.id or False,
             }
         return {'value': values}
 
@@ -150,12 +151,12 @@ class panipat_crm_lead(osv.osv):
         'name': fields.char('Subject', required=True, select=1),
         'email_from': fields.char('Email', size=128, help="Email address of the contact", select=1),
         'create_date': fields.datetime('Creation Date', readonly=True),
-        'description': fields.text('Notes'),
+        'description': fields.text('Internal Notes'),
         'contact_name': fields.char('Contact Name', size=64),
         'priority': fields.selection(AVAILABLE_PRIORITIES, 'Priority', select=True),
         'user_id': fields.many2one('res.users', 'Salesperson', select=True, track_visibility='onchange'),
         'current_date': fields.datetime('Date',Readonly=True),
-        'product_line': fields.one2many('panipat.crm.product','crm_lead_id',string="Products"),
+        'product_line': fields.one2many('panipat.crm.product','crm_lead_id',string="Products",required=True),
         'street': fields.char('Street'),
         'street2': fields.char('Street2'),
         'zip': fields.char('Zip', change_default=True, size=24),
@@ -176,4 +177,5 @@ class panipat_crm_lead(osv.osv):
         'sequence':'/',
         'state': 'draft',
         'total_paid_amount':00.00,
+        'priority':'2',
     }
