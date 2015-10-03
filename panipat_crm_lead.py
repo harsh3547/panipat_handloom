@@ -20,7 +20,7 @@ class panipat_crm_lead(osv.osv):
         amount_paid = 0.0
         voucher_obj = self.pool.get('account.voucher')
         for id in ids:
-            voucher_ids = voucher_obj.search(cr,uid,[('crm_lead_id','=',id)],context=None)
+            voucher_ids = voucher_obj.search(cr,uid,[('crm_lead_id','=',id),('state','=','posted')],context=None)
             print "voucher_ids-----------------------------",voucher_ids
             for obj in voucher_obj.browse(cr,uid,voucher_ids,context=None) :
                 amount_paid += obj.amount
