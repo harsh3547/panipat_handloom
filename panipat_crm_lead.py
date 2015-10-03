@@ -31,6 +31,23 @@ class panipat_crm_lead(osv.osv):
     def lead_amount_paid_records(self,cr,uid,id,context=None):
         obj = self.browse(cr,uid,id,context=None)
         voucher_ids = self.pool.get('account.voucher').search(cr,uid,[('crm_lead_id','=',id[0])])
+        if len(voucher_ids)==1:
+            return {
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'res_model': 'account.voucher',
+                    'type': 'ir.actions.act_window',
+                    'res_id': voucher_ids[0],
+                    'context': {
+                            'form_view_ref':'account_voucher.view_vendor_receipt_form',
+                            'default_partner_id': obj.partner_id.parent_id.id if obj.partner_id.parent_id else obj.partner_id.id,
+                            # customer payment only done by company if company exists for the contact
+                            'crm_lead_id':obj.id,
+                            'search_disable_custom_filters': False
+                            }
+
+                    }
+
         return {
                 'view_type': 'form',
                 'view_mode': 'tree,form',
@@ -40,7 +57,7 @@ class panipat_crm_lead(osv.osv):
                 'context': {
                             'tree_view_ref':'account_voucher.view_voucher_tree',
                             'form_view_ref':'account_voucher.view_vendor_receipt_form',
-                            'default_partner_id': obj.partner_id.id ,
+                            'default_partner_id': obj.partner_id.parent_id.id if obj.partner_id.parent_id else obj.partner_id.id,
                             'crm_lead_id':obj.id,
                             'search_disable_custom_filters': False
                             }
