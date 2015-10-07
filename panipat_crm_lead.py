@@ -156,7 +156,7 @@ class panipat_crm_lead(osv.osv):
         'priority': fields.selection(AVAILABLE_PRIORITIES, 'Priority', select=True),
         'user_id': fields.many2one('res.users', 'Salesperson', select=True, track_visibility='onchange'),
         'current_date': fields.datetime('Date',Readonly=True),
-        'product_line': fields.one2many('panipat.crm.product','crm_lead_id',string="Products",required=True),
+        'product_line': fields.one2many('panipat.crm.product','crm_lead_id',string="Products"),
         'street': fields.char('Street'),
         'street2': fields.char('Street2'),
         'zip': fields.char('Zip', change_default=True, size=24),

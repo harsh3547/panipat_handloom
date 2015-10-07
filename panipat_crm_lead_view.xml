@@ -23,27 +23,25 @@
                 	    <field name="state" widget="statusbar"/>    
                     </div>
                 </header>
-               
+               <sheet>
                 	<div class="oe_right oe_button_box" name="buttons">
                         <button name="lead_amount_paid_records"  class="oe_inline oe_stat_button" type="object"  icon="fa-money">
                             <div><strong><field name="total_paid_amount" widget="monetary"/></strong><br/><strong>Advance</strong></div>
                         </button>
                     </div>
-                	<div>
-                       	<group> 
-                       		<group>
-                       			<label for="sequence" />
-                       			<h3><field name="sequence" readonly="1" /></h3>
-                       		</group>
-                       		<group>
-                       			<label for="create_date" />
-                       			<h3><field name="create_date"/></h3>
-                       		</group>
-                       	</group>
-						<label for="name" class="oe_edit_only"/>
-                       	<h2><field name="name" placeholder="Describe the lead..."/></h2>                       	
-                     </div>
+                	<div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h2><field name="name" placeholder="Describe the lead..."/></h2>
+                    </div>
                     <group>
+                            <group>
+                                <label for="sequence" />
+                                <h3><field name="sequence" readonly="1" /></h3>
+                            </group>
+                            <group>
+                                <label for="create_date" />
+                                <h3><field name="create_date"/></h3>
+                            </group>
                         <group>
                             <field name="partner_name" string="Company Name"/>
                             <!-- Preload all the partner's information -->
@@ -100,9 +98,10 @@
                         <page string="Extra Info">
 
                         </page>
-                    
-               
+                    </notebook>
+                </sheet>
             </form>
+        
         </field>
         </record>
 
@@ -112,8 +111,8 @@
             <field name="model">panipat.crm.lead</field>
             <field name="arch" type="xml">
                 <tree string="Leads">
-                    <field name="create_date"/>
                     <field name="sequence"/>
+                    <field name="create_date"/>
                     <field name="name"/>
                     <field name="partner_id" string="Customer"/>
                     <field name="priority"/>
