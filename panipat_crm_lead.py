@@ -1,32 +1,26 @@
-from openerp.osv import fields, osv
+# -*- coding: utf-8 -*-
+from openerp import models, fields, api, _
+from openerp.exceptions import except_orm
 from datetime import datetime
 from openerp.tools.translate import _
 
-AVAILABLE_PRIORITIES = [
-    ('0', 'Very Low'),
-    ('1', 'Low'),
-    ('2', 'Normal'),
-    ('3', 'High'),
-    ('4', 'Very High'),
-]
 
-class panipat_crm_lead(osv.osv):
+class panipat_crm_lead(models.Model):
     _name = "panipat.crm.lead"
     _rec_name = 'sequence'
     
-    def _get_amount_paid(self,cr,uid,ids,name, arg,context=None):
-        
-        res = {}
-        amount_paid = 0.0
-        voucher_obj = self.pool.get('account.voucher')
-        for id in ids:
-            voucher_ids = voucher_obj.search(cr,uid,[('crm_lead_id','=',id),('state','=','posted')],context=None)
-            print "voucher_ids-----------------------------",voucher_ids
-            for obj in voucher_obj.browse(cr,uid,voucher_ids,context=None) :
+    
+    def _get_amount_paid(self):
+        amount_paid=0.0
+        voucher_obj = self.env['account.voucher']
+        for rec_self in self:
+            voucher_recs = voucher_obj.search([('crm_lead_id','=',rec_self.id),('state','=','posted')])
+            #print "voucher_ids-----------------------------",voucher_ids
+            for obj in voucher_recs:
                 amount_paid += obj.amount
-            res[id] = amount_paid
-        print "===============res===",res
-        return res
+            rec_self.total_paid_amount = amount_paid
+        
+    
     
     def lead_amount_paid_records(self,cr,uid,id,context=None):
         obj = self.browse(cr,uid,id,context=None)
@@ -73,7 +67,7 @@ class panipat_crm_lead(osv.osv):
         return super(panipat_crm_lead,self).create(cr,uid,vals,context=None)
     
     def confirm_and_allocate(self,cr,uid,id,context=None):
-        self.write(cr,uid,id,{'state':'done'},context=None)
+        self.write(cr,uid,id,{'state':'employee'},context=None)
         carry_fields = self.read(cr,uid,id,['sequence','partner_id'],context=None)
         crm_id = carry_fields[0].pop('id')
         vals=carry_fields[0]
@@ -83,6 +77,16 @@ class panipat_crm_lead(osv.osv):
         vals.update({'state':'draft'})
         allocated_id=self.pool.get('crm.lead.allocated').create(cr,uid,vals,context=None)
         print "------------------------------",allocated_id
+        return True
+
+    def confirm_and_quote(self,cr,uid,id,context=None):
+        self.write(cr,uid,id,{'state':'quotation'},context=None)
+        return True
+    
+    def confirm_and_redesign(self,cr,uid,id,context=None):
+        return True
+    
+    def confirm_and_install(self,cr,uid,id,context=None):
         return True
     
     def view_allocation_order(self,cr,uid,id,context=None):
@@ -117,68 +121,53 @@ class panipat_crm_lead(osv.osv):
                                'text': 'Allocated Lead is not available .',
                                }
                     }
-        
-                                                  
-    def on_change_partner_id(self, cr, uid, ids, partner_id, context=None):
-        values = {}
-        if partner_id:
-            partner = self.pool.get('res.partner').browse(cr, uid, partner_id, context=context)
-            values = {
-                'partner_name': partner.parent_id.name if partner.parent_id else '',
-                'contact_name': partner.name if partner.parent_id else False,
-                'title': partner.title and partner.title.id or False,
-                'street': partner.street,
-                'street2': partner.street2,
-                'city': partner.city,
-                'state_id': partner.state_id and partner.state_id.id or False,
-                'country_id': partner.country_id and partner.country_id.id or False,
-                'email_from': partner.email,
-                'phone': partner.phone,
-                'mobile': partner.mobile,
-                'fax': partner.fax,
-                'zip': partner.zip,
-                'user_id': partner.user_id and partner.user_id.id or False,
-            }
-        return {'value': values}
-
-    def onchange_state(self, cr, uid, ids, state_id, context=None):
-        if state_id:
-            country_id=self.pool.get('res.country.state').browse(cr, uid, state_id, context).country_id.id
-            return {'value':{'country_id':country_id}}
-        return {}
     
-    _columns = {
-        'partner_name': fields.char(string="Company Name"),
-        'partner_id': fields.many2one('res.partner', 'Partner', ondelete='set null', track_visibility='onchange',
-            select=True, help="Linked partner (optional). Usually created when converting the lead.",required=True),
-        'name': fields.char('Subject', required=True, select=1),
-        'email_from': fields.char('Email', size=128, help="Email address of the contact", select=1),
-        'create_date': fields.datetime('Creation Date', readonly=True),
-        'description': fields.text('Internal Notes'),
-        'contact_name': fields.char('Contact Name', size=64),
-        'priority': fields.selection(AVAILABLE_PRIORITIES, 'Priority', select=True),
-        'user_id': fields.many2one('res.users', 'Salesperson', select=True, track_visibility='onchange'),
-        'current_date': fields.datetime('Date',Readonly=True),
-        'product_line': fields.one2many('panipat.crm.product','crm_lead_id',string="Products"),
-        'street': fields.char('Street'),
-        'street2': fields.char('Street2'),
-        'zip': fields.char('Zip', change_default=True, size=24),
-        'city': fields.char('City'),
-        'state_id': fields.many2one("res.country.state", 'State'),
-        'country_id': fields.many2one('res.country', 'Country'),
-        'phone': fields.char('Phone'),
-        'fax': fields.char('Fax'),
-        'mobile': fields.char('Mobile'),
-        'title': fields.many2one('res.partner.title', 'Title'),
-        'sequence': fields.char(string="Order No.",copy=False),
-        'state': fields.selection(string="State",selection=[('draft','Draft'),('done','Done')],copy=False),
-        'total_paid_amount':fields.function(_get_amount_paid,type='float',string="Payment"),
-    }
+    @api.depends('partner_id')    
+    def _get_partner_details(self):
+        for rec in self:
+            if rec.partner_id:
+                partner = rec.partner_id
+                rec.partner_name = partner.parent_id.name if partner.parent_id else ''
+                rec.contact_name = partner.name if partner.parent_id else False
+                rec.title = partner.title and partner.title.id or False
+                rec.street = partner.street
+                rec.street2 = partner.street2
+                rec.city = partner.city
+                rec.state_id = partner.state_id and partner.state_id.id or False
+                rec.country_id = partner.country_id and partner.country_id.id or False
+                rec.email_from = partner.email
+                rec.phone = partner.phone
+                rec.mobile = partner.mobile
+                rec.fax = partner.fax
+                rec.zip = partner.zip
+                rec.user_id = partner.user_id and partner.user_id.id or False
 
-    _defaults = {
-        'create_date': fields.datetime.now,
-        'sequence':'/',
-        'state': 'draft',
-        'total_paid_amount':00.00,
-        'priority':'2',
-    }
+    
+    
+    partner_name = fields.Char(compute='_get_partner_details',string="Company Name")
+    partner_id = fields.Many2one('res.partner', 'Partner', ondelete='set null', track_visibility='onchange',
+        select=True, required=True)
+    name = fields.Char(string='Subject', select=1)
+    email_from = fields.Char(compute='_get_partner_details',string='Email', size=128, help="Email address of the contact", select=1)
+    create_date = fields.Datetime('Creation Date', readonly=True,default=fields.Datetime.now)
+    description = fields.Text('Internal Notes')
+    contact_name = fields.Char(compute='_get_partner_details',string='Contact Name', size=64)
+    priority = fields.Selection(selection=[('0', 'Very Low'),('1', 'Low'),('2', 'Normal'),('3', 'High'),('4', 'Very High')], string='Priority', select=True,default='2')
+    user_id = fields.Many2one('res.users', 'Salesperson', select=True, track_visibility='onchange')
+    current_date = fields.Datetime('Date',Readonly=True)
+    product_line = fields.One2many('panipat.crm.product','crm_lead_id',string="Products")
+    street = fields.Char(compute='_get_partner_details',string='Street')
+    street2 = fields.Char(compute='_get_partner_details',string='Street2')
+    zip = fields.Char(compute='_get_partner_details',string='Zip', change_default=True, size=24)
+    city = fields.Char(compute='_get_partner_details',string='City')
+    state_id = fields.Many2one(compute='_get_partner_details',comodel_name="res.country.state", string='State')
+    country_id = fields.Many2one(compute='_get_partner_details',comodel_name='res.country', string='Country')
+    phone = fields.Char(compute='_get_partner_details',string='Phone')
+    fax = fields.Char(compute='_get_partner_details',string='Fax')
+    mobile = fields.Char(compute='_get_partner_details',string='Mobile')
+    title = fields.Many2one(compute='_get_partner_details',comodel_name='res.partner.title', string='Title')
+    sequence = fields.Char(string="Order No.",copy=False,default='/')
+    state = fields.Selection(string="State",selection=[('draft','Draft'),('employee','Employee Allocated'),('quotation','Quotation'),('redesign','Redesign'),('install','Install'),('cancel','Cancel')],copy=False,default='draft')
+    total_paid_amount =fields.Float(compute='_get_amount_paid',string="Payment",default=00.00)
+    order_group =fields.Many2one('panipat.order.group',string="Order Group")
+
