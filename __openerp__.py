@@ -32,7 +32,7 @@
     'website': 'www.jginfosystems.com',
     'depends': ['base','hr','account'],
     'data': [
-             'panipat_crm_lead_data.xml',
+             'panipat_sequences.xml',
              'panipat_crm_lead_view.xml',
              'panipat_employee_view.xml',
              'crm_lead_allocated_view.xml',
