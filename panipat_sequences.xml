@@ -1,10 +1,10 @@
 <openerp>
-	<data noupdate="0">
-	
-		<record id="crm_lead_order_no" model="ir.sequence.type">
-	            <field name="name">CRM-Lead Order No</field>
-	            <field name="code">CRM.Lead.Order.No</field>
-	    </record>
+       <data noupdate="0">
+       
+               <record id="crm_lead_order_no" model="ir.sequence.type">
+                   <field name="name">CRM-Lead Order No</field>
+                 <field name="code">CRM.Lead.Order.No</field>
+          </record>
         <record id="crm_lead_order_no_seq" model="ir.sequence">
             <field name="name">Panipat Handloom Lead Module</field>
             <field name="code">CRM.Lead.Order.No</field>
@@ -38,5 +38,5 @@
         </record>
         
         
-	</data>
+       </data>
 </openerp>
