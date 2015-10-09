@@ -40,11 +40,11 @@ class crm_lead_allocated(osv.osv):
         
         return True
     
-    def unlink(self,cr,uid,ids,context):
-        delete_ids = self.pool.get('panipat.employee').search(cr,uid,[('crm_lead_allocated_id','in',ids)],context=None)
-        if delete_ids :
-            self.pool.get('panipat.employee').unlink(cr,uid,delete_ids,context)
-        return super(crm_lead_allocated,self).unlink(cr,uid,ids,context)
+    def create(self,cr,uid,vals,context=None):
+        if vals.get('allocation_no','/')=='/':
+            seq=self.pool.get('ir.sequence').get(cr,uid,'CRM.Lead.Allocation.No',context=None) or '/'
+            vals['allocation_no']=seq
+        return super(crm_lead_allocated, self).create(cr,uid,vals,context)
     
     _columns = {
         'partner_id': fields.many2one('res.partner', 'Partner'),
