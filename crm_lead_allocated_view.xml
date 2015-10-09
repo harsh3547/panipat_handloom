@@ -30,7 +30,6 @@
                        			<field name="create_date"/>
                        		</group>
                        		<group>
-                       			<field name="sequence" />
                        			<field name="allocation_no" readonly="1" />
                        		</group>
                        	</group>
@@ -55,6 +54,11 @@
                     <notebook colspan="4">
                     <page string="Internal Notes">
                         <field name="description"/>
+                    </page>
+                    <page>
+                        <group>
+                            <field name='order_group'/>
+                        </group>
                     </page>
                     </notebook>
                 </sheet>

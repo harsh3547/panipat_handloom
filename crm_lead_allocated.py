@@ -6,16 +6,7 @@ class crm_lead_allocated(osv.osv):
     _rec_name = "allocation_no"
     
     def schedule_employee(self,cr,uid,id,context=None):
-        seq ="/"
-        alloc_no = self.read(cr,uid,id,['allocation_no'],context=None)
-        if alloc_no[0].get('allocation_no','/') == "/" :
-            seq=self.pool.get('ir.sequence').get(cr,uid,'CRM.Lead.Allocation.No',context=None) or '/'
-        self.write(cr,uid,id,{'state':'ongoing',
-                              'allocation_no':seq},context=None)
-        order_no = self.read(cr,uid,id,['sequence'],context=None)
-        seq_no = order_no[0].get('sequence',False)
-        crm_obj = self.pool.get('panipat.crm.lead')
-        
+        self.write(cr,uid,id,{'state':'ongoing'},context=None)
         return True
     
     def quotation(self,cr,uid,id,context=None):
@@ -51,11 +42,12 @@ class crm_lead_allocated(osv.osv):
         'create_date': fields.datetime('Creation Date', readonly=True),
         'description': fields.text('Notes'),
         'allocation_no': fields.char(string="Allocation No."),
-        'sequence':fields.many2one('panipat.crm.lead',string="Order No."),
+        'order_group':fields.many2one('panipat.order.group',string="Order Group",readonly=True),
         'employee_line': fields.one2many('panipat.employee','crm_lead_allocated_id',string="Employees"),
         'state': fields.selection(string="State",selection=[('draft','Draft'),('ongoing','Ongoing'),('done','Done')]),
                 }
     
     _defaults = {
         'allocation_no':'/',
+        'state':'draft',
     }

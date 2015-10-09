@@ -70,15 +70,9 @@ class panipat_crm_lead(models.Model):
     
     def confirm_and_allocate(self,cr,uid,id,context=None):
         self.write(cr,uid,id,{'state':'employee'},context=None)
-        carry_fields = self.read(cr,uid,id,['sequence','partner_id'],context=None)
-        crm_id = carry_fields[0].pop('id')
-        vals=carry_fields[0]
-        if vals.get('partner_id',False) :
-            vals['partner_id'] = vals.get('partner_id')[0]
-        vals['sequence'] = crm_id
-        vals.update({'state':'draft'})
+        carry_fields = self.browse(cr,uid,id,context=None)
+        vals = {'partner_id':carry_fields.partner_id.id,'order_group':carry_fields.order_group.id}
         allocated_id=self.pool.get('crm.lead.allocated').create(cr,uid,vals,context=None)
-        print "------------------------------",allocated_id
         return True
 
     def confirm_and_quote(self,cr,uid,id,context=None):
@@ -92,8 +86,8 @@ class panipat_crm_lead(models.Model):
         return True
     
     def view_allocation_order(self,cr,uid,id,context=None):
-        sequence=self.read(cr,uid,id,['sequence'],context=None)[0].get('sequence')
-        allocated_ids=self.pool.get('crm.lead.allocated').search(cr,uid,[('sequence','=',sequence)],context=None)
+        order_group=self.browse(cr,uid,id,context=None).order_group.id
+        allocated_ids=self.pool.get('crm.lead.allocated').search(cr,uid,[('order_group','=',order_group)],context=None)
         if allocated_ids :
             if len(allocated_ids) == 1 :
                 return {
