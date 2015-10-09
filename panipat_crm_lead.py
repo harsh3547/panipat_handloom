@@ -36,6 +36,7 @@ class panipat_crm_lead(models.Model):
                             'form_view_ref':'account_voucher.view_vendor_receipt_form',
                             'default_partner_id': obj.partner_id.parent_id.id if obj.partner_id.parent_id else obj.partner_id.id,
                             # customer payment only done by company if company exists for the contact
+                            'default_name':obj.sequence,
                             'crm_lead_id':obj.id,
                             'search_disable_custom_filters': False
                             }
@@ -53,6 +54,7 @@ class panipat_crm_lead(models.Model):
                             'form_view_ref':'account_voucher.view_vendor_receipt_form',
                             'default_partner_id': obj.partner_id.parent_id.id if obj.partner_id.parent_id else obj.partner_id.id,
                             'crm_lead_id':obj.id,
+                            'default_name':obj.sequence,
                             'search_disable_custom_filters': False
                             }
                 }
@@ -127,7 +129,12 @@ class panipat_crm_lead(models.Model):
         for rec in self:
             if rec.partner_id:
                 partner = rec.partner_id
-                rec.partner_name = partner.parent_id.name if partner.parent_id else ''
+                if partner.parent_id:
+                    rec.partner_name = partner.parent_id.name
+                elif partner.is_company:
+                    rec.partner_name = partner.name
+                else:
+                    rec.partner_name = ''
                 rec.contact_name = partner.name if partner.parent_id else False
                 rec.title = partner.title and partner.title.id or False
                 rec.street = partner.street
@@ -169,5 +176,5 @@ class panipat_crm_lead(models.Model):
     sequence = fields.Char(string="Order No.",copy=False,default='/')
     state = fields.Selection(string="State",selection=[('draft','Draft'),('employee','Employee Allocated'),('quotation','Quotation'),('redesign','Redesign'),('install','Install'),('cancel','Cancel')],copy=False,default='draft')
     total_paid_amount =fields.Float(compute='_get_amount_paid',string="Payment",default=00.00)
-    order_group =fields.Many2one('panipat.order.group',string="Order Group")
+    order_group =fields.Many2one('panipat.order.group',string="Order Group",readonly=True)
 

@@ -9,3 +9,7 @@ class panipat_crm_product(osv.osv):
         'crm_lead_id': fields.many2one('panipat.crm.lead'),
         'description':fields.text(string="Description"),
                 }
+    _order='sequence'
+    _defaults={
+               'sequence':10,
+               }
