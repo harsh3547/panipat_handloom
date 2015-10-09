@@ -64,9 +64,12 @@ class panipat_crm_lead(osv.osv):
                 }
     
     def create(self,cr,uid,vals,context=None):
+
         if vals.get('sequence','/')=='/':
             print "in sequnece"
-            vals['sequence']=self.pool.get('ir.sequence').get(cr,uid,'CRM.Lead.Order.No',context=None) or '/'
+            vals['sequence']=self.pool.get('ir.sequence').get(cr,uid,'CRM.Lead.Order.No',context) or '/'
+            vals['order_group'] = self.pool.get('panipat.order.group').create(cr,uid,{'partner_id':vals.get('partner_id',False)},context)
+            print "========vals crm lead=====",vals
         return super(panipat_crm_lead,self).create(cr,uid,vals,context=None)
     
     def confirm_and_allocate(self,cr,uid,id,context=None):

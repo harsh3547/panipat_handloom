@@ -96,7 +96,9 @@
                             </div>
                         </page>
                         <page string="Extra Info">
-
+							<group>
+							    <field name='order_group'/>
+							</group>
                         </page>
                     </notebook>
                 </sheet>
@@ -126,6 +128,7 @@
             <field name="model">panipat.crm.lead</field>
             <field name="arch" type="xml">
                 <search string="Search Leads">
+                    <field name="sequence"/>
                     <field name="name" string="Lead / Customer" filter_domain="['|','|','|',('partner_name','ilike',self),('email_from','ilike',self),('contact_name','ilike',self),('name','ilike',self)]"/>
                     <field name="user_id"/>
                     <field name="partner_id" operator="child_of"/>
