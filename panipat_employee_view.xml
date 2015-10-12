@@ -4,11 +4,11 @@
             <field name="name">panipat.employee.search.view</field>
             <field name="model">panipat.employee</field>
             <field name="arch" type="xml">
-                <search string="group by employee_id">
+                <search string="Panipat Employee">
                     <field name="employee_id"  />
    					<field name="crm_lead_allocated_id" />
-   					<field name="scheduled_time" />
-   					<field name="scheduled_hours"/>
+   					<field name="start_time" />
+   					<filter string="Confirmed" name="done_state_filter" domain="[('state','=','done')]" help="Allocation Order that have been confirmed"/>
                     <group expand="1" string="Group By">
                    		 <filter string="Employee" icon="terp-accessories-archiver" context="{'group_by':'employee_id'}" name="group_by_employee"/>
                  	</group>
@@ -22,19 +22,20 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">panipat.employee</field>
             <field name="view_type">form</field>
-            <field name="view_mode">gantt,tree,form</field>
-            <field name="context">{'search_default_group_by_employee': True}</field>
+            <field name="view_mode">calendar,tree,form</field>
+            <field name="context">{'search_default_group_by_employee': True,'search_default_done_state_filter':True}</field>
 	    </record>
 	    
-	    <record id="panipat_employee_tree_view" model="ir.ui.view" >
+        <record id="panipat_employee_tree_view" model="ir.ui.view" >
 	    	<field name="name">panipat.employee.tree.view</field>
 	    	<field name="model">panipat.employee</field>
 	    	<field name="arch" type="xml">
 	    		<tree string="Panipat Employee tree View" >
 	    			<field name="employee_id" invisible="1" />
    					<field name="crm_lead_allocated_id" />
-   					<field name="scheduled_time" />
-   					<field name="scheduled_hours"/>
+   					<field name="start_time" />
+   					<field name="delay_hours"  widget="float_time"/>
+   					<field name="end_time"/>
 				</tree>
 	    	</field>
 	    </record>
@@ -43,31 +44,37 @@
     	<field name="name">panipat.employee.form.view</field>
     	<field name="model">panipat.employee</field>
     	<field name="arch" type="xml">
-    		<form string="Panipat Employee Form View" create="0" >
+    		<form string="Panipat Employee Form View" >
+    		    <header>
+ 	              	   <field name="state" widget="statusbar" />
+                </header>
     			<sheet>
     				<group>
-    				<group>
-    					<field name="employee_id" readonly="1" />
-    					<field name="crm_lead_allocated_id" readonly="1" />
-    					<field name="scheduled_time" readonly="1" />
-    					<field name="scheduled_hours" readonly="1" />
-    				</group>
-    				<group></group>
+    					<field name="employee_id"/>
+    					<field name="crm_lead_allocated_id" options="{'create': false, 'create_edit': false}"/>
+    					<field name="start_time"  />
+    					<field name="delay_hours" widget="float_time"/>
+    					<field name="end_time"/>
+    					<field name="notes"/>
     				</group>
     			</sheet>
     		</form>
     	</field>
     </record>
     
-    <record id="panipat_employee_scheduler_gantt" model="ir.ui.view">
-        <field name="name">panipat.employee.scheduler.gantt</field>
-        <field name="model">panipat.employee</field>
-        <field name="arch" type="xml">
-            <gantt date_delay="scheduled_hours" date_start="scheduled_time" string="Operations" default_group_by="employee_id" create="0">
-            </gantt>
-        </field>
-    </record>
-    
+
+    <record	id="panipat_employee_scheduler_calendar" model="ir.ui.view">
+		<field	name="name">Employee Scheduler</field>
+		<field	name="model">panipat.employee</field>
+		<field	name="arch"	type="xml">
+		    <calendar date_stop="end_time" date_start="start_time" color="employee_id" display="
+		       , [employee_id], [crm_lead_allocated_id]">
+				<!--	Fields	used	for	the	text	of	display	attribute	-->
+				<field	name="employee_id"	/>
+				<field	name="crm_lead_allocated_id"	/>
+			</calendar>
+		</field>
+	</record>
     
     
     <menuitem id="submenu_item_employee_gantt" name="Employee Scheduler" parent="panipat_main_menu_item" sequence="2" action="action_panipat_employee_scheduler_gantt"/>

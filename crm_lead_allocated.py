@@ -7,6 +7,8 @@ class crm_lead_allocated(osv.osv):
     
     def schedule_employee(self,cr,uid,id,context=None):
         self.write(cr,uid,id,{'state':'ongoing'},context=None)
+        employee_ids=map(int,self.browse(cr,uid,id).employee_line or [])
+        self.pool.get('panipat.employee').write(cr,uid,employee_ids,{'state':'done'},context)
         return True
     
     def quotation(self,cr,uid,id,context=None):
