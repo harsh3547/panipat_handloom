@@ -30,7 +30,7 @@
     """,
     'author': 'J & G Infosystems',
     'website': 'www.jginfosystems.com',
-    'depends': ['base','hr','account_voucher','web_m2x_options'],
+    'depends': ['base','hr','account_voucher','web_m2x_options','sale'],
     'data': [
              'panipat_sequences.xml',
              'panipat_crm_lead_view.xml',
@@ -39,6 +39,7 @@
              'panipat_quotation_view.xml',
              'panipat_account_voucher_view.xml',
              'order_group.xml',
+             'sale_view.xml',
              ],
     'demo': [],
     'test': [],

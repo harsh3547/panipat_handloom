@@ -115,6 +115,7 @@
                     <field name="name"/>
                     <field name="partner_id" string="Customer"/>
                     <field name="priority"/>
+                    <field name="state"/>
                 </tree>
             </field>
         </record>

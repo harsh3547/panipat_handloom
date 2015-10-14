@@ -4,3 +4,4 @@ import panipat_crm_product
 import panipat_employee
 import panipat_account_voucher
 import order_group
+import sale_order

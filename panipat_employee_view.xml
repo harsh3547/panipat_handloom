@@ -36,6 +36,7 @@
    					<field name="start_time" />
    					<field name="delay_hours"  widget="float_time"/>
    					<field name="end_time"/>
+   					<field name="state"/>
 				</tree>
 	    	</field>
 	    </record>

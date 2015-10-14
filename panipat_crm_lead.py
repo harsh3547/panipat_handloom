@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openerp import models, fields, api, _
+from openerp import models, fields, api
 from openerp.exceptions import except_orm
 from datetime import datetime
 from openerp.tools.translate import _

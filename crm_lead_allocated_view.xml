@@ -15,13 +15,14 @@
         <field name="name">CRM - Leads Allocated Form</field>
         <field name="model">crm.lead.allocated</field>
         <field name="arch" type="xml">
-            <form string="Leads Form">
+            <form string="Allocation Form">
                 <header>
-                  <div>
-                    <button name="schedule_employee" string="Schedule Employee" type="object" class="oe_highlight" attrs = "{'invisible':['|',('state','=','done'),('state','=','ongoing')]}"/>
-                    <button name="quotation" string="Make Quotation" type="object" class="oe_highlight" attrs = "{'invisible':['|',('state','=','done'),('state','=','draft')]}" />
-                	   <field name="state" widget="statusbar" />
-                  </div>
+                    <div>
+	                    <button name="schedule_employee" string="Schedule Employee" type="object" class="oe_highlight" attrs = "{'invisible':[('state','!=','draft')]}"/>
+	                    <button name="make_quotation" string="Make Quotation" type="object" class="oe_highlight" attrs = "{'invisible':['|',('state','!=','employee')]}" />
+	                    <button name="view_quotation" string="View Quotation" type="object" class="oe_highlight" attrs = "{'invisible':['|',('state','!=','quotation_made')]}" />
+	                    <field name="state" widget="statusbar"/>
+                    </div>
                 </header>
                 <sheet>
                 	<div>
@@ -37,7 +38,7 @@
                     <group>
                         <group>
                             <!-- Preload all the partner's information -->
-                            <field name="partner_id" string="Customer" readonly="1" />
+                            <field name="partner_id" string="Customer" attrs = "{'readonly':[('order_group','!=',False)]}" />
                         </group>
                         
                     </group>
