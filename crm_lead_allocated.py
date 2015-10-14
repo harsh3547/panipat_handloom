@@ -6,7 +6,7 @@ class crm_lead_allocated(osv.osv):
     _rec_name = "allocation_no"
     
     def schedule_employee(self,cr,uid,id,context=None):
-        self.write(cr,uid,id,{'state':'ongoing'},context=None)
+        self.write(cr,uid,id,{'state':'employee'},context=None)
         employee_ids=map(int,self.browse(cr,uid,id).employee_line or [])
         self.pool.get('panipat.employee').write(cr,uid,employee_ids,{'state':'done'},context)
         return True
@@ -94,7 +94,7 @@ class crm_lead_allocated(osv.osv):
         'allocation_no': fields.char(string="Allocation No."),
         'order_group':fields.many2one('panipat.order.group',string="Order Group",readonly=True),
         'employee_line': fields.one2many('panipat.employee','crm_lead_allocated_id',string="Employees"),
-        'state': fields.selection(string="State",selection=[('draft','Draft'),('ongoing','Ongoing'),('done','Done')]),
+        'state': fields.selection(string="State",selection=[('draft','Draft'),('employee','Employee Scheduled'),('quotation_made','Quotation Made')]),
                 }
     
     _defaults = {
