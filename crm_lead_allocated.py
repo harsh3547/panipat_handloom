@@ -14,7 +14,6 @@ class crm_lead_allocated(osv.osv):
     def make_quotation(self,cr,uid,id,context=None):
         vals = {}
         values = []
-        
         order_group = self.browse(cr,uid,id,context).order_group.id
         lead_id = self.pool.get('panipat.crm.lead').search(cr,uid,[('order_group','=',order_group)],context=None)
         print " ==============lead_id===",lead_id
@@ -23,13 +22,14 @@ class crm_lead_allocated(osv.osv):
             if lead_obj.product_line :
                 for i in lead_obj.product_line :
                     values.append((0,0,{'product_id':i.product_id.id,
-                                        'name':i.description,
+                                        'name':i.description or "",
                                         }))
-                    vals.update({'order_line':values})
+                vals.update({'order_line':values})
                     
             if lead_obj.partner_id and lead_obj.partner_id.id:
                 vals.update({'partner_id':lead_obj.partner_id.id})  
             vals['order_group'] = order_group
+            print "---------vals in make_qutaion crm.lead.allocated==========",vals
             quotation_id = self.pool.get('sale.order').create(cr,uid,vals,context=None)
             self.write(cr,uid,id,{'state':'quotation_made'},context)
             return True

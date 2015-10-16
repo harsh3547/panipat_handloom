@@ -156,7 +156,7 @@ class panipat_crm_lead(models.Model):
     priority = fields.Selection(selection=[('0', 'Very Low'),('1', 'Low'),('2', 'Normal'),('3', 'High'),('4', 'Very High')], string='Priority', select=True,default='2')
     user_id = fields.Many2one('res.users', 'Salesperson', select=True, track_visibility='onchange')
     current_date = fields.Datetime('Date',Readonly=True)
-    product_line = fields.One2many('panipat.crm.product','crm_lead_id',string="Products")
+    product_line = fields.One2many('panipat.crm.product','crm_lead_id',string="Products",copy=True)
     street = fields.Char(compute='_get_partner_details',string='Street')
     street2 = fields.Char(compute='_get_partner_details',string='Street2')
     zip = fields.Char(compute='_get_partner_details',string='Zip', change_default=True, size=24)
