@@ -22,7 +22,7 @@ class crm_lead_allocated(osv.osv):
             if lead_obj.product_line :
                 for i in lead_obj.product_line :
                     values.append((0,0,{'product_id':i.product_id.id,
-                                        'name':i.description or "",
+                                        'name':i.description or self.pool.get('product.product').name_get(cr,uid,[i.product_id.id],context=context)[0][1] or "",
                                         }))
                 vals.update({'order_line':values})
                     
