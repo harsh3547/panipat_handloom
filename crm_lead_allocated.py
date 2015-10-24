@@ -96,6 +96,7 @@ class crm_lead_allocated(osv.osv):
         'employee_line': fields.one2many('panipat.employee','crm_lead_allocated_id',string="Employees"),
         'state': fields.selection(string="State",selection=[('draft','Draft'),('employee','Employee Scheduled'),('quotation_made','Quotation Made')]),
                 }
+    _order = "allocation_no desc"
     
     _defaults = {
         'allocation_no':'/',
