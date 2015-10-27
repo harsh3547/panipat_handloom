@@ -47,6 +47,7 @@
     	<field name="arch" type="xml">
     		<form string="Panipat Employee Form View" >
     		    <header>
+    		        	<button name="schedule_employee" string="Schedule Employee" type="object" class="oe_highlight" attrs = "{'invisible':[('state','!=','draft')]}"/>
  	              	   <field name="state" widget="statusbar" />
                 </header>
     			<sheet>
