@@ -1,7 +1,8 @@
 <openerp>
 	<data>
-	<menuitem action="account_voucher.action_vendor_receipt" icon="STOCK_JUSTIFY_FILL" sequence="12"
-            id="menu_action_vendor_receipt_panipat"  parent="panipat_main_menu_item"/>
-            
+		<menuitem action="account_voucher.action_vendor_receipt"
+			icon="STOCK_JUSTIFY_FILL" sequence="12"
+			id="menu_action_vendor_receipt_panipat" parent="panipat_main_menu_item" />
+
 	</data>
 </openerp>

@@ -14,7 +14,7 @@ class panipat_crm_lead(models.Model):
         amount_paid=0.0
         voucher_obj = self.env['account.voucher']
         for rec_self in self:
-            voucher_recs = voucher_obj.search([('crm_lead_id','=',rec_self.id),('state','=','posted')])
+            voucher_recs = voucher_obj.search([('order_group','=',rec_self.id),('state','=','posted')])
             #print "voucher_ids-----------------------------",voucher_ids
             for obj in voucher_recs:
                 amount_paid += obj.amount
@@ -24,7 +24,7 @@ class panipat_crm_lead(models.Model):
     
     def lead_amount_paid_records(self,cr,uid,id,context=None):
         obj = self.browse(cr,uid,id,context=None)
-        voucher_ids = self.pool.get('account.voucher').search(cr,uid,[('crm_lead_id','=',id[0])])
+        voucher_ids = self.pool.get('account.voucher').search(cr,uid,[('order_group','=',obj.order_group.id)])
         if len(voucher_ids)==1:
             return {
                     'view_type': 'form',
@@ -37,7 +37,7 @@ class panipat_crm_lead(models.Model):
                             'default_partner_id': obj.partner_id.parent_id.id if obj.partner_id.parent_id else obj.partner_id.id,
                             # customer payment only done by company if company exists for the contact
                             'default_name':obj.sequence,
-                            'crm_lead_id':obj.id,
+                            'order_group':obj.order_group.id,
                             'search_disable_custom_filters': False
                             }
 
@@ -53,7 +53,7 @@ class panipat_crm_lead(models.Model):
                             'tree_view_ref':'account_voucher.view_voucher_tree',
                             'form_view_ref':'account_voucher.view_vendor_receipt_form',
                             'default_partner_id': obj.partner_id.parent_id.id if obj.partner_id.parent_id else obj.partner_id.id,
-                            'crm_lead_id':obj.id,
+                            'order_group':obj.order_group.id,
                             'default_name':obj.sequence,
                             'search_disable_custom_filters': False
                             }
@@ -64,6 +64,7 @@ class panipat_crm_lead(models.Model):
         if vals.get('sequence','/')=='/':
             print "in sequnece"
             vals['sequence']=self.pool.get('ir.sequence').get(cr,uid,'CRM.Lead.Order.No',context) or '/'
+            lead_id = self.pool.get('panipat.crm.lead').search(cr,uid,[('order_group','=',order_group)],context=None)
             vals['order_group'] = self.pool.get('panipat.order.group').create(cr,uid,{'partner_id':vals.get('partner_id',False)},context)
             print "========vals crm lead=====",vals
         return super(panipat_crm_lead,self).create(cr,uid,vals,context=None)
@@ -75,16 +76,6 @@ class panipat_crm_lead(models.Model):
         allocated_id=self.pool.get('crm.lead.allocated').create(cr,uid,vals,context=None)
         return True
 
-    def confirm_and_quote(self,cr,uid,id,context=None):
-        self.write(cr,uid,id,{'state':'quotation'},context=None)
-        return True
-    
-    def confirm_and_redesign(self,cr,uid,id,context=None):
-        return True
-    
-    def confirm_and_install(self,cr,uid,id,context=None):
-        return True
-    
     def view_allocation_order(self,cr,uid,id,context=None):
         order_group=self.browse(cr,uid,id,context=None).order_group.id
         allocated_ids=self.pool.get('crm.lead.allocated').search(cr,uid,[('order_group','=',order_group)],context=None)
@@ -117,6 +108,74 @@ class panipat_crm_lead(models.Model):
                                'text': 'Allocated Lead is not available .',
                                }
                     }
+    
+
+
+    def confirm_and_quote(self,cr,uid,id,context=None):
+        lead_obj = self.browse(cr,uid,id,context)
+        values=[]
+        vals={}
+        if lead_obj.product_line :
+            for i in lead_obj.product_line :
+                values.append((0,0,{'product_id':i.product_id.id,
+                                    'name':i.description or self.pool.get('product.product').name_get(cr,uid,[i.product_id.id],context=context)[0][1] or "",
+                                    }))
+            vals.update({'order_line':values})
+                
+        if lead_obj.partner_id and lead_obj.partner_id.id:
+            vals.update({'partner_id':lead_obj.partner_id.id})  
+        vals['order_group'] = lead_obj.order_group.id
+        print "---------vals in make_qutaion crm.lead.allocated==========",vals
+        quotation_id = self.pool.get('sale.order').create(cr,uid,vals,context=None)
+        self.write(cr,uid,id,{'state':'quotation'},context=None)
+        return True
+    
+    
+    def view_quotation(self,cr,uid,id,context=None):
+        vals = {}
+        order_group = self.browse(cr,uid,id,context=None).order_group.id
+        sale_ids = self.pool.get('sale.order').search(cr,uid,[('order_group','=',order_group)],context=None)
+        if sale_ids :
+            if len(sale_ids) == 1 :
+                return {
+                'name': 'Sale Order Form',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'sale.order',
+                'type': 'ir.actions.act_window',
+                'res_id': sale_ids[0],
+                }
+            else :
+                return {
+                'name': 'Sale Order Form',
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'res_model': 'sale.order',
+                'type': 'ir.actions.act_window',
+                'domain':[('id','in',sale_ids)],
+                }
+        else :
+            return {
+                    'type': 'ir.actions.client',
+                    'tag': 'action_warn',
+                    'name': 'Warning',
+                    'params': {
+                               'title': 'Warning!',
+                               'text': 'Quotation is not available or has been deleted .',
+                               }
+                    }
+            
+
+
+
+    def confirm_and_redesign(self,cr,uid,id,context=None):
+        self.write(cr,uid,id,{'state':'redesign'},context=None)
+        return True
+    
+    def confirm_and_install(self,cr,uid,id,context=None):
+        self.write(cr,uid,id,{'state':'install'},context=None)
+        return True
+    
     
     @api.depends('partner_id')    
     def _get_partner_details(self):

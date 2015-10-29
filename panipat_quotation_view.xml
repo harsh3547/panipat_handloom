@@ -1,6 +1,6 @@
 <openerp>
 	<data>
-	<menuitem id="menu_panipat_crm_quotations"  action="sale.action_quotations" parent="panipat_main_menu_item"
-                sequence="5"/>
+		<menuitem id="menu_panipat_crm_quotations" action="sale.action_quotations"
+			parent="panipat_main_menu_item" sequence="5" />
 	</data>
 </openerp>

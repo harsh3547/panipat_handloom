@@ -1,105 +1,115 @@
 <?xml version="1.0"?>
 <openerp>
-    <data>
-        <!-- CRM Lead Form View  -->
-        
-        <record id="action_panipat_crm_lead_allocated" model="ir.actions.act_window">
-            <field name="name">Leads Allocated</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">crm.lead.allocated</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-        
-        <record model="ir.ui.view" id="panipat_crm_case_form_view_leads_allocated">
-        <field name="name">CRM - Leads Allocated Form</field>
-        <field name="model">crm.lead.allocated</field>
-        <field name="arch" type="xml">
-            <form string="Allocation Form">
-                <header>
-                    <div>
-	                    <button name="schedule_employee" string="Schedule Employee" type="object" class="oe_highlight" attrs = "{'invisible':[('state','!=','draft')]}"/>
-	                    <button name="make_quotation" string="Make Quotation" type="object" class="oe_highlight" attrs = "{'invisible':['|',('state','!=','employee')]}" />
-	                    <button name="view_quotation" string="View Quotation" type="object" class="oe_highlight" attrs = "{'invisible':['|',('state','!=','quotation_made')]}" />
-	                    <field name="state" widget="statusbar"/>
-                    </div>
-                </header>
-                <sheet>
-                	<div>
-                       	<group> 
-                       		<group>
-                       			<field name="create_date"/>
-                       		</group>
-                       		<group>
-                       			<field name="allocation_no" readonly="1" />
-                       		</group>
-                       	</group>
-                     </div>
-                    <group>
-                        <group>
-                            <!-- Preload all the partner's information -->
-                            <field name="partner_id" string="Customer" attrs = "{'readonly':[('order_group','!=',False)]}" />
-                        </group>
-                        
-                    </group>
-                   	<group>
-                   		<field name="employee_line" attrs="{'readonly':[('state','=','quotation_made')]}">
-                   			<tree editable="bottom">
-                   				<field name="employee_id" />
-                   				<field name="start_time" />
-                       			<field name="delay_hours" widget="float_time" />
-                       			<field name="end_time"/>
-                   			</tree>
-                   		</field>
-                   	</group>
-                    
-                    <notebook colspan="4">
-                    <page string="Internal Notes">
-                        <field name="description"/>
-                    </page>
-                    <page string="Extra Info">
-                        <group>
-                            <field name='order_group'/>
-                        </group>
-                    </page>
-                    </notebook>
-                </sheet>
-            </form>
-        </field>
-        </record>
+	<data>
+		<!-- CRM Lead Form View -->
 
-        <!-- CRM Lead Tree View -->
-        <record model="ir.ui.view" id="panipat_crm_case_tree_view_leads_allocated">
-            <field name="name">Leads</field>
-            <field name="model">crm.lead.allocated</field>
-            <field name="arch" type="xml">
-                <tree string="Leads">
-                     <field name="allocation_no" />
-                    <field name="partner_id"/>
-                </tree>
-            </field>
-        </record>
+		<record id="action_panipat_crm_lead_allocated" model="ir.actions.act_window">
+			<field name="name">Leads Allocated</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">crm.lead.allocated</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
 
-        <!-- CRM Lead Search View -->
-        <record id="panipat_view_crm_case_leads_filter_allocated" model="ir.ui.view">
-            <field name="name">CRM - Leads Search</field>
-            <field name="model">crm.lead.allocated</field>
-            <field name="arch" type="xml">
-                <search string="Search Allocated Leads">
-                    <field name="allocation_no" />
-                    <field name="order_group" />
-                    <field name="partner_id" operator="child_of"/>
-                    <field name="create_date"/>
-                    <separator/>
-                    <group>
-                        <filter string="Creation Month" domain="[]" context="{'group_by':'create_date'}"/>
-                    </group>
-                </search>
-            </field>
-        </record>
-	
-	
-	<menuitem id="submenu_item_allocated_leads" name="Allocated Leads" parent="panipat_main_menu_item" sequence="1" action="action_panipat_crm_lead_allocated"/>
+		<record model="ir.ui.view" id="panipat_crm_case_form_view_leads_allocated">
+			<field name="name">CRM - Leads Allocated Form</field>
+			<field name="model">crm.lead.allocated</field>
+			<field name="arch" type="xml">
+				<form string="Allocation Form">
+					<header>
+						<div>
+							<button name="schedule_employee" string="Schedule Employee"
+								type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','draft')]}" />
+							<button name="make_quotation" string="Make Quotation"
+								type="object" class="oe_highlight"
+								attrs="{'invisible':['|',('state','!=','employee')]}" />
+							<button name="view_quotation" string="View Quotation"
+								type="object" class="oe_highlight"
+								attrs="{'invisible':['|',('state','!=','quotation_made')]}" />
+							<field name="state" widget="statusbar" />
+						</div>
+					</header>
+					<sheet>
+						<div>
+							<group>
+								<group>
+									<field name="create_date" />
+								</group>
+								<group>
+									<field name="allocation_no" readonly="1" />
+								</group>
+							</group>
+						</div>
+						<group>
+							<group>
+								<!-- Preload all the partner's information -->
+								<field name="partner_id" string="Customer"
+									attrs="{'readonly':[('order_group','!=',False)]}" />
+							</group>
 
-    </data>
+						</group>
+						<group>
+							<field name="employee_line" attrs="{'readonly':[('state','=','quotation_made')]}">
+								<tree editable="bottom">
+									<field name="employee_id" />
+									<field name="start_time" />
+									<field name="delay_hours" widget="float_time" />
+									<field name="end_time" />
+								</tree>
+							</field>
+						</group>
+
+						<notebook colspan="4">
+							<page string="Internal Notes">
+								<field name="description" />
+							</page>
+							<page string="Extra Info">
+								<group>
+									<field name='order_group' />
+								</group>
+							</page>
+						</notebook>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<!-- CRM Lead Tree View -->
+		<record model="ir.ui.view" id="panipat_crm_case_tree_view_leads_allocated">
+			<field name="name">Leads</field>
+			<field name="model">crm.lead.allocated</field>
+			<field name="arch" type="xml">
+				<tree string="Leads">
+					<field name="allocation_no" />
+					<field name="partner_id" />
+				</tree>
+			</field>
+		</record>
+
+		<!-- CRM Lead Search View -->
+		<record id="panipat_view_crm_case_leads_filter_allocated"
+			model="ir.ui.view">
+			<field name="name">CRM - Leads Search</field>
+			<field name="model">crm.lead.allocated</field>
+			<field name="arch" type="xml">
+				<search string="Search Allocated Leads">
+					<field name="allocation_no" />
+					<field name="order_group" />
+					<field name="partner_id" operator="child_of" />
+					<field name="create_date" />
+					<separator />
+					<group>
+						<filter string="Creation Month" domain="[]"
+							context="{'group_by':'create_date'}" />
+					</group>
+				</search>
+			</field>
+		</record>
+
+
+		<menuitem id="submenu_item_allocated_leads" name="Allocated Leads"
+			parent="panipat_main_menu_item" sequence="1"
+			action="action_panipat_crm_lead_allocated" />
+
+	</data>
 </openerp>

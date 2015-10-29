@@ -6,8 +6,8 @@ class account_voucher(osv.osv):
     def create(self,cr,uid,vals,context=None):
         
         print "context-----------------------------",context,vals
-        if context.get('crm_lead_id',False):
-            vals['crm_lead_id'] = context.get('crm_lead_id',False)
+        if context.get('order_group',False):
+            vals['order_group'] = context.get('order_group',False)
             vals['type'] = 'receipt'
             vals['partner_id'] = context.get('default_partner_id',False)
             # so that even if user changes the partner it'll still record payment of partner 
@@ -16,6 +16,6 @@ class account_voucher(osv.osv):
         return super(account_voucher,self).create(cr,uid,vals,context=None)
     
     _columns = {
-                'crm_lead_id':fields.many2one('panipat.crm.lead',string='CRM Lead Id')
+                'order_group':fields.many2one('panipat.order.group',string='Order Group')
                 }
     

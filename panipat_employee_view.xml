@@ -1,85 +1,92 @@
 <openerp>
 	<data>
-	    <record id="panipat_employee_search_view" model="ir.ui.view">
-            <field name="name">panipat.employee.search.view</field>
-            <field name="model">panipat.employee</field>
-            <field name="arch" type="xml">
-                <search string="Panipat Employee">
-                    <field name="employee_id"  />
-   					<field name="crm_lead_allocated_id" />
-   					<field name="start_time" />
-   					<filter string="Confirmed" name="done_state_filter" domain="[('state','=','done')]" help="Allocation Order that have been confirmed"/>
-                    <group expand="1" string="Group By">
-                   		 <filter string="Employee" icon="terp-accessories-archiver" context="{'group_by':'employee_id'}" name="group_by_employee"/>
-                 	</group>
+		<record id="panipat_employee_search_view" model="ir.ui.view">
+			<field name="name">panipat.employee.search.view</field>
+			<field name="model">panipat.employee</field>
+			<field name="arch" type="xml">
+				<search string="Panipat Employee">
+					<field name="employee_id" />
+					<field name="crm_lead_allocated_id" />
+					<field name="start_time" />
+					<filter string="Confirmed" name="done_state_filter" domain="[('state','=','done')]"
+						help="Allocation Order that have been confirmed" />
+					<group expand="1" string="Group By">
+						<filter string="Employee" icon="terp-accessories-archiver"
+							context="{'group_by':'employee_id'}" name="group_by_employee" />
+					</group>
 
-               </search>
-            </field>
-        </record>
-        
-        <record id="action_panipat_employee_scheduler_gantt" model="ir.actions.act_window">
-            <field name="name">Employee Scheduler</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">panipat.employee</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">calendar,tree,form</field>
-            <field name="context">{'search_default_group_by_employee': True,'search_default_done_state_filter':True}</field>
-	    </record>
-	    
-        <record id="panipat_employee_tree_view" model="ir.ui.view" >
-	    	<field name="name">panipat.employee.tree.view</field>
-	    	<field name="model">panipat.employee</field>
-	    	<field name="arch" type="xml">
-	    		<tree string="Panipat Employee tree View" >
-	    			<field name="employee_id" invisible="1" />
-   					<field name="crm_lead_allocated_id" />
-   					<field name="start_time" />
-   					<field name="delay_hours"  widget="float_time"/>
-   					<field name="end_time"/>
-   					<field name="state"/>
+				</search>
+			</field>
+		</record>
+
+		<record id="action_panipat_employee_scheduler_gantt" model="ir.actions.act_window">
+			<field name="name">Employee Scheduler</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">panipat.employee</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">calendar,tree,form</field>
+			<field name="context">{'search_default_group_by_employee':
+				True,'search_default_done_state_filter':True}</field>
+		</record>
+
+		<record id="panipat_employee_tree_view" model="ir.ui.view">
+			<field name="name">panipat.employee.tree.view</field>
+			<field name="model">panipat.employee</field>
+			<field name="arch" type="xml">
+				<tree string="Panipat Employee tree View">
+					<field name="employee_id" invisible="1" />
+					<field name="crm_lead_allocated_id" />
+					<field name="start_time" />
+					<field name="delay_hours" widget="float_time" />
+					<field name="end_time" />
+					<field name="state" />
 				</tree>
-	    	</field>
-	    </record>
-    
-    <record id="panipat_employee_form_view" model="ir.ui.view" >
-    	<field name="name">panipat.employee.form.view</field>
-    	<field name="model">panipat.employee</field>
-    	<field name="arch" type="xml">
-    		<form string="Panipat Employee Form View" >
-    		    <header>
-    		        	<button name="schedule_employee" string="Schedule Employee" type="object" class="oe_highlight" attrs = "{'invisible':[('state','!=','draft')]}"/>
- 	              	   <field name="state" widget="statusbar" />
-                </header>
-    			<sheet>
-    				<group>
-    					<field name="employee_id"/>
-    					<field name="crm_lead_allocated_id" options="{'create': false, 'create_edit': false}"/>
-    					<field name="start_time"  />
-    					<field name="delay_hours" widget="float_time"/>
-    					<field name="end_time"/>
-    					<field name="notes"/>
-    				</group>
-    			</sheet>
-    		</form>
-    	</field>
-    </record>
-    
+			</field>
+		</record>
 
-    <record	id="panipat_employee_scheduler_calendar" model="ir.ui.view">
-		<field	name="name">Employee Scheduler</field>
-		<field	name="model">panipat.employee</field>
-		<field	name="arch"	type="xml">
-		    <calendar date_stop="end_time" date_start="start_time" color="employee_id" display="
+		<record id="panipat_employee_form_view" model="ir.ui.view">
+			<field name="name">panipat.employee.form.view</field>
+			<field name="model">panipat.employee</field>
+			<field name="arch" type="xml">
+				<form string="Panipat Employee Form View">
+					<header>
+						<button name="schedule_employee" string="Schedule Employee"
+							type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','draft')]}" />
+						<field name="state" widget="statusbar" />
+					</header>
+					<sheet>
+						<group>
+							<field name="employee_id" />
+							<field name="crm_lead_allocated_id" options="{'create': false, 'create_edit': false}" />
+							<field name="start_time" />
+							<field name="delay_hours" widget="float_time" />
+							<field name="end_time" />
+							<field name="notes" />
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+
+		<record id="panipat_employee_scheduler_calendar" model="ir.ui.view">
+			<field name="name">Employee Scheduler</field>
+			<field name="model">panipat.employee</field>
+			<field name="arch" type="xml">
+				<calendar date_stop="end_time" date_start="start_time"
+					color="employee_id" display="
 		       , [employee_id], [crm_lead_allocated_id]">
-				<!--	Fields	used	for	the	text	of	display	attribute	-->
-				<field	name="employee_id"	/>
-				<field	name="crm_lead_allocated_id"	/>
-			</calendar>
-		</field>
-	</record>
-    
-    
-    <menuitem id="submenu_item_employee_gantt" name="Employee Scheduler" parent="panipat_main_menu_item" sequence="2" action="action_panipat_employee_scheduler_gantt"/>
-    
+					<!-- Fields used for the text of display attribute -->
+					<field name="employee_id" />
+					<field name="crm_lead_allocated_id" />
+				</calendar>
+			</field>
+		</record>
+
+
+		<menuitem id="submenu_item_employee_gantt" name="Employee Scheduler"
+			parent="panipat_main_menu_item" sequence="2"
+			action="action_panipat_employee_scheduler_gantt" />
+
 	</data>
 </openerp>

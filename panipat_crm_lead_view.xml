@@ -1,159 +1,189 @@
 <?xml version="1.0"?>
 <openerp>
-    <data>
-        <!-- CRM Lead Form View  -->
-        
-        <record id="action_panipat_crm_lead" model="ir.actions.act_window">
-            <field name="name">Leads</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">panipat.crm.lead</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-        
-        <record model="ir.ui.view" id="panipat_crm_case_form_view_leads">
-        <field name="name">CRM - Leads Form</field>
-        <field name="model">panipat.crm.lead</field>
-        <field name="arch" type="xml">
-            <form string="Leads Form">
-                <header>
-                    <div>
-                        <button name="confirm_and_allocate" string="Confirm and Allocate" type="object" class="oe_highlight" states="draft" />
-                    	<button name="view_allocation_order" string="View Allocation Order" type="object" class="oe_highlight" states="employee" />
-                        
-                        <button name="confirm_and_quote" string="Confirm and Make Quotation" type="object" class="oe_highlight" states="draft"/>
-                        <button name="view_quotation" string="View Quotation" type="object" class="oe_highlight" states="quotation" />
-                        
-                        <button name="confirm_and_redesign" string="Confirm and Redesign" type="object" class="oe_highlight" states="draft"/>
-                        
-                        <button name="confirm_and_install" string="Confirm and Install" type="object" class="oe_highlight" states="draft"/>
-                        
-                        <field name="state" widget="statusbar" statusbar_visible="draft"/>    
-                    </div>
-                </header>
-               <sheet>
-                	<div class="oe_right oe_button_box" name="buttons">
-                        <button name="lead_amount_paid_records"  class="oe_inline oe_stat_button" type="object"  icon="fa-money">
-                            <div><strong><field name="total_paid_amount" widget="monetary"/></strong><br/><strong>Advance</strong></div>
-                        </button>
-                    </div>
-                	<div class="oe_title" >
-                        <label for="name" class="oe_edit_only"/>
-                        <h2><field name="name" placeholder="Describe the lead..." attrs="{'readonly':[('state','!=','draft')]}"/></h2>
-                    </div>
-                    <group>
-                         <group>
-                            <label for="sequence" />
-                                <h3><field name="sequence" readonly="1" /></h3>
-                            <field name="partner_name" string="Company Name" />
-                            <field name="partner_id" string="Customer" attrs="{'readonly':[('state','!=','draft')]}"/>
-                            <label for="street" string="Address"/>
-                            <div>
-                                <field name="street" placeholder="Street..." />
-                                <field name="street2" />
-                                <div class="address_format">
-                                    <field name="city" placeholder="City" style="width: 40%%" />
-                                    <field name="state_id" options='{"no_open": True}' placeholder="State" style="width: 24%%" />
-                                    <field name="zip" placeholder="ZIP" style="width: 34%%" />
-                                </div>
-                                <field name="country_id" placeholder="Country" options='{"no_open": True, "no_create": True}' />
-                            </div>
-                            <field name="user_id"  attrs="{'readonly':[('state','!=','draft')]}"/>
-                        </group>
-                        <group>
-                            <label for="create_date" />
-                            <h3><field name="create_date" attrs="{'readonly':[('state','!=','draft')]}"/></h3>
-                            <label for="contact_name"/>
-                            <div>
-                                <field name="contact_name" class="oe_inline" /><span attrs="{'invisible': [('title', '=', '')]}">, </span>
-                                <field name="title" placeholder="Title" domain="[('domain', '=', 'contact')]" class="oe_inline" options='{"no_open": True}' />
-                            </div>
-                            <field name="email_from" widget="email" />
-                            <field name="phone" />
-                            <field name="mobile" />
-                            <field name="fax" />
-                            <field name="priority" widget="priority" />
-                        </group>
-                       
-                    </group>
-					<div>
-                        <label for="product_line"/>
-                        <field name="product_line" attrs="{'readonly':[('state','!=','draft')]}">
-							<tree editable="bottom" >
-                                <field name="sequence" widget="handle"/>
-								<field name="product_id"/>
-								<field name="description"/>
-							</tree>
-						</field>
-                    </div>
-                    <notebook colspan="4">
-                        <page string="Notes">
-                            <div>
-                                <field name="description" placeholder="Extra Notes ......."/>
-                            </div>
-                        </page>
-                        <page string="Extra Info">
+	<data>
+		<!-- CRM Lead Form View -->
+
+		<record id="action_panipat_crm_lead" model="ir.actions.act_window">
+			<field name="name">Leads</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">panipat.crm.lead</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+
+		<record model="ir.ui.view" id="panipat_crm_case_form_view_leads">
+			<field name="name">CRM - Leads Form</field>
+			<field name="model">panipat.crm.lead</field>
+			<field name="arch" type="xml">
+				<form string="Leads Form">
+					<header>
+						<div>
+							<button name="confirm_and_allocate" string="Confirm and Allocate"
+								type="object" class="oe_highlight" states="draft" />
+							<button name="view_allocation_order" string="View Allocation Order"
+								type="object" class="oe_highlight" states="employee" />
+
+							<button name="confirm_and_quote" string="Confirm and Make Quotation"
+								type="object" class="oe_highlight" states="draft" />
+							<button name="view_quotation" string="View Quotation"
+								type="object" class="oe_highlight" states="quotation" />
+
+							<button name="confirm_and_redesign" string="Confirm and Redesign"
+								type="object" class="oe_highlight" states="draft" />
+
+							<button name="confirm_and_install" string="Confirm and Install"
+								type="object" class="oe_highlight" states="draft" />
+
+							<field name="state" widget="statusbar" statusbar_visible="draft" />
+						</div>
+					</header>
+					<sheet>
+						<div class="oe_right oe_button_box" name="buttons">
+							<button name="lead_amount_paid_records" class="oe_inline oe_stat_button"
+								type="object" icon="fa-money">
+								<div>
+									<strong>
+										<field name="total_paid_amount" widget="monetary" />
+									</strong>
+									<br />
+									<strong>Advance</strong>
+								</div>
+							</button>
+						</div>
+						<div class="oe_title">
+							<label for="name" class="oe_edit_only" />
+							<h2>
+								<field name="name" placeholder="Describe the lead..."
+									attrs="{'readonly':[('state','!=','draft')]}" />
+							</h2>
+						</div>
+						<group>
 							<group>
-							    <field name='order_group'/>
+								<label for="sequence" />
+								<h3>
+									<field name="sequence" readonly="1" />
+								</h3>
+								<field name="partner_name" string="Company Name" />
+								<field name="partner_id" string="Customer"
+									attrs="{'readonly':[('state','!=','draft')]}" />
+								<label for="street" string="Address" />
+								<div>
+									<field name="street" placeholder="Street..." />
+									<field name="street2" />
+									<div class="address_format">
+										<field name="city" placeholder="City" style="width: 40%%" />
+										<field name="state_id" options='{"no_open": True}'
+											placeholder="State" style="width: 24%%" />
+										<field name="zip" placeholder="ZIP" style="width: 34%%" />
+									</div>
+									<field name="country_id" placeholder="Country"
+										options='{"no_open": True, "no_create": True}' />
+								</div>
+								<field name="user_id" attrs="{'readonly':[('state','!=','draft')]}" />
 							</group>
-                        </page>
-                    </notebook>
-                </sheet>
-            </form>
-        
-        </field>
-        </record>
+							<group>
+								<label for="create_date" />
+								<h3>
+									<field name="create_date" attrs="{'readonly':[('state','!=','draft')]}" />
+								</h3>
+								<label for="contact_name" />
+								<div>
+									<field name="contact_name" class="oe_inline" />
+									<span attrs="{'invisible': [('title', '=', '')]}">, </span>
+									<field name="title" placeholder="Title"
+										domain="[('domain', '=', 'contact')]" class="oe_inline"
+										options='{"no_open": True}' />
+								</div>
+								<field name="email_from" widget="email" />
+								<field name="phone" />
+								<field name="mobile" />
+								<field name="fax" />
+								<field name="priority" widget="priority" />
+							</group>
 
-        <!-- CRM Lead Tree View -->
-        <record model="ir.ui.view" id="panipat_crm_case_tree_view_leads">
-            <field name="name">Leads</field>
-            <field name="model">panipat.crm.lead</field>
-            <field name="arch" type="xml">
-                <tree string="Leads">
-                    <field name="sequence"/>
-                    <field name="create_date"/>
-                    <field name="name"/>
-                    <field name="partner_id" string="Customer"/>
-                    <field name="priority"/>
-                    <field name="state"/>
-                </tree>
-            </field>
-        </record>
+						</group>
+						<div>
+							<label for="product_line" />
+							<field name="product_line" attrs="{'readonly':[('state','!=','draft')]}">
+								<tree editable="bottom">
+									<field name="sequence" widget="handle" />
+									<field name="product_id" />
+									<field name="description" />
+								</tree>
+							</field>
+						</div>
+						<notebook colspan="4">
+							<page string="Notes">
+								<div>
+									<field name="description" placeholder="Extra Notes ......." />
+								</div>
+							</page>
+							<page string="Extra Info">
+								<group>
+									<field name='order_group' />
+								</group>
+							</page>
+						</notebook>
+					</sheet>
+				</form>
 
-        <!-- CRM Lead Search View -->
-        <record id="panipat_view_crm_case_leads_filter" model="ir.ui.view">
-            <field name="name">CRM - Leads Search</field>
-            <field name="model">panipat.crm.lead</field>
-            <field name="arch" type="xml">
-                <search string="Search Leads">
-                    <field name="sequence"/>
-                    <field name="name" string="Lead / Customer" filter_domain="['|','|','|',('partner_name','ilike',self),('email_from','ilike',self),('contact_name','ilike',self),('name','ilike',self)]"/>
-                    <field name="user_id"/>
-                    <field name="partner_id" operator="child_of"/>
-                    <field name="create_date"/>
-                    <field name="country_id"/>
-                    <separator/>
-                    <filter string="My Leads"
-                            domain="[('user_id','=',uid)]"
-                            help="Leads that are assigned to me"/>
-                    <filter string="Unassigned" name="unassigned"
-                            domain="[('user_id','=', False)]"
-                            help="No salesperson"/>
-                    <separator />
-                    <group expand="0" string="Group By">
-                        <filter string="Salesperson" domain="[]" context="{'group_by':'user_id'}"/>
-                        <filter string="Customer" help="Partner" domain="[]" context="{'group_by':'partner_id'}"/>
-                        <filter string="Creation Month" domain="[]" context="{'group_by':'create_date'}"/>
-                    </group>
-                </search>
-            </field>
-        </record>
-	
-	
-	<menuitem id="panipat_main_menu" sequence="1" name="Panipat Handloom" />
-	<menuitem id="panipat_main_menu_item" name="Panipat Handloom" parent="panipat_main_menu" />
-	<menuitem id="submenu_item_leads" name="Leads" parent="panipat_main_menu_item" sequence="1" action="action_panipat_crm_lead"/>
-    
-    
-    </data>
+			</field>
+		</record>
+
+		<!-- CRM Lead Tree View -->
+		<record model="ir.ui.view" id="panipat_crm_case_tree_view_leads">
+			<field name="name">Leads</field>
+			<field name="model">panipat.crm.lead</field>
+			<field name="arch" type="xml">
+				<tree string="Leads">
+					<field name="sequence" />
+					<field name="create_date" />
+					<field name="name" />
+					<field name="partner_id" string="Customer" />
+					<field name="priority" />
+					<field name="state" />
+				</tree>
+			</field>
+		</record>
+
+		<!-- CRM Lead Search View -->
+		<record id="panipat_view_crm_case_leads_filter" model="ir.ui.view">
+			<field name="name">CRM - Leads Search</field>
+			<field name="model">panipat.crm.lead</field>
+			<field name="arch" type="xml">
+				<search string="Search Leads">
+					<field name="sequence" />
+					<field name="name" string="Lead / Customer"
+						filter_domain="['|','|','|',('partner_name','ilike',self),('email_from','ilike',self),('contact_name','ilike',self),('name','ilike',self)]" />
+					<field name="user_id" />
+					<field name="partner_id" operator="child_of" />
+					<field name="create_date" />
+					<field name="country_id" />
+					<separator />
+					<filter string="My Leads" domain="[('user_id','=',uid)]"
+						help="Leads that are assigned to me" />
+					<filter string="Unassigned" name="unassigned" domain="[('user_id','=', False)]"
+						help="No salesperson" />
+					<separator />
+					<group expand="0" string="Group By">
+						<filter string="Salesperson" domain="[]"
+							context="{'group_by':'user_id'}" />
+						<filter string="Customer" help="Partner" domain="[]"
+							context="{'group_by':'partner_id'}" />
+						<filter string="Creation Month" domain="[]"
+							context="{'group_by':'create_date'}" />
+					</group>
+				</search>
+			</field>
+		</record>
+
+
+		<menuitem id="panipat_main_menu" sequence="1" name="Panipat Handloom" />
+		<menuitem id="panipat_main_menu_item" name="Panipat Handloom"
+			parent="panipat_main_menu" />
+		<menuitem id="submenu_item_leads" name="Leads"
+			parent="panipat_main_menu_item" sequence="1" action="action_panipat_crm_lead" />
+
+
+	</data>
 </openerp>
