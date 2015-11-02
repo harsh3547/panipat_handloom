@@ -100,7 +100,7 @@ class sale_order(models.Model):
                             'form_view_ref':'account_voucher.view_vendor_receipt_form',
                             'default_partner_id': obj.partner_id.parent_id.id if obj.partner_id.parent_id else obj.partner_id.id,
                             # customer payment only done by company if company exists for the contact
-                            'default_name':obj.name,
+                            'default_name':obj.order_group.name+':'+obj.name if obj.order_group else obj.name,
                             'order_group':obj.order_group.id,
                             'search_disable_custom_filters': False
                             }
@@ -118,7 +118,7 @@ class sale_order(models.Model):
                             'form_view_ref':'account_voucher.view_vendor_receipt_form',
                             'default_partner_id': obj.partner_id.parent_id.id if obj.partner_id.parent_id else obj.partner_id.id,
                             'order_group':obj.order_group.id,
-                            'default_name':obj.name,
+                            'default_name':obj.order_group.name+':'+obj.name if obj.order_group else obj.name,
                             'search_disable_custom_filters': False
                             }
                 }
