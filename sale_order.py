@@ -4,7 +4,6 @@ from openerp.exceptions import except_orm
 from datetime import datetime
 from openerp.tools.translate import _
 
-
 class sale_order(models.Model):
     _inherit = "sale.order"
     
@@ -74,8 +73,61 @@ class sale_order(models.Model):
             print "picking_count============",picking_count
             self.picking_count=len(picking_count)
     
+    def _get_amount_paid(self):
+        print "========in _get_amount_paid====="
+        amount_paid=0.0
+        voucher_obj = self.env['account.voucher']
+        for rec_self in self:
+            voucher_recs = voucher_obj.search([('order_group','=',rec_self.order_group.id),('state','=','posted')])
+            print "voucher_ids-----------------------------",voucher_recs
+            for obj in voucher_recs:
+                amount_paid += obj.amount
+            rec_self.total_paid_amount = amount_paid
+        
     
+    
+    def total_amount_paid_records(self,cr,uid,id,context=None):
+        obj = self.browse(cr,uid,id,context=None)
+        voucher_ids = self.pool.get('account.voucher').search(cr,uid,[('order_group','=',obj.order_group.id)])
+        if len(voucher_ids)==1:
+            return {
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'res_model': 'account.voucher',
+                    'type': 'ir.actions.act_window',
+                    'res_id': voucher_ids[0],
+                    'context': {
+                            'form_view_ref':'account_voucher.view_vendor_receipt_form',
+                            'default_partner_id': obj.partner_id.parent_id.id if obj.partner_id.parent_id else obj.partner_id.id,
+                            # customer payment only done by company if company exists for the contact
+                            'default_name':obj.name,
+                            'order_group':obj.order_group.id,
+                            'search_disable_custom_filters': False
+                            }
+
+                    }
+
+        return {
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'res_model': 'account.voucher',
+                'type': 'ir.actions.act_window',
+                'domain':[('id','in',voucher_ids)],
+                'context': {
+                            'tree_view_ref':'account_voucher.view_voucher_tree',
+                            'form_view_ref':'account_voucher.view_vendor_receipt_form',
+                            'default_partner_id': obj.partner_id.parent_id.id if obj.partner_id.parent_id else obj.partner_id.id,
+                            'order_group':obj.order_group.id,
+                            'default_name':obj.name,
+                            'search_disable_custom_filters': False
+                            }
+                }
+    
+
+
+
     po_count=fields.Integer(compute='_count_all')
     picking_count=fields.Char(compute='_count_all')
+    total_paid_amount =fields.Float(compute='_get_amount_paid',string="Payment")
     
     

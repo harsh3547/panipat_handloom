@@ -4,7 +4,6 @@ from openerp.exceptions import except_orm
 from datetime import datetime
 from openerp.tools.translate import _
 
-
 class panipat_crm_lead(models.Model):
     _name = "panipat.crm.lead"
     _rec_name = 'sequence'
@@ -14,7 +13,7 @@ class panipat_crm_lead(models.Model):
         amount_paid=0.0
         voucher_obj = self.env['account.voucher']
         for rec_self in self:
-            voucher_recs = voucher_obj.search([('order_group','=',rec_self.id),('state','=','posted')])
+            voucher_recs = voucher_obj.search([('order_group','=',rec_self.order_group.id),('state','=','posted')])
             #print "voucher_ids-----------------------------",voucher_ids
             for obj in voucher_recs:
                 amount_paid += obj.amount
