@@ -64,7 +64,6 @@ class panipat_crm_lead(models.Model):
         if vals.get('sequence','/')=='/':
             print "in sequnece"
             vals['sequence']=self.pool.get('ir.sequence').get(cr,uid,'CRM.Lead.Order.No',context) or '/'
-            lead_id = self.pool.get('panipat.crm.lead').search(cr,uid,[('order_group','=',order_group)],context=None)
             vals['order_group'] = self.pool.get('panipat.order.group').create(cr,uid,{'partner_id':vals.get('partner_id',False)},context)
             print "========vals crm lead=====",vals
         return super(panipat_crm_lead,self).create(cr,uid,vals,context=None)

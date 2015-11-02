@@ -9,7 +9,34 @@
 				<xpath expr="//field[@name='user_id']" position="after">
 					<field name="order_group" readonly="1" />
 				</xpath>
-			</field>
-		</record>
+				<xpath expr="/form/sheet/h1" position="inside">
+            		<div class="oe_right" name="button_box">
+            			<button class="oe_inline oe_stat_button" icon="fa-shopping-cart" name="do_view_po"  type="object" attrs="{'invisible': [('state', 'in', ['draft','sent'])]}">
+            				<field name='po_count' widget='statinfo' string="Purchases"/>
+            			</button>
+                        <button class="oe_inline oe_stat_button" icon="fa-truck" name="do_view_pickings_sale"  type="object" attrs="{'invisible': [('state', 'in', ['draft','sent'])]}">
+                        	<field name='picking_count' widget='statinfo' string="Shipments"/>
+            			</button>
+                    </div>
+            	</xpath>
+        	</field>
+        </record>
+
+        <record id="do_view_po" model="ir.actions.act_window">
+            <field name="name">Related Purchase Orders</field>
+            <field name="res_model">purchase.order</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('id','=',active_id)]</field>            
+        </record>
+		
+		<record id="do_view_pickings_sale_action" model="ir.actions.act_window">
+            <field name="name">Pickings for Groups</field>
+            <field name="res_model">stock.picking</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        	<field name="domain">[('group_id','=',active_id)]</field>
+        </record>
+		
 	</data>
 </openerp>   	
