@@ -101,7 +101,7 @@ class sale_order(models.Model):
                             'default_partner_id': obj.partner_id.parent_id.id if obj.partner_id.parent_id else obj.partner_id.id,
                             # customer payment only done by company if company exists for the contact
                             'default_name':obj.name+':'+obj.order_group.name if obj.order_group else obj.name,
-                            'order_group':obj.order_group.id,
+                            'order_group':obj.order_group and obj.order_group.id or False,
                             'search_disable_custom_filters': False
                             }
 
@@ -117,7 +117,7 @@ class sale_order(models.Model):
                             'tree_view_ref':'account_voucher.view_voucher_tree',
                             'form_view_ref':'account_voucher.view_vendor_receipt_form',
                             'default_partner_id': obj.partner_id.parent_id.id if obj.partner_id.parent_id else obj.partner_id.id,
-                            'order_group':obj.order_group.id,
+                            'order_group':obj.order_group and obj.order_group.id or False,
                             'default_name':obj.name+':'+obj.order_group.name if obj.order_group else obj.name,
                             'search_disable_custom_filters': False
                             }
