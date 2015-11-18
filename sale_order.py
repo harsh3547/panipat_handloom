@@ -10,44 +10,59 @@ class sale_order(models.Model):
     order_group = fields.Many2one(comodel_name='panipat.order.group', string="Order Group")
 
     def do_view_po(self, cr, uid, ids, context=None):
-        if not context:context={}
         '''
         This function returns an action that display the Purchase order related to this sales order
         '''
         
-        mod_obj = self.pool.get('ir.model.data')
-        act_obj = self.pool.get('ir.actions.act_window')
-        pro_obj=self.pool.get('procurement.order')
-        result = mod_obj.get_object_reference(cr, uid, 'gsp_sale_smart_buttons', 'do_view_po')
-        id = result and result[1] or False
-        result = act_obj.read(cr, uid, [id], context=context)[0]
         cr.execute('select distinct order_id from purchase_order_line where id in (select distinct purchase_line_id from procurement_order where group_id in (select distinct procurement_group_id from sale_order where id in %s))',(tuple(ids),))
         result_cr=cr.fetchall()
         print "query==============",result_cr
-        ids=[i[0] for i in result_cr if i[0]]
-        print "ids=========",ids
-        result['domain'] = "[('id','in',[" + ','.join(map(str,ids)) + "])]"
-        return result
-    
+        po_ids=[i[0] for i in result_cr if i[0]]
+        print "ids=========",po_ids
+        if len(po_ids)==1:
+            return{
+                   'view_type': 'form',
+                   'view_mode': 'form',
+                   'res_model': 'purchase.order',
+                   'type': 'ir.actions.act_window',
+                   'res_id': po_ids[0],
+                   }
+        else:
+            return {
+                    'view_type': 'form',
+                    'view_mode': 'tree,form',
+                    'res_model': 'purchase.order',
+                    'type': 'ir.actions.act_window',
+                    'domain':[('id','in',po_ids)],
+                    }
+        
+        
     def do_view_pickings_sale(self, cr, uid, ids, context=None):
         if not context:context={}
         '''
         This function returns an action that display the pickings of the procurements belonging
         to the same procurement group of given ids.
         '''
-        mod_obj = self.pool.get('ir.model.data')
-        act_obj = self.pool.get('ir.actions.act_window')
-        result = mod_obj.get_object_reference(cr, uid, 'gsp_sale_smart_buttons', 'do_view_pickings_sale_action')
-        id = result and result[1] or False
-        result = act_obj.read(cr, uid, [id], context=context)[0]
-        group_ids = set([proc.procurement_group_id.id for proc in self.browse(cr, uid, ids, context=context) if proc.procurement_group_id])
-        print "ids==================in  do_view_pickings",ids
-        print "group_ids=====",group_ids
-        print "type(group_ids)=====",type(group_ids)
-        print "list(group_ids)========",list(group_ids)
-        print "type(list(group_ids))========",type(list(group_ids))
-        result['domain'] = "[('group_id','in',[" + ','.join(map(str, list(group_ids))) + "])]"
-        return result
+        obj = self.browse(cr,uid,ids,context=None)
+        group_ids = list(set([proc.procurement_group_id.id for proc in obj if proc.procurement_group_id]))
+        picking_ids=self.pool.get('stock.picking').search(cr,uid,[('group_id','in',group_ids)])
+        if len(picking_ids)==1:
+            return{
+                   'view_type': 'form',
+                   'view_mode': 'form',
+                   'res_model': 'stock.picking',
+                   'type': 'ir.actions.act_window',
+                   'res_id': picking_ids[0],
+                   }
+        else:
+            return {
+                    'view_type': 'form',
+                    'view_mode': 'tree,form',
+                    'res_model': 'stock.picking',
+                    'type': 'ir.actions.act_window',
+                    'domain':[('id','in',picking_ids)],
+                    }
+        
         
     @api.one
     @api.depends()
