@@ -11,26 +11,26 @@ class panipat_crm_lead(models.Model):
     
     def _get_amount_paid(self):
         amount_paid=0.0
-        voucher_obj = self.env['account.voucher']
+        #voucher_obj = self.env['account.voucher']
         for rec_self in self:
-            voucher_recs = voucher_obj.search([('order_group','=',rec_self.order_group.id),('state','=','posted')])
+            #voucher_recs = voucher_obj.search([('partner_id','=',rec_self.partner_id.parent_id.id if rec_self.partner_id.parent_id else rec_self.partner_id.id),('state','=','posted')])
             #print "voucher_ids-----------------------------",voucher_ids
-            for obj in voucher_recs:
-                amount_paid += obj.amount
-            rec_self.total_paid_amount = amount_paid
+            #for obj in voucher_recs:
+            #    amount_paid += obj.amount
+            rec_self.total_paid_amount = -1*rec_self.partner_id.credit if rec_self.partner_id and rec_self.partner_id.credit else 0.00
         
     
     
     def lead_amount_paid_records(self,cr,uid,id,context=None):
         obj = self.browse(cr,uid,id,context=None)
-        voucher_ids = self.pool.get('account.voucher').search(cr,uid,[('order_group','=',obj.order_group.id)])
-        if len(voucher_ids)==1:
-            return {
+        #voucher_ids = self.pool.get('account.voucher').search(cr,uid,[('partner_id','=',obj.partner_id.parent_id.id if obj.partner_id.parent_id else obj.partner_id.id)])
+        #if len(voucher_ids)==1:
+        return {
                     'view_type': 'form',
                     'view_mode': 'form',
                     'res_model': 'account.voucher',
                     'type': 'ir.actions.act_window',
-                    'res_id': voucher_ids[0],
+                    #'res_id': voucher_ids[0],
                     'context': {
                             'form_view_ref':'account_voucher.view_vendor_receipt_form',
                             'default_partner_id': obj.partner_id.parent_id.id if obj.partner_id.parent_id else obj.partner_id.id,
@@ -42,7 +42,7 @@ class panipat_crm_lead(models.Model):
 
                     }
 
-        return {
+        '''return {
                 'view_type': 'form',
                 'view_mode': 'tree,form',
                 'res_model': 'account.voucher',
@@ -56,7 +56,7 @@ class panipat_crm_lead(models.Model):
                             'default_name':obj.sequence+':'+obj.order_group.name,
                             'search_disable_custom_filters': False
                             }
-                }
+                }'''
     
     def create(self,cr,uid,vals,context=None):
 
