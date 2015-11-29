@@ -14,6 +14,12 @@
             <field name="default_location_dest_id" ref="stock.stock_location_customers"/>
             <field name="warehouse_id" eval="False"/>
             <field name="code">outgoing</field>
-        </record>	
+        </record>
+        
+        <record id="panipat_pos_default_customer" model="res.partner">
+        	<field name="name">Walk-In Customer</field>
+        	<field name="customer">True</field>
+        	<field name="supplier">False</field>
+        </record>
 	</data>
 </openerp>

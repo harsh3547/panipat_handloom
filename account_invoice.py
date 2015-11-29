@@ -7,6 +7,10 @@ class account_invoice(models.Model):
     is_pos = fields.Boolean('Retail Invoice',default=False)
     picking_id = fields.Many2one('stock.picking','Picking Orders',copy=False)
     
+    @api.onchange("is_pos")
+    def onchange_is_pos(self):
+        if self.is_pos:self.partner_id=self.env.ref("panipat_handloom.panipat_pos_default_customer")
+        
     def _get_default_location(self, cr, uid, context=None):
         wh_obj = self.pool.get('stock.warehouse')
         user = self.pool.get('res.users').browse(cr, uid, uid, context)
