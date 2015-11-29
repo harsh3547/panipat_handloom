@@ -5,3 +5,4 @@ import panipat_employee
 import panipat_account_voucher
 import order_group
 import sale_order
+import account_invoice

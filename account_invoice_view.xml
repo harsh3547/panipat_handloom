@@ -1,0 +1,22 @@
+<openerp>
+	<data>
+        <record id="view_invoice_customer" model="ir.ui.view">
+            <field name="name">account.invoice.customer.pay</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='invoice_open']" position="after">
+                    <button name = "return_product" type = "object" string = "Return Products" 
+                    	attrs = "{'invisible':['|',('picking_id','=',False),('is_pos','=',False)]}" /> 
+                    <button name = "transfer_product" type = "object" string = "Transfer Products" attrs="{'invisible': ['|','|', ('state','!=','open'), ('is_pos','=',False),('picking_id','!=',False)]}" class="oe_highlight" groups="base.group_user" />
+                </xpath>
+                <xpath expr = "/form/sheet//field[@name='date_invoice']" position = "before">
+                	<field name = "is_pos" attrs="{'readonly':[('state','!=','draft')],'invisible':[('type','!=','out_invoice')]}" /> 
+                </xpath>
+                <xpath expr = "/form/sheet//field[@name='move_id']" position = "after">
+                	<field name = "picking_id" readonly="1"/>
+                </xpath>
+                
+            </field>
+        </record>		
+	</data></openerp>
