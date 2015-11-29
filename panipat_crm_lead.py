@@ -17,7 +17,7 @@ class panipat_crm_lead(models.Model):
             #print "voucher_ids-----------------------------",voucher_ids
             #for obj in voucher_recs:
             #    amount_paid += obj.amount
-            rec_self.total_paid_amount = -1*rec_self.partner_id.credit if rec_self.partner_id and rec_self.partner_id.credit else 0.00
+            rec_self.total_paid_amount = -1*rec_self.partner_id.credit if rec_self.partner_id and rec_self.partner_id.credit and rec_self.partner_id.credit<=0 else 0.00
         
     
     
