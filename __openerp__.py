@@ -41,6 +41,7 @@
              'order_group.xml',
              'sale_view.xml',
              'account_invoice_view.xml',
+             'sample_file.xml',
              'data.xml',
              ],
     'demo': [],
