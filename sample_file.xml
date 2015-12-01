@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+<openerp>
+	<data>
+		<!-- Sample View -->
+		<record id="panipat_sample_wizard_form_view" model="ir.ui.view">
+            <field name="name">panipat.sample.wizard.form.view</field>
+            <field name="model">panipat.sample.wizard</field>
+            <field name="arch" type="xml">
+            	<form string="Return Samples">
+                        <h4><label for="sample_out_lines"/></h4>
+                        <div> 
+                            <field name="sample_out_lines"/>
+                        </div>
+                    <footer>
+                        <button string="Return Samples" name="return_sample" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        
+
+		<record id="panipat_sample_tree_view" model="ir.ui.view">
+			<field name="name">panipat_sample_tree_view</field>
+			<field name="model">panipat.sample</field>
+			<field name="arch" type="xml">
+            	<tree string="Sample Tree View">
+					<field name="name"/>
+					<field name="partner_id"/>
+					<field name="date"/>
+					<field name="state" string="Sample"/>
+					<field name="state_paid" string="Deposit"/>
+				</tree>
+			</field>
+		</record>
+		
+		<record id="panipat_sample_form_view" model="ir.ui.view">
+            <field name="name">panipat.sample.form.view</field>
+            <field name="model">panipat.sample</field>
+            <field name="arch" type="xml">
+            	<form string="Sample Form">
+					<header>
+						<button name="button_confirm" string="Confirm" type="object" class="oe_highlight" states="draft"/>
+						<button name="send_sample" string="Transfer" type="object" class="oe_highlight" states="confirm"/>
+						<button name="return_sample_wizard" string="Reverse Transfer" type="object" class="oe_highlight" states="sample_sent"/>
+						<field name="state" widget="statusbar" statusbar_visible="sample_sent,deposit,sample_returned,deposit_returned" />
+					</header>
+					<sheet>
+						<group col="4">
+							<div>
+								<h2>
+									<field name="name" readonly="1"/>
+								</h2>
+							</div>
+							<div>
+								<field name="state_paid" widget="statusbar" class="oe_right" />
+							</div>
+						</group>
+						<group col="4">
+							<field name="partner_id"/>
+							<field name="date"/>
+						</group>
+						<notebook>
+							<page string="Samples">
+							
+								<label for="sample_out" />
+									<div>
+										<field name="sample_out"/>
+									</div>
+								<group class="oe_subtotal_footer oe_right" colspan="2">
+									<field name="amount_total_out" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+								</group>
+								<group></group>
+								<label for="sample_in" />
+									<div>
+										<field name="sample_in"/>
+									</div>
+								<group class="oe_subtotal_footer oe_right" colspan="2">
+									<field name="amount_total_in" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+								</group>	
+								<group></group>
+								<group></group>
+							</page>
+							
+							<page string="Journal Entries">
+							</page>
+						</notebook>
+					</sheet>
+            	</form>
+            </field>
+        </record>
+		
+
+		<record id="panipat_sample_search_view" model="ir.ui.view">
+			<field name="name">panipat_sample_search_view</field>
+			<field name="model">panipat.sample</field>
+			<field name="arch" type="xml">
+            	<search string="Sample Search View">
+            		<field name="name" string="Sample No." />
+                    <field name="partner_id" operator="child_of" string="Customer"/>
+                    <separator/>
+                    	<group expand="0" string="Group By">
+                        <filter string="Customer" domain="[]" context="{'group_by':'partner_id'}"/>
+                        </group>
+            	</search>
+            </field>
+		</record>
+
+		<record id="panipat_sample_lines_tree_view" model="ir.ui.view">
+			<field name="name">panipat_sample_lines_tree_view</field>
+			<field name="model">panipat.sample.lines</field>
+			<field name="arch" type="xml">
+            	<tree editable="bottom">
+					<field name="product_categ"/>
+					<field name="product_id" context="{'default_categ_id':product_categ,'default_type':'product'}" domain="[('categ_id','child_of',product_categ)]"/>
+					<field name="product_uom"/>
+					<field name="qty"/>
+					<field name="unit_price"/>
+					<field name="amount"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="action_panipat_sample" model="ir.actions.act_window">
+			<field name="name">Sample Account</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">panipat.sample</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+		
+
+		<menuitem id="panipat_sample_main_menu_item" name="Sample" parent="panipat_main_menu" sequence="1000"/>
+		<menuitem id="submenu_item_leads" name="Sample Account" parent="panipat_sample_main_menu_item" sequence="1" action="action_panipat_sample" />
+		
+		
+	</data>
+</openerp>

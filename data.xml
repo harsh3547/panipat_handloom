@@ -2,7 +2,7 @@
 	<data noupdate="0">
         
         <record id="picking_type_posout_panipat" model="stock.picking.type">
-            <field name="name">POS Orders</field>
+            <field name="name">INVPOS Orders</field>
             <field name="sequence_id" ref="seq_picking_type_posout_panipat"/>
             <field name="default_location_src_id" ref="stock.stock_location_stock"/>
             <field name="default_location_dest_id" ref="stock.stock_location_customers"/>
@@ -26,6 +26,8 @@
         	<field name="type">sale</field>
         	<field name="user_id" ref="base.user_root"/>
         </record>
+        
+        
         
 	</data>
 </openerp>
