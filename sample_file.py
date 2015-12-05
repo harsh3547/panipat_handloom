@@ -9,25 +9,21 @@ class panipat_sample(models.Model):
     _name="panipat.sample"
     _order="date desc,name desc"
     
-    def _get_amount_total(self):
-        amount_total_in=0.0
-        amount_total_out=0.0
-        for rec in self.sample_in:
-            amount_total_in += rec.amount
-        for rec in self.sample_out:
-            amount_total_out += rec.amount
-        self.amount_total_in=amount_total_in
-        self.amount_total_out=amount_total_out            
     
     name=fields.Char(string="Order No.",copy=False,default='/',readonly=True)
     partner_id=fields.Many2one(comodel_name="res.partner", string="Customer",required=True)
-    date=fields.Date(string="Date")
+    date=fields.Date(string="Date",default=fields.Date.today())
     state=fields.Selection(selection=[('draft','Draft'),('confirm', 'Confirmed'),('sample_sent','Sample Sent'),('sample_returned','Sample Returned'),('done','Done')],copy=False,default='draft')
     state_paid=fields.Selection(selection=[('deposit','Deposit Paid'),('deposit_returned','Deposit Returned')],copy=False)
     sample_out=fields.One2many(comodel_name='panipat.sample.lines', inverse_name='sample_out', string="Outgoing Samples")
     sample_in=fields.One2many(comodel_name='panipat.sample.lines', inverse_name='sample_in', string="Returned Samples")
-    amount_total_in=fields.Float(compute='_get_amount_total',string="Total")
-    amount_total_out=fields.Float(compute='_get_amount_total',string="Total")
+    
+    @api.multi
+    def unlink(self):
+        for rec in self:
+            if rec.state not in ('draft','cancel'):
+                raise except_orm(_('Warning!'), _('Cannot delete a record which has been confirmed. Please cancel the record and then delete it !'))
+        return super(panipat_sample, self).unlink()
     
     @api.multi
     def write(self,vals):
@@ -37,11 +33,13 @@ class panipat_sample(models.Model):
     
     @api.multi
     def button_confirm(self):
-        self.write({'state':'confirm'})
+        self.write({'state':'confirm','date':fields.Date.today()})
         return True
     
     @api.multi
     def send_sample(self):
+        if not self.sample_out:
+            raise except_orm(_('Warning!'), _('No Outgoing Samples !'))
         partner_obj = self.env['res.partner']
         move_obj = self.pool.get('stock.move')
         user = self.env['res.users'].browse(self._uid)
@@ -130,20 +128,10 @@ class panipat_sample_lines(models.Model):
         return self.env.ref("panipat_handloom.panipat_sample_category")
     
     
-    @api.one
-    @api.depends('product_id','qty','unit_price')
-    def _get_amount(self):
-        try:
-            self.amount=self.qty*self.unit_price
-        except:
-            self.amount=0.0
-    
     product_categ=fields.Many2one(comodel_name='product.category', string='Category',default=_get_sample_categ)
     product_id=fields.Many2one(comodel_name='product.product', string='Product',required=True)
     product_uom=fields.Many2one(comodel_name='product.uom', string='Unit',required=True)
     qty=fields.Float(String='Quantity',digits= dp.get_precision('Product Unit of Measure'),        required=True,default=1)
-    unit_price=fields.Float(string='Unit Price', required=True,digits= dp.get_precision('Product Price'))
-    amount=fields.Float(compute='_get_amount',string="Amount",store=True,digits= dp.get_precision('Product Price'))
     sample_out=fields.Many2one(comodel_name='panipat.sample',copy=False)
     # sample_out if for one2many of samples_sent
     sample_in=fields.Many2one(comodel_name='panipat.sample',copy=False)
@@ -156,7 +144,6 @@ class panipat_sample_lines(models.Model):
     @api.onchange('product_id')
     def _onchange_product_id(self):
         self.product_uom=self.product_id.uom_id.id
-        self.unit_price=self.product_id.list_price
         
 class panipat_sample_wizard(models.Model):
     _name='panipat.sample.wizard'

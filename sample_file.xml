@@ -68,18 +68,11 @@
 									<div>
 										<field name="sample_out"/>
 									</div>
-								<group class="oe_subtotal_footer oe_right" colspan="2">
-									<field name="amount_total_out" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-								</group>
 								<group></group>
 								<label for="sample_in" />
 									<div>
 										<field name="sample_in"/>
 									</div>
-								<group class="oe_subtotal_footer oe_right" colspan="2">
-									<field name="amount_total_in" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-								</group>	
-								<group></group>
 								<group></group>
 							</page>
 							
@@ -116,8 +109,6 @@
 					<field name="product_id" context="{'default_categ_id':product_categ,'default_type':'product'}" domain="[('categ_id','child_of',product_categ)]"/>
 					<field name="product_uom"/>
 					<field name="qty"/>
-					<field name="unit_price"/>
-					<field name="amount"/>
 				</tree>
 			</field>
 		</record>
@@ -132,7 +123,7 @@
 		
 
 		<menuitem id="panipat_sample_main_menu_item" name="Sample" parent="panipat_main_menu" sequence="1000"/>
-		<menuitem id="submenu_item_leads" name="Sample Account" parent="panipat_sample_main_menu_item" sequence="1" action="action_panipat_sample" />
+		<menuitem id="panipat_submenu_sample" name="Sample Account" parent="panipat_sample_main_menu_item" sequence="1" action="action_panipat_sample" />
 		
 		
 	</data>
