@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<openerp>
+	<data>
+		<record id ="panipat_brand_name_form" model ="ir.ui.view">
+			<field name="name">panipat.brand.name.form</field>
+			<field name="model">panipat.brand.name</field>
+			<field name="arch" type="xml">
+				<form string="Brand Name">
+					<group col="4">
+						<field name="name"/>
+						<field name="barcode_no"/>
+						<field name='seq'/>							
+					</group>
+				</form>
+			</field>
+		</record>
+		
+		<record id ="panipat_brand_name_tree" model ="ir.ui.view">
+			<field name="name">panipat.brand.name.tree</field>
+			<field name="model">panipat.brand.name</field>
+			<field name="arch" type="xml">
+				<tree string="Brand Name">
+					<field name="name"/>
+					<field name="barcode_no"/>	
+											
+				</tree>
+			</field>
+		</record>
+		
+		 <record id="panipat_brand_name_search" model="ir.ui.view">
+            <field name="name">panipat_brand_name_search</field>
+            <field name="model">panipat.brand.name</field>
+            <field name="arch" type="xml">
+            	<search string="Brand Names">
+                    <field name="name" string="Name"/>
+                    <field name="barcode_no" string="Barcode No"/>
+                </search>
+            </field>
+        </record>
+        
+        <record id="action_panipat_brand_name" model="ir.actions.act_window">
+			<field name="name">Brand Names</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">panipat.brand.name</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+		
+
+		<menuitem id="panipat_brand_name_main_menu_item" name="Configuration" parent="panipat_main_menu" sequence="1100"/>
+		<menuitem id="panipat_submenu_brand_name" name="Brand Name" parent="panipat_brand_name_main_menu_item" sequence="1" action="action_panipat_brand_name" />
+		
+		
+		
+	</data>
+</openerp>
