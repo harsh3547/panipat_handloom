@@ -6,9 +6,39 @@
             <field name="sequence_id" ref="seq_picking_type_posout_panipat"/>
             <field name="default_location_src_id" ref="stock.stock_location_stock"/>
             <field name="default_location_dest_id" ref="stock.stock_location_customers"/>
-            <field name="warehouse_id" eval="False"/>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
             <field name="code">outgoing</field>
         </record>
+        
+        <record id="picking_type_supplier_return" model="stock.picking.type">
+            <field name="name">Supplier Returns</field>
+            <field name="sequence_id" ref="seq_supplier_return_picking_panipat"/>
+            <field name="default_location_src_id" ref="stock.stock_location_stock"/>
+            <field name="default_location_dest_id" ref="stock.stock_location_suppliers"/>
+            <field name="return_picking_type_id" ref="stock.picking_type_in"/>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="code">outgoing</field>
+        </record>
+        
+        <record id="picking_type_customer_return" model="stock.picking.type">
+            <field name="name">Customer Returns</field>
+            <field name="sequence_id" ref="seq_customer_return_picking_panipat"/>
+            <field name="default_location_src_id" ref="stock.stock_location_customers"/>
+            <field name="default_location_dest_id" ref="stock.stock_location_stock"/>
+            <field name="return_picking_type_id" ref="stock.picking_type_out"/>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="code">incoming</field>
+        </record>
+        
+        <record id="stock.picking_type_out" model="stock.picking.type">
+			<field name="return_picking_type_id" ref="picking_type_customer_return"/>
+		</record>        
+        
+        <record id="stock.picking_type_in" model="stock.picking.type">
+			<field name="return_picking_type_id" ref="picking_type_supplier_return"/>
+		</record>        
+        
+        
         
         <record id="panipat_pos_default_customer" model="res.partner">
         	<field name="name">Walk-In Customer</field>

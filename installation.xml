@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<openerp>
+	<data>
+		
+		<record id ="panipat_install_form" model ="ir.ui.view">
+			<field name="name">panipat_install_form</field>
+			<field name="model">panipat.install</field>
+			<field name="arch" type="xml">
+				<form string="Install Works">
+					<div class="oe_title">
+						<h2>
+							<field name="name" />
+						</h2>
+					</div>
+					<group col="4">
+						<field name="supplier"/>
+						<field name="date"/>
+						<field name='customer'/>							
+					</group>
+					<notebook>
+                        <page string="Order Lines">
+                          </page>
+                      </notebook>
+				</form>
+			</field>
+		</record>
+		
+		<record id ="panipat_install_tree" model ="ir.ui.view">
+			<field name="name">panipat_install_tree</field>
+			<field name="model">panipat.install</field>
+			<field name="arch" type="xml">
+				<tree string="Install Works">
+					<field name="name"/>
+					<field name="supplier" />
+					<field name="date"/>
+					<field name='customer'/>						
+				</tree>
+			</field>
+		</record>
+		
+		 <record id="panipat_install_search" model="ir.ui.view">
+            <field name="name">panipat_install_search</field>
+            <field name="model">panipat.install</field>
+            <field name="arch" type="xml">
+            	<search string="Brand Names">
+                    <field name="name" string="Name"/>
+                    <field name="supplier" string="Supplier"/>
+                    <field name="customer" string="Customer"/>
+                </search>
+            </field>
+        </record>
+        
+        <record id="action_panipat_install" model="ir.actions.act_window">
+			<field name="name">Install Works</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">panipat.install</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+			
+		
+		<menuitem id="submenu_item_installation_works" name="Installation Works"
+			parent="panipat_main_menu_item" sequence="15"
+			action="action_panipat_install" />
+	
+	</data>
+</openerp>

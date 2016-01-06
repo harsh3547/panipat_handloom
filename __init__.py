@@ -1,3 +1,4 @@
+import procurement
 import panipat_crm_lead
 import crm_lead_allocated
 import panipat_crm_product
@@ -7,3 +8,7 @@ import order_group
 import sale_order
 import account_invoice
 import sample_file
+import brand_name
+import product
+import supplier_return
+import installation

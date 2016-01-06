@@ -7,12 +7,71 @@
             <field name="model">panipat.sample.wizard</field>
             <field name="arch" type="xml">
             	<form string="Return Samples">
-                        <h4><label for="sample_out_lines"/></h4>
+            		<header>
+            			<field name="state_paid" widget="statusbar" statusbar_visible="deposit,deposit_returned"/>
+            		</header>
+                        <h3><label for="sample_in_lines"/></h3>
                         <div> 
-                            <field name="sample_out_lines"/>
+                            <field name="sample_in_lines" attrs="{'invisible':[('sample_in_lines','=',[])]}"/>
                         </div>
+                        <group col="4">
+                        	<group>
+                        		<field name="return_amount" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'invisible':[('state_paid','!=','deposit')]}"/>				
+                        		<field name="payment_method" attrs="{'invisible':[('state_paid','!=','deposit')]}"/>
+                        	</group>
+                        	<group>
+                        		<field name="date" attrs="{'invisible':[('state_paid','!=','deposit')]}"/>
+	            				<field name="ref" placeholder="eg :- Some Reference" attrs="{'invisible':[('state_paid','!=','deposit')]}"/>
+                        	</group>
+                        </group>
+                        <group col="2">
+							<field name="diff_amount" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'invisible':[('state_paid','!=','deposit')]}"/>
+							<field name="diff_option" attrs="{'invisible':['|',('diff_amount','=',0.0),('state_paid','!=','deposit')],'required':[('diff_amount','!=',0.0),('state_paid','not in',('done','deposit_returned'))]}"/>
+                        </group>
                     <footer>
                         <button string="Return Samples" name="return_sample" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        
+        <record id="panipat_wizard_pay_form_view" model="ir.ui.view">
+            <field name="name">panipat.wizard.pay.form.view</field>
+            <field name="model">panipat.pay.wizard</field>
+            <field name="arch" type="xml">
+            	<form string="Payment">
+            		<group col="4">
+            			<group>
+	            			<field name="paid_amount" widget='monetary'/>
+	            			<field name="payment_method"/>
+	            		</group>
+	            		<group>
+		            		<field name="date"/>
+	            			<field name="ref" placeholder="eg :- Some Reference"/>
+	            		</group>
+            		</group>
+                    <footer>
+                        <button string="Register Payment" name="register_payment" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        
+        <record id="panipat_cancel_wizard_form_view" model="ir.ui.view">
+            <field name="name">panipat.cancel.wizard.form.view</field>
+            <field name="model">panipat.cancel.wizard</field>
+            <field name="arch" type="xml">
+            	<form string="Cancel Sample Order">
+            		<group></group>
+            		<group>
+            			<h3><b><label string="Cancelling the order will reverse all the payments and stock transfers"/></b></h3>
+            		</group>
+                    <footer>
+                        <button string="Cancel Sample Order" name="button_cancel" type="object" class="oe_highlight"/>
                         or
                         <button string="Cancel" class="oe_link" special="cancel"/>
                     </footer>
@@ -42,9 +101,11 @@
             	<form string="Sample Form">
 					<header>
 						<button name="button_confirm" string="Confirm" type="object" class="oe_highlight" states="draft"/>
-						<button name="send_sample" string="Transfer" type="object" class="oe_highlight" states="confirm"/>
-						<button name="return_sample_wizard" string="Reverse Transfer" type="object" class="oe_highlight" states="sample_sent"/>
-						<field name="state" widget="statusbar" statusbar_visible="sample_sent,deposit,sample_returned,deposit_returned" />
+						<button name="send_sample_wizard" string="Transfer and Deposit" type="object" class="oe_highlight" states="confirm"/>
+						<button name="return_sample_wizard" string="Reverse Transfer" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','sample_sent'),('state_paid','!=','deposit')]}"/>
+						<button name="button_done" string="Close" type="object" attrs="{'invisible':[('state','!=','sample_sent'),('state_paid','!=','deposit')]}"/>
+						<button name="button_cancel" string="Cancel" type="object" attrs="{'invisible':[('state','in',('draft','cancel'))]}"/>
+						<field name="state" widget="statusbar" statusbar_visible="sample_sent,sample_returned" />
 					</header>
 					<sheet>
 						<group col="4">
@@ -53,30 +114,45 @@
 									<field name="name" readonly="1"/>
 								</h2>
 							</div>
-							<div>
-								<field name="state_paid" widget="statusbar" class="oe_right" />
-							</div>
+							 	<field name="state_paid" class="oe_right" string="Payment Status" readonly="1"/>
+							
 						</group>
 						<group col="4">
-							<field name="partner_id"/>
-							<field name="date"/>
+							<group>
+								<field name="partner_id" attrs="{'readonly':[('state','!=','draft')]}"/>
+								<field name="amount_paid" widget='monetary' />
+							</group>
+							<group>
+								<field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
+								<field name="amount_returned" widget='monetary' />
+							</group>
 						</group>
 						<notebook>
 							<page string="Samples">
 							
 								<label for="sample_out" />
 									<div>
-										<field name="sample_out"/>
+										<field name="sample_out" attrs="{'readonly':[('state','!=','draft')]}"/>
 									</div>
 								<group></group>
 								<label for="sample_in" />
 									<div>
-										<field name="sample_in"/>
+										<field name="sample_in" readonly="1"/>
 									</div>
 								<group></group>
 							</page>
 							
 							<page string="Journal Entries">
+								<label for="sample_out_account_lines" />
+									<div>
+										<field name="sample_out_account_lines" readonly="1"/>
+									</div>
+								<group></group>
+								<label for="sample_in_account_lines" />
+									<div>
+										<field name="sample_in_account_lines" readonly="1"/>
+									</div>
+								<group></group>
 							</page>
 						</notebook>
 					</sheet>
@@ -118,6 +194,7 @@
 			<field name="type">ir.actions.act_window</field>
 			<field name="res_model">panipat.sample</field>
 			<field name="view_type">form</field>
+			<field name="context">{'in_panipat_sample':True}</field>
 			<field name="view_mode">tree,form</field>
 		</record>
 		

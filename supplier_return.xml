@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<openerp>
+	<data>
+	
+		 <record id="panipat_supplier_return_search_view" model="ir.ui.view">
+            <field name="name">panipat.supplier.return.search.view</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@string='Group By']" position="inside">
+                    <filter string='Partner' domain="[]" context="{'group_by' : 'partner_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
+		<record id="action_panipat_supplier_return_done" model="ir.actions.act_window">
+			<field name="name">Supplier Return Done</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">stock.picking</field>
+			<field name="domain" eval="[('picking_type_id','=',int(picking_type_supplier_return))]"/>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+		
+		<menuitem id="panipat_supplier_return_main_menu_item" name="Supplier Return" parent="panipat_main_menu" sequence="1050"/>
+		<menuitem id="panipat_submenu_supplier_return_done" name="Supplier Return Records" parent="panipat_supplier_return_main_menu_item" sequence="2" action="action_panipat_supplier_return_done" />
+		
+		<record id="panipat_back_to_supplier_wizard_view" model="ir.ui.view">
+            <field name="name">panipat_back_to_supplier_wizard_view</field>
+            <field name="model">stock.transfer_details</field>
+            <field name="inherit_id" ref="stock.view_stock_enter_transfer_details"/>
+            <field name="mode">primary</field>
+            <!-- https://www.odoo.com/documentation/8.0/reference/views.html#reference-views-inheritance -->
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='item_ids']/tree/field[@name='lot_id']" position="after">
+                	<field name='back_to_supplier' />
+                </xpath>
+            </field>
+        </record>
+		
+	
+	</data>
+</openerp>

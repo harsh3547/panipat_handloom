@@ -21,6 +21,7 @@ class sale_order(models.Model):
         print "ids=========",po_ids
         if len(po_ids)==1:
             return{
+                   'name':'Purchase',
                    'view_type': 'form',
                    'view_mode': 'form',
                    'res_model': 'purchase.order',
@@ -29,6 +30,7 @@ class sale_order(models.Model):
                    }
         else:
             return {
+                    'name':'Purchases',
                     'view_type': 'form',
                     'view_mode': 'tree,form',
                     'res_model': 'purchase.order',
@@ -72,12 +74,6 @@ class sale_order(models.Model):
         group_id=False
         if self.procurement_group_id:group_id=[self.procurement_group_id.id]
         if group_id:
-            print "group_id==============",group_id
-            cr.execute('select distinct production_id from procurement_order where group_id = %s and production_id is not null',(group_id))
-            mo_count=cr.fetchall()
-            print "mo_count============",mo_count
-            self.mo_count=len(mo_count)
-            
             cr.execute('select distinct order_id from purchase_order_line where id in (select distinct purchase_line_id from procurement_order where group_id = %s and group_id is not null) and order_id is not null',(group_id))
             po_count=cr.fetchall()
             print "po_count============",po_count
