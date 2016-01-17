@@ -92,7 +92,7 @@ class crm_lead_allocated(osv.osv):
         'create_date': fields.datetime('Creation Date', readonly=True),
         'description': fields.text('Notes'),
         'allocation_no': fields.char(string="Allocation No."),
-        'order_group':fields.many2one('panipat.order.group',string="Order Group",readonly=True),
+        'order_group':fields.many2one('procurement.group',string="Order Group",readonly=True,copy=False),
         'employee_line': fields.one2many('panipat.employee','crm_lead_allocated_id',string="Employees"),
         'state': fields.selection(string="State",selection=[('draft','Draft'),('employee','Employee Scheduled'),('quotation_made','Quotation Made')]),
                 }

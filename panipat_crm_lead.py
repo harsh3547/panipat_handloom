@@ -35,7 +35,7 @@ class panipat_crm_lead(models.Model):
                             'form_view_ref':'account_voucher.view_vendor_receipt_form',
                             'default_partner_id': obj.partner_id.parent_id.id if obj.partner_id.parent_id else obj.partner_id.id,
                             # customer payment only done by company if company exists for the contact
-                            'default_name':obj.sequence+':'+obj.order_group.name,
+                            'default_name':obj.sequence+ obj.order_group and ':'+obj.order_group.name or '',
                             'order_group':obj.order_group.id,
                             'search_disable_custom_filters': False
                             }
@@ -63,7 +63,7 @@ class panipat_crm_lead(models.Model):
         if vals.get('sequence','/')=='/':
             print "in sequnece"
             vals['sequence']=self.pool.get('ir.sequence').get(cr,uid,'CRM.Lead.Order.No',context) or '/'
-            vals['order_group'] = self.pool.get('panipat.order.group').create(cr,uid,{'partner_id':vals.get('partner_id',False)},context)
+            vals['order_group'] = self.pool.get('procurement.group').create(cr,uid,{'partner_id':vals.get('partner_id',False)},context)
             print "========vals crm lead=====",vals
         return super(panipat_crm_lead,self).create(cr,uid,vals,context=None)
     
@@ -122,7 +122,7 @@ class panipat_crm_lead(models.Model):
                 
         if lead_obj.partner_id and lead_obj.partner_id.id:
             vals.update({'partner_id':lead_obj.partner_id.id})  
-        vals['order_group'] = lead_obj.order_group.id
+        vals['procurement_group_id'] = lead_obj.order_group.id
         print "---------vals in make_qutaion crm.lead.allocated==========",vals
         quotation_id = self.pool.get('sale.order').create(cr,uid,vals,context=None)
         self.write(cr,uid,id,{'state':'quotation'},context=None)
@@ -132,7 +132,7 @@ class panipat_crm_lead(models.Model):
     def view_quotation(self,cr,uid,id,context=None):
         vals = {}
         order_group = self.browse(cr,uid,id,context=None).order_group.id
-        sale_ids = self.pool.get('sale.order').search(cr,uid,[('order_group','=',order_group)],context=None)
+        sale_ids = self.pool.get('sale.order').search(cr,uid,[('procurement_group_id','=',order_group)],context=None)
         if sale_ids :
             if len(sale_ids) == 1 :
                 return {
@@ -227,5 +227,5 @@ class panipat_crm_lead(models.Model):
     sequence = fields.Char(string="Order No.",copy=False,default='/')
     state = fields.Selection(string="State",selection=[('draft','Draft'),('employee','Employee Allocated'),('quotation','Quotation'),('redesign','Redesign'),('install','Install'),('cancel','Cancel')],copy=False,default='draft')
     total_paid_amount =fields.Float(compute='_get_amount_paid',string="Payment",default=00.00)
-    order_group =fields.Many2one('panipat.order.group',string="Order Group",readonly=True)
+    order_group =fields.Many2one('procurement.group',string="Order Group",readonly=True,copy=False)
 

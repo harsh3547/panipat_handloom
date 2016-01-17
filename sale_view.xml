@@ -7,7 +7,7 @@
 			<field name="inherit_id" ref="sale.view_order_form" />
 			<field name="arch" type="xml">
 				<xpath expr="//field[@name='user_id']" position="after">
-					<field name="order_group" readonly="1" />
+					<field name="procurement_group_id" readonly="1" />
 				</xpath>
 				<xpath expr="/form/sheet/h1" position="inside">
 					<div class="oe_right" name="button_box">

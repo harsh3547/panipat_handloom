@@ -7,8 +7,6 @@ from openerp.tools.translate import _
 class sale_order(models.Model):
     _inherit = "sale.order"
     
-    order_group = fields.Many2one(comodel_name='panipat.order.group', string="Order Group")
-
     def do_view_po(self, cr, uid, ids, context=None):
         '''
         This function returns an action that display the Purchase order related to this sales order
