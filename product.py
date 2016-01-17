@@ -31,6 +31,7 @@ class product_template(models.Model):
     _inherit='product.template'
 
     panipat_brand_name=fields.Many2one(comodel_name='panipat.brand.name', string='Brand Name')
+    vol_file_name=fields.Many2one(comodel_name='panipat.brand.vol', string='Vol/File No.')
     ean13=fields.Char(readonly=True,copy=False)
     default_code=fields.Char(readonly=True,copy=False)
     

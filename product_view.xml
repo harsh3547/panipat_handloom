@@ -9,7 +9,11 @@
             <field name="arch" type="xml">
 			<!-- Adding fields width and height -->
 				<xpath expr="//field[@name='list_price']" position="after">
-					<field name = "panipat_brand_name" />
+					<label for = "panipat_brand_name"/>
+					<div>
+						<field name = "panipat_brand_name" placeholder="Brand Name"/>
+						<field name = "vol_file_name" placeholder="Vol No./File No." attrs="{'invisible':[('panipat_brand_name','=',False)]}" class="oe_inline" domain="[('panipat_brand_name', '=', panipat_brand_name)]" context="{'default_panipat_brand_name':panipat_brand_name}"/>
+					</div>
 				</xpath>
 			</field>
 		</record>			
