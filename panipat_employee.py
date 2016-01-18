@@ -5,20 +5,20 @@ from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 class panipat_employee(models.Model):
     _name = "panipat.employee"
-    _rec_name = "crm_lead_allocated_id"
+    _rec_name = "employee_id"
     
     employee_id = fields.Many2one(comodel_name='hr.employee',string="Employee Name",ondelete='cascade',required=True)
     start_time = fields.Datetime(string='Start Time',required=True,default=fields.Datetime.now())
     delay_hours = fields.Float(string='Hours (hh:mm)',required=True,default=0.0)
     end_time = fields.Datetime(compute="_onchanges_time_hour",string="End Time",store=True)
-    crm_lead_allocated_id = fields.Many2one(comodel_name='crm.lead.allocated',string="CRM Lead Allocated",ondelete='cascade')
+    crm_lead_allocated_id = fields.Many2one(comodel_name='crm.lead.allocated',string="CRM Lead Allocated",ondelete='cascade',copy=False)
     notes = fields.Text("Internal Notes")
-    state = fields.Selection(string="State",selection=[('draft','Draft'),('done','Done')],default='draft')
+    state = fields.Selection(string="State",selection=[('draft','Draft'),('confirm','Confirmed')],default='draft')
     
     @api.one
     def schedule_employee(self):
         print self
-        self.write({'state':'done'})
+        self.write({'state':'confirm'})
         return True
     
     

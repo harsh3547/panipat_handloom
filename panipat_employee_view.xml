@@ -8,7 +8,7 @@
 					<field name="employee_id" />
 					<field name="crm_lead_allocated_id" />
 					<field name="start_time" />
-					<filter string="Confirmed" name="done_state_filter" domain="[('state','=','done')]"
+					<filter string="Confirmed" name="done_state_filter" domain="[('state','=','confirm')]"
 						help="Allocation Order that have been confirmed" />
 					<group expand="1" string="Group By">
 						<filter string="Employee" icon="terp-accessories-archiver"
@@ -34,7 +34,7 @@
 			<field name="model">panipat.employee</field>
 			<field name="arch" type="xml">
 				<tree string="Panipat Employee tree View">
-					<field name="employee_id" invisible="1" />
+					<field name="employee_id" />
 					<field name="crm_lead_allocated_id" />
 					<field name="start_time" />
 					<field name="delay_hours" widget="float_time" />
@@ -57,7 +57,7 @@
 					<sheet>
 						<group>
 							<field name="employee_id" />
-							<field name="crm_lead_allocated_id" options="{'create': false, 'create_edit': false}" />
+							<field name="crm_lead_allocated_id" options="{'create': false, 'create_edit': false}" attrs="{'invisible':[('install_id','!=',False)]}"/>
 							<field name="start_time" />
 							<field name="delay_hours" widget="float_time" />
 							<field name="end_time" />

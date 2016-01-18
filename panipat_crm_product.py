@@ -5,7 +5,7 @@ class panipat_crm_product(models.Model):
 
     product_id = fields.Many2one('product.product',string="product",required=True)
     crm_lead_id = fields.Many2one('panipat.crm.lead')
-    description = fields.Text(string="Description")
+    description = fields.Char(string="Description")
     sequence = fields.Integer(default=10)
     
     _order='sequence'

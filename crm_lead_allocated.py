@@ -8,7 +8,7 @@ class crm_lead_allocated(osv.osv):
     def schedule_employee(self,cr,uid,id,context=None):
         self.write(cr,uid,id,{'state':'employee'},context=None)
         employee_ids=map(int,self.browse(cr,uid,id).employee_line or [])
-        self.pool.get('panipat.employee').write(cr,uid,employee_ids,{'state':'done'},context)
+        self.pool.get('panipat.employee').write(cr,uid,employee_ids,{'state':'confirm'},context)
         return True
     
     def make_quotation(self,cr,uid,id,context=None):
@@ -91,7 +91,7 @@ class crm_lead_allocated(osv.osv):
         'partner_id': fields.many2one('res.partner', 'Partner'),
         'create_date': fields.datetime('Creation Date', readonly=True),
         'description': fields.text('Notes'),
-        'allocation_no': fields.char(string="Allocation No."),
+        'allocation_no': fields.char(string="Allocation No.",copy=False),
         'order_group':fields.many2one('procurement.group',string="Order Group",readonly=True,copy=False),
         'employee_line': fields.one2many('panipat.employee','crm_lead_allocated_id',string="Employees"),
         'state': fields.selection(string="State",selection=[('draft','Draft'),('employee','Employee Scheduled'),('quotation_made','Quotation Made')]),

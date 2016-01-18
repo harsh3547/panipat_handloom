@@ -17,7 +17,6 @@
 			<field name="arch" type="xml">
 				<form string="Allocation Form">
 					<header>
-						<div>
 							<button name="schedule_employee" string="Schedule Employee"
 								type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','draft')]}" />
 							<button name="make_quotation" string="Make Quotation"
@@ -27,7 +26,6 @@
 								type="object" class="oe_highlight"
 								attrs="{'invisible':['|',('state','!=','quotation_made')]}" />
 							<field name="state" widget="statusbar" />
-						</div>
 					</header>
 					<sheet>
 						<div>
