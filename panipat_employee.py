@@ -14,6 +14,7 @@ class panipat_employee(models.Model):
     crm_lead_allocated_id = fields.Many2one(comodel_name='crm.lead.allocated',string="CRM Lead Allocated",ondelete='cascade',copy=False)
     notes = fields.Text("Internal Notes")
     state = fields.Selection(string="State",selection=[('draft','Draft'),('confirm','Confirmed')],default='draft')
+    install_id = fields.Many2one(comodel_name='panipat.install', string="Installation Work",ondelete='cascade',copy=False)
     
     @api.one
     def schedule_employee(self):

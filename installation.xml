@@ -7,20 +7,67 @@
 			<field name="model">panipat.install</field>
 			<field name="arch" type="xml">
 				<form string="Install Works">
-					<div class="oe_title">
-						<h2>
-							<field name="name" />
-						</h2>
-					</div>
-					<group col="4">
-						<field name="supplier"/>
-						<field name="date"/>
-						<field name='customer'/>							
-					</group>
-					<notebook>
-                        <page string="Order Lines">
-                          </page>
-                      </notebook>
+					<header>
+						<button name="schedule_employee" string="Schedule Job" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','draft')]}" />
+						<button name="make_supplier_invoice" string="Create Supplier Invoice" type="object" class="oe_highlight" attrs="{'invisible':['|',('state','!=','confirm'),('supplier_invoice','!=','2binvoiced')]}" />
+						<button name="make_customer_invoice" string="Create Customer Invoice" type="object" class="oe_highlight" attrs="{'invisible':['|',('state','!=','confirm'),('customer_invoice','!=','2binvoiced')]}" />
+						<button name="view_invoices" string="View Supplier Invoices" type="object" class="oe_highlight" attrs="{'invisible':['|',('state','!=','confirm'),('supplier_invoice','!=','invoiced')]}" context="{'supplier':True}" />
+						<button name="view_invoices" string="View Customer Invoices" type="object" class="oe_highlight" attrs="{'invisible':['|',('state','!=','confirm'),('customer_invoice','!=','invoiced')]}" context="{'customer':True}" />
+						<field name="state" widget="statusbar" />
+					</header>
+					<sheet>
+						<div class="oe_title">
+							<h2>
+								<field name="desc" placeholder="Desciption of task"/>
+							</h2>
+						</div>
+						<div  class="oe_right">
+							<h1>
+								<field name="name"/>
+							</h1>
+						</div>
+						<group><field name="employee_add"/>	</group>
+						<group col="4">
+							<field name="supplier" attrs="{'required':[('employee_add','!=',True)]}"/>
+							<field name="date"/>
+							<field name='customer'/>	
+							<field name="schedule_date"/>
+						</group>
+						<label for="employees" attrs="{'invisible':[('employee_add','!=',True)]}"/>
+						<div>
+							<field name="employees" attrs="{'invisible':[('employee_add','!=',True)]}">
+								<tree editable="bottom">
+									<field name="employee_id" />
+									<field name="start_time" />
+									<field name="delay_hours" widget="float_time"/>
+									<field name="end_time" />
+								</tree>
+							</field>
+						</div>
+						<notebook>
+	                        <page string="Order Lines">
+	                        	<field name="install_lines">
+	                        		<tree string="lines" editable="bottom">
+										<field name="sequence" widget="handle"/>
+	                        			<field name="product_id"/>
+	                        			<field name="name"/>
+	                        			<field name="product_uom"/>
+	                        			<field name="product_uom_qty"/>
+	                        		</tree>
+	                        	</field>
+	                          </page>
+	                          <page string="Extra Info">
+	                          	<group col="4">
+			                     	<field name="order_group"/>
+			                     	<field name="supplier_invoice"/>
+			                     	<field name="customer_invoice"/>
+			                     </group>
+			                     <group>
+			                     	<field name="notes" placeholder="Some internal notes"/>
+			                     </group>
+	                          </page>
+	                      </notebook>
+                     </sheet>
 				</form>
 			</field>
 		</record>
@@ -31,9 +78,12 @@
 			<field name="arch" type="xml">
 				<tree string="Install Works">
 					<field name="name"/>
+					<field name="desc"/>
 					<field name="supplier" />
 					<field name="date"/>
-					<field name='customer'/>						
+					<field name='customer'/>
+					<field name="schedule_date"/>
+					<field name="state"/>					
 				</tree>
 			</field>
 		</record>
@@ -46,16 +96,33 @@
                     <field name="name" string="Name"/>
                     <field name="supplier" string="Supplier"/>
                     <field name="customer" string="Customer"/>
+                    <field name="desc" string="Description"/>
+                    <filter string="Today's Schedule" domain="[('schedule_date', '!=', False), ('schedule_date','>=',datetime.datetime.combine(context_today(),datetime.time(0,0,0))), ('schedule_date','&lt;=',datetime.datetime.combine(context_today(),datetime.time(23,59,59)))]"/>
                 </search>
             </field>
         </record>
+        
+        <record id="panipat_install_supplier_calendar" model="ir.ui.view">
+			<field name="name">panipat_install_supplier_calendar</field>
+			<field name="model">panipat.install</field>
+			<field name="arch" type="xml">
+				<calendar date_start="schedule_date"
+					color="supplier" display="[supplier] ; [name]">
+					<!-- Fields used for the text of display attribute -->
+					<field name="name" />
+					<field name="supplier" />
+					<field name="state"/>
+				</calendar>
+			</field>
+		</record>
+        
         
         <record id="action_panipat_install" model="ir.actions.act_window">
 			<field name="name">Install Works</field>
 			<field name="type">ir.actions.act_window</field>
 			<field name="res_model">panipat.install</field>
 			<field name="view_type">form</field>
-			<field name="view_mode">tree,form</field>
+			<field name="view_mode">tree,form,calendar</field>
 		</record>
 			
 		
