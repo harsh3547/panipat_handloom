@@ -31,7 +31,10 @@
 							<button name="button_redesign" string="Make Redesign Job"
 								type="object" class="oe_highlight" states="confirm" />
 
-							<button name="confirm_and_install" string="Confirm and Install"
+							<button name="button_install" string="Make Installation Job"
+								type="object" class="oe_highlight" states="confirm" />
+							<button name="view_install_job" string="View Installation Job"
+								type="object" class="oe_highlight" states="install" />
 							
 							<button name="button_confirm" string="Confirm Lead"
 								type="object" class="oe_highlight" states="draft" />

@@ -146,10 +146,56 @@ class panipat_crm_lead(models.Model):
         self.write(cr,uid,id,{'state':'redesign'},context=None)
         return True
     
-    def confirm_and_install(self,cr,uid,id,context=None):
+    def button_install(self,cr,uid,id,context=None):
+        lead_obj = self.browse(cr,uid,id,context)
+        values=[]
+        vals={}
+        vals['customer']=lead_obj.partner_id.id
+        vals['order_group']=lead_obj.order_group.id
+        if lead_obj.product_line :
+            for i in lead_obj.product_line :
+                values.append((0,0,{'product_id':i.product_id.id,
+                                    'name':i.description or self.pool.get('product.product').name_get(cr,uid,[i.product_id.id],context=context)[0][1] or "",
+                                    'product_uom':i.product_id.uom_id.id,
+                                    }))
+            vals.update({'install_lines':values})
+        self.pool.get('panipat.install').create(cr,uid,vals,context=None)
         self.write(cr,uid,id,{'state':'install'},context=None)
         return True
     
+    def view_install_job(self,cr,uid,id,context=None):
+        vals = {}
+        order_group = self.browse(cr,uid,id,context=None).order_group.id
+        install_ids = self.pool.get('panipat.install').search(cr,uid,[('order_group','=',order_group)],context=None)
+        if install_ids :
+            if len(install_ids) == 1 :
+                return {
+                'name': 'Sale Order Form',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'panipat.install',
+                'type': 'ir.actions.act_window',
+                'res_id': install_ids[0],
+                }
+            else :
+                return {
+                'name': 'Sale Order Form',
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'res_model': 'panipat.install',
+                'type': 'ir.actions.act_window',
+                'domain':[('id','in',install_ids)],
+                }
+        else :
+            return {
+                    'type': 'ir.actions.client',
+                    'tag': 'action_warn',
+                    'name': 'Warning',
+                    'params': {
+                               'title': 'Warning!',
+                               'text': 'Install Job is not available or has been deleted .',
+                               }
+                    }
 
     
     def button_confirm(self,cr,uid,id,context=None):

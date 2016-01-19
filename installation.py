@@ -29,6 +29,8 @@ class panipat_install(models.Model):
     def schedule_employee(self):
         if not self.employees and not self.supplier:
             raise except_orm(('Warning'),('Please add employees or supplier for installation work'))
+        if not self.schedule_date:
+            raise except_orm(('Warning'),('Please enter a schedule date (for deadlines)'))
         self.employees.schedule_employee()
         self.write({'state':'confirm','name':self.env['ir.sequence'].get(code="panipat.install")})
         return True
