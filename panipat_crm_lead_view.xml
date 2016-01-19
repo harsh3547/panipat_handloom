@@ -18,23 +18,26 @@
 				<form string="Leads Form">
 					<header>
 						<div>
-							<button name="confirm_and_allocate" string="Confirm and Allocate"
-								type="object" class="oe_highlight" states="draft" />
+							<button name="button_allocate" string="Make Allocation"
+								type="object" class="oe_highlight" states="confirm" />
 							<button name="view_allocation_order" string="View Allocation Order"
 								type="object" class="oe_highlight" states="employee" />
 
-							<button name="confirm_and_quote" string="Confirm and Make Quotation"
-								type="object" class="oe_highlight" states="draft" />
+							<button name="button_quote" string="Make Quotation"
+								type="object" class="oe_highlight" states="confirm" />
 							<button name="view_quotation" string="View Quotation"
 								type="object" class="oe_highlight" states="quotation" />
 
-							<button name="confirm_and_redesign" string="Confirm and Redesign"
-								type="object" class="oe_highlight" states="draft" />
+							<button name="button_redesign" string="Make Redesign Job"
+								type="object" class="oe_highlight" states="confirm" />
 
 							<button name="confirm_and_install" string="Confirm and Install"
+							
+							<button name="button_confirm" string="Confirm Lead"
 								type="object" class="oe_highlight" states="draft" />
-
-							<field name="state" widget="statusbar" statusbar_visible="draft" />
+							
+							
+							<field name="state" widget="statusbar" statusbar_visible="draft,confirm" />
 						</div>
 					</header>
 					<sheet>

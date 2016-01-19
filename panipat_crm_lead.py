@@ -142,12 +142,18 @@ class panipat_crm_lead(models.Model):
 
 
 
-    def confirm_and_redesign(self,cr,uid,id,context=None):
+    def button_redesign(self,cr,uid,id,context=None):
         self.write(cr,uid,id,{'state':'redesign'},context=None)
         return True
     
     def confirm_and_install(self,cr,uid,id,context=None):
         self.write(cr,uid,id,{'state':'install'},context=None)
+        return True
+    
+
+    
+    def button_confirm(self,cr,uid,id,context=None):
+        self.write(cr,uid,id,{'state':'confirm'},context=None)
         return True
     
     
@@ -201,7 +207,7 @@ class panipat_crm_lead(models.Model):
     mobile = fields.Char(compute='_get_partner_details',string='Mobile')
     title = fields.Many2one(compute='_get_partner_details',comodel_name='res.partner.title', string='Title')
     sequence = fields.Char(string="Order No.",copy=False,default='/')
-    state = fields.Selection(string="State",selection=[('draft','Draft'),('employee','Employee Allocated'),('quotation','Quotation'),('redesign','Redesign'),('install','Install'),('cancel','Cancel')],copy=False,default='draft')
+    state = fields.Selection(string="State",selection=[('draft','Draft'),('confirm','Confirm'),('employee','Employee Allocated'),('quotation','Quotation'),('redesign','Redesign'),('install','Install'),('cancel','Cancel')],copy=False,default='draft')
     total_paid_amount =fields.Float(compute='_get_amount_paid',string="Payment",default=00.00)
     order_group =fields.Many2one('procurement.group',string="Order Group",readonly=True,copy=False)
 
