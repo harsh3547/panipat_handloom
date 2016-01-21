@@ -46,7 +46,8 @@ class panipat_crm_lead(models.Model):
     def button_allocate(self,cr,uid,id,context=None):
         self.write(cr,uid,id,{'state':'employee'},context=None)
         carry_fields = self.browse(cr,uid,id,context=None)
-        vals = {'partner_id':carry_fields.partner_id.id,'order_group':carry_fields.order_group.id}
+        vals = {'partner_id':carry_fields.partner_id.id,'order_group':carry_fields.order_group.id,
+                'origin':carry_fields.sequence}
         allocated_id=self.pool.get('crm.lead.allocated').create(cr,uid,vals,context=None)
         return True
 
@@ -99,6 +100,7 @@ class panipat_crm_lead(models.Model):
         if lead_obj.partner_id and lead_obj.partner_id.id:
             vals.update({'partner_id':lead_obj.partner_id.id})  
         vals['procurement_group_id'] = lead_obj.order_group.id
+        vals['origin']=lead_obj.sequence
         print "---------vals in make_qutaion crm.lead.allocated==========",vals
         quotation_id = self.pool.get('sale.order').create(cr,uid,vals,context=None)
         self.write(cr,uid,id,{'state':'quotation'},context=None)
@@ -152,6 +154,7 @@ class panipat_crm_lead(models.Model):
         vals={}
         vals['customer']=lead_obj.partner_id.id
         vals['order_group']=lead_obj.order_group.id
+        vals['origin']=lead_obj.sequence
         if lead_obj.product_line :
             for i in lead_obj.product_line :
                 values.append((0,0,{'product_id':i.product_id.id,

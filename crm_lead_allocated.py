@@ -6,15 +6,17 @@ class crm_lead_allocated(osv.osv):
     _rec_name = "allocation_no"
     
     def schedule_employee(self,cr,uid,id,context=None):
+        allocation_obj=self.browse(cr,uid,id,context)
         self.write(cr,uid,id,{'state':'employee'},context=None)
         employee_ids=map(int,self.browse(cr,uid,id).employee_line or [])
-        self.pool.get('panipat.employee').write(cr,uid,employee_ids,{'state':'confirm'},context)
+        self.pool.get('panipat.employee').write(cr,uid,employee_ids,{'state':'confirm','origin':allocation_obj.origin+":"+allocation_obj.allocation_no if allocation_obj.origin else allocation_obj.allocation_no},context)
         return True
     
     def make_quotation(self,cr,uid,id,context=None):
         vals = {}
         values = []
-        order_group = self.browse(cr,uid,id,context).order_group.id
+        allocation_obj=self.browse(cr,uid,id,context)
+        order_group = allocation_obj.order_group.id
         lead_id = self.pool.get('panipat.crm.lead').search(cr,uid,[('order_group','=',order_group)],context=None)
         print " ==============lead_id===",lead_id
         if lead_id:
@@ -29,6 +31,7 @@ class crm_lead_allocated(osv.osv):
             if lead_obj.partner_id and lead_obj.partner_id.id:
                 vals.update({'partner_id':lead_obj.partner_id.id})  
             vals['order_group'] = order_group
+            vals['origin']=allocation_obj.origin+":"+allocation_obj.allocation_no if allocation_obj.origin else allocation_obj.allocation_no
             print "---------vals in make_qutaion crm.lead.allocated==========",vals
             quotation_id = self.pool.get('sale.order').create(cr,uid,vals,context=None)
             self.write(cr,uid,id,{'state':'quotation_made'},context)
@@ -95,6 +98,7 @@ class crm_lead_allocated(osv.osv):
         'order_group':fields.many2one('procurement.group',string="Order Group",readonly=True,copy=False),
         'employee_line': fields.one2many('panipat.employee','crm_lead_allocated_id',string="Employees"),
         'state': fields.selection(string="State",selection=[('draft','Draft'),('employee','Employee Scheduled'),('quotation_made','Quotation Made')]),
+        'origin':fields.char(string="Source Document",copy=False)
                 }
     _order = "allocation_no desc"
     

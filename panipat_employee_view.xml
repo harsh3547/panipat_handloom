@@ -65,6 +65,7 @@
 							<field name="delay_hours" widget="float_time" />
 							<field name="end_time" />
 							<field name="notes" />
+							<field name="origin"/>
 						</group>
 					</sheet>
 				</form>

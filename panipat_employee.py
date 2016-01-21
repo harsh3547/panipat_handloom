@@ -15,11 +15,14 @@ class panipat_employee(models.Model):
     notes = fields.Text("Internal Notes")
     state = fields.Selection(string="State",selection=[('draft','Draft'),('confirm','Confirmed')],default='draft')
     install_id = fields.Many2one(comodel_name='panipat.install', string="Installation Work",ondelete='cascade',copy=False)
+    origin = fields.Char("Source Document",copy=False)
     
     @api.one
-    def schedule_employee(self):
+    def schedule_employee(self,origin=False):
         print self
-        self.write({'state':'confirm'})
+        vals={'state':'confirm'}
+        if origin:vals['origin']=origin
+        self.write(vals)
         return True
     
     

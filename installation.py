@@ -23,7 +23,7 @@ class panipat_install(models.Model):
     state = fields.Selection(string="State",selection=[('draft','Draft'),('confirm','Confirmed')],default='draft')
     supplier_invoice = fields.Selection(string="Supplier Invoice",selection=[('invoiced','Invoiced'),('2binvoiced','To be Invoiced')],default='2binvoiced',copy=False)
     customer_invoice = fields.Selection(string="Customer Invoice",selection=[('invoiced','Invoiced'),('2binvoiced','To be Invoiced')],default='2binvoiced',copy=False)
-
+    origin = fields.Char("Source Document",copy=False)
     
     @api.multi
     def schedule_employee(self):
@@ -31,8 +31,8 @@ class panipat_install(models.Model):
             raise except_orm(('Warning'),('Please add employees or supplier for installation work'))
         if not self.schedule_date:
             raise except_orm(('Warning'),('Please enter a schedule date (for deadlines)'))
-        self.employees.schedule_employee()
         self.write({'state':'confirm','name':self.env['ir.sequence'].get(code="panipat.install")})
+        self.employees.schedule_employee(origin=self.origin+":"+self.name if self.origin else self.name)
         return True
     
     @api.multi
@@ -69,7 +69,7 @@ class panipat_install(models.Model):
                 'partner_id': self.supplier.id,
                 'journal_id': len(journal_ids) and journal_ids[0].id or False,
                 'invoice_line': line_ids,
-                'origin': self.name,
+                'origin': self.origin+":"+self.name if self.origin else self.name,
             }
             print vals
             supplier_inv=self.env['account.invoice'].create(vals)
@@ -113,7 +113,7 @@ class panipat_install(models.Model):
                 'partner_id': self.customer.id,
                 'journal_id': len(journal_ids) and journal_ids[0].id or False,
                 'invoice_line': line_ids,
-                'origin': self.name,
+                'origin': self.origin+":"+self.name if self.origin else self.name,
             }
             print vals
             supplier_inv=self.env['account.invoice'].create(vals)
