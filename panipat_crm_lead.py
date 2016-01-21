@@ -159,9 +159,10 @@ class panipat_crm_lead(models.Model):
             for i in lead_obj.product_line :
                 values.append((0,0,{'product_id':i.product_id.id,
                                     'name':i.description or self.pool.get('product.product').name_get(cr,uid,[i.product_id.id],context=context)[0][1] or "",
-                                    'product_uom':i.product_id.uom_id.id,
+                                    'product_uom':i.product_uom.id,
+                                    'product_uom_qty':i.product_uom_qty,
                                     }))
-            vals.update({'install_lines':values})
+            vals.update({'product_lines':values})
         self.pool.get('panipat.install').create(cr,uid,vals,context=None)
         self.write(cr,uid,id,{'state':'install'},context=None)
         return True

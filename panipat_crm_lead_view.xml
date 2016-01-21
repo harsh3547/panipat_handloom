@@ -115,6 +115,8 @@
 									<field name="sequence" widget="handle" />
 									<field name="product_id" />
 									<field name="description" />
+									<field name="product_uom_qty"/>
+	                        		<field name="product_uom"/>
 								</tree>
 							</field>
 						</div>
