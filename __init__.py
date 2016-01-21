@@ -11,3 +11,4 @@ import brand_name
 import product
 import supplier_return
 import installation
+import stock_picking

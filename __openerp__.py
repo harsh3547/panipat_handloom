@@ -48,6 +48,7 @@
              'supplier_return.xml',
              'product_label_mod.xml',
              'installation.xml',
+             'stock_picking.xml'
              ],
     'demo': [],
     'test': [],
