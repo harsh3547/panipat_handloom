@@ -16,7 +16,8 @@ class panipat_install(models.Model):
     date=fields.Date(string='Created Date',default=fields.Date.today())
     schedule_date=fields.Date(string='Schedule Date')
     order_group=fields.Many2one(comodel_name='procurement.group', string='Order Group',readonly=True,copy=False)
-    install_lines=fields.One2many(comodel_name="panipat.install.lines", inverse_name="install_id", string='Order Lines')
+    service_lines=fields.One2many(comodel_name="panipat.install.lines", inverse_name="install_service_id", string='Service Lines')
+    product_lines=fields.One2many(comodel_name="panipat.install.lines", inverse_name="install_product_id", string='Product Lines')
     notes=fields.Text(string="Internal Notes")
     employee_add=fields.Boolean(string="Add Employees")
     employees=fields.One2many(comodel_name='panipat.employee', inverse_name='install_id', string="Employees Schedule")
@@ -41,7 +42,7 @@ class panipat_install(models.Model):
             expense_account_id=self.env['product.category'].default_get(['property_account_expense_categ'])['property_account_expense_categ']
             payable_account_id=self.env['res.partner'].default_get(['property_account_payable'])['property_account_payable']
             line_ids=[]
-            for order_line in self.install_lines:
+            for order_line in self.service_lines:
                 
                 final_qty=self.pool.get('product.uom')._compute_qty(self._cr,self._uid,order_line.product_uom.id,order_line.product_uom_qty,order_line.product_id.uom_po_id.id)
                 ctx=self._context.copy()
@@ -87,7 +88,7 @@ class panipat_install(models.Model):
             income_account_id=self.env['product.category'].default_get(['property_account_income_categ'])['property_account_income_categ']
             receivable_account_id=self.env['res.partner'].default_get(['property_account_receivable'])['property_account_receivable']
             line_ids=[]
-            for order_line in self.install_lines:
+            for order_line in self.service_lines:
                 
                 final_qty=self.pool.get('product.uom')._compute_qty(self._cr,self._uid,order_line.product_uom.id,order_line.product_uom_qty,order_line.product_id.uom_id.id)
                 line_id = {
@@ -188,7 +189,8 @@ class panipat_install_lines(models.Model):
             self.product_uom=self.product_id.uom_id.id
             self.name=self.product_id.name_get()[0][1] if self.product_id.name_get() else self.product_id.name 
     
-    install_id=fields.Many2one(comodel_name='panipat.install',copy=False)
+    install_product_id=fields.Many2one(comodel_name='panipat.install',copy=False)
+    install_service_id=fields.Many2one(comodel_name='panipat.install',copy=False)
     sequence = fields.Integer(string="Seq",default=10)
     product_id=fields.Many2one(comodel_name='product.product', string='Product',required=True)
     name=fields.Char(string="Description")

@@ -50,8 +50,19 @@
 							</field>
 						</div>
 						<notebook>
-	                        <page string="Order Lines">
-	                        	<field name="install_lines">
+	                        <page string="Service Lines">
+	                        	<field name="service_lines">
+	                        		<tree string="lines" editable="bottom">
+										<field name="sequence" widget="handle"/>
+	                        			<field name="product_id"/>
+	                        			<field name="name"/>
+	                        			<field name="product_uom_qty"/>
+	                        			<field name="product_uom"/>
+	                        		</tree>
+	                        	</field>
+	                          </page>
+	                          <page string="Product Lines">
+	                          	<field name="product_lines">
 	                        		<tree string="lines" editable="bottom">
 										<field name="sequence" widget="handle"/>
 	                        			<field name="product_id"/>
