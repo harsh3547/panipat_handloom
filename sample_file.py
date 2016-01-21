@@ -36,17 +36,12 @@ class panipat_sample(models.Model):
     
     
     @api.multi
-    def write(self,vals):
-        if vals.get('state',False)=='confirm':
-            vals['name']=self.env['ir.sequence'].get('panipat.sample.sequence.type') or '/'
-        return super(panipat_sample, self).write(vals)
-    
-    @api.multi
     def button_confirm(self):
         if not self.sample_out:
             raise except_orm(_('Warning!'), _('No Outgoing Samples !'))
         if self.date:vals={'state':'confirm'}
         else:vals={'state':'confirm','date':fields.Date.today()}
+        vals['name']=self.env['ir.sequence'].get('panipat.sample.sequence.type') or '/'
         self.write(vals)
         return True
     

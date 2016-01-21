@@ -34,15 +34,6 @@ class panipat_crm_lead(models.Model):
                     }
 
     
-    def create(self,cr,uid,vals,context=None):
-
-        if vals.get('sequence','/')=='/':
-            print "in sequnece"
-            vals['sequence']=self.pool.get('ir.sequence').get(cr,uid,'CRM.Lead.Order.No',context) or '/'
-            vals['order_group'] = self.pool.get('procurement.group').create(cr,uid,{'partner_id':vals.get('partner_id',False)},context)
-            print "========vals crm lead=====",vals
-        return super(panipat_crm_lead,self).create(cr,uid,vals,context=None)
-    
     def button_allocate(self,cr,uid,id,context=None):
         self.write(cr,uid,id,{'state':'employee'},context=None)
         carry_fields = self.browse(cr,uid,id,context=None)
@@ -203,7 +194,12 @@ class panipat_crm_lead(models.Model):
 
     
     def button_confirm(self,cr,uid,id,context=None):
-        self.write(cr,uid,id,{'state':'confirm'},context=None)
+        lead_obj=self.browse(cr,uid,id,context)
+        vals={'state':'confirm',
+              'sequence':self.pool.get('ir.sequence').get(cr,uid,'CRM.Lead.Order.No',context) or '/',
+              'order_group':self.pool.get('procurement.group').create(cr,uid,{'partner_id':lead_obj.partner_id.id},context)
+              }
+        self.write(cr,uid,id,vals,context=None)
         return True
     
     
