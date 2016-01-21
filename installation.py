@@ -9,7 +9,7 @@ class panipat_install(models.Model):
     _name="panipat.install"
     _order="schedule_date desc,state"
     
-    name=fields.Char(readonly=True,default='/',string='Name',copy=False)
+    name=fields.Char(readonly=True,default='draft',string='Name',copy=False)
     desc=fields.Char(string="Description")
     supplier=fields.Many2one(comodel_name='res.partner', string='Contractor',domain=[('supplier', '=', True)])
     customer=fields.Many2one(comodel_name='res.partner', string='For Customer',domain=[('customer', '=', True)])
@@ -21,7 +21,7 @@ class panipat_install(models.Model):
     notes=fields.Text(string="Internal Notes")
     employee_add=fields.Boolean(string="Add Employees")
     employees=fields.One2many(comodel_name='panipat.employee', inverse_name='install_id', string="Employees Schedule")
-    state = fields.Selection(string="State",selection=[('draft','Draft'),('confirm','Confirmed')],default='draft')
+    state = fields.Selection(string="State",selection=[('draft','Draft'),('confirm','Confirmed')],default='draft',copy=False)
     supplier_invoice = fields.Selection(string="Supplier Invoice",selection=[('invoiced','Invoiced'),('2binvoiced','To be Invoiced')],default='2binvoiced',copy=False)
     customer_invoice = fields.Selection(string="Customer Invoice",selection=[('invoiced','Invoiced'),('2binvoiced','To be Invoiced')],default='2binvoiced',copy=False)
     origin = fields.Char("Source Document",copy=False)

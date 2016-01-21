@@ -103,6 +103,6 @@ class crm_lead_allocated(osv.osv):
     _order = "allocation_no desc"
     
     _defaults = {
-        'allocation_no':'/',
+        'allocation_no':'draft',
         'state':'draft',
     }

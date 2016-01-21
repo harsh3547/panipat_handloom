@@ -15,7 +15,7 @@ class panipat_sample(models.Model):
     _name="panipat.sample"
     _order="date desc,name desc"
     
-    name=fields.Char(string="Order No.",copy=False,default='/',readonly=True)
+    name=fields.Char(string="Order No.",copy=False,default='draft',readonly=True)
     partner_id=fields.Many2one(comodel_name="res.partner", string="Customer",required=True)
     date=fields.Date(string="Date")
     state=fields.Selection(selection=[('draft','Draft'),('confirm', 'Confirmed'),('sample_sent','Sample Sent'),('sample_returned','Sample Returned'),('done','Closed'),('cancel','Cancelled')],copy=False,default='draft')

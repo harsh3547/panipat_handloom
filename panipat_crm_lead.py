@@ -256,7 +256,7 @@ class panipat_crm_lead(models.Model):
     fax = fields.Char(compute='_get_partner_details',string='Fax')
     mobile = fields.Char(compute='_get_partner_details',string='Mobile')
     title = fields.Many2one(compute='_get_partner_details',comodel_name='res.partner.title', string='Title')
-    sequence = fields.Char(string="Order No.",copy=False,default='/')
+    sequence = fields.Char(string="Order No.",copy=False,default='draft')
     state = fields.Selection(string="State",selection=[('draft','Draft'),('confirm','Confirm'),('employee','Employee Allocated'),('quotation','Quotation'),('redesign','Redesign'),('install','Install'),('cancel','Cancel')],copy=False,default='draft')
     total_paid_amount =fields.Float(compute='_get_amount_paid',string="Payment",default=00.00)
     order_group =fields.Many2one('procurement.group',string="Order Group",readonly=True,copy=False)
