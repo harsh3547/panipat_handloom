@@ -84,7 +84,7 @@ class account_invoice(models.Model):
         picking_id = False
         if picking_type:
             picking_id = picking_obj.create(self._cr, self._uid, {
-                'origin': order.number or '',
+                'origin': (order.number or '')+":Return" if reverse_location else (order.number or ''),
                 'partner_id': addr.get('delivery',False),
                 'date_done' : order.date_invoice,
                 'picking_type_id': picking_type.id,
