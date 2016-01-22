@@ -7,6 +7,13 @@ class account_invoice(models.Model):
     is_pos = fields.Boolean('Retail Invoice',default=False)
     picking_id = fields.Many2one('stock.picking','Picking Orders',copy=False)
     
+    @api.multi
+    def action_cancel(self):
+        for inv in self:
+            if inv.picking_id:
+                raise exceptions.except_orm(_('Error!'), _('You cannot cancel an invoice before Returning the products'))
+        return super(account_invoice, self).action_cancel()
+    
     @api.onchange("is_pos")
     def onchange_is_pos(self):
         if self.is_pos:self.partner_id=self.env.ref("panipat_handloom.panipat_pos_default_customer")
