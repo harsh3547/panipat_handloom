@@ -137,5 +137,5 @@ class sale_order(models.Model):
     po_count=fields.Integer(compute='_count_all')
     picking_count=fields.Char(compute='_count_all')
     total_paid_amount =fields.Float(compute='_get_amount_paid',string="Payment")
-    
+    order_group = fields.Many2one(comodel_name='panipat.order.group', string="Order Group",copy=False,readonly=True)
     

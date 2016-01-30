@@ -16,6 +16,6 @@ class account_voucher(osv.osv):
         return super(account_voucher,self).create(cr,uid,vals,context=None)
     
     _columns = {
-                'order_group':fields.many2one('procurement.group',string='Order Group')
+                'order_group':fields.many2one('panipat.order.group',string='Order Group')
                 }
     

@@ -15,7 +15,7 @@ class panipat_install(models.Model):
     customer=fields.Many2one(comodel_name='res.partner', string='For Customer',domain=[('customer', '=', True)])
     date=fields.Date(string='Created Date',default=fields.Date.today())
     schedule_date=fields.Date(string='Schedule Date')
-    order_group=fields.Many2one(comodel_name='procurement.group', string='Order Group',readonly=True,copy=False)
+    order_group=fields.Many2one(comodel_name='panipat.order.group', string='Order Group',readonly=True,copy=False)
     service_lines=fields.One2many(comodel_name="panipat.install.lines", inverse_name="install_service_id", string='Service Lines')
     product_lines=fields.One2many(comodel_name="panipat.install.lines", inverse_name="install_product_id", string='Product Lines')
     notes=fields.Text(string="Internal Notes")

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<openerp>
+       <data>
+               <record id="action_panipat_order_group" model="ir.actions.act_window">
+                       <field name="name">Order Groups</field>
+                       <field name="type">ir.actions.act_window</field>
+                       <field name="res_model">panipat.order.group</field>
+                       <field name="view_type">form</field>
+                       <field name="view_mode">form</field>
+               </record>
+
+               <record model="ir.ui.view" id="panipat_order_group_form">
+                       <field name="name">panipat.order.group.form</field>
+                       <field name="model">panipat.order.group</field>
+                       <field name="arch" type="xml">
+                               <form string="Leads">
+                                       <sheet>
+                                               <group>
+                                                       <field name="name" />
+                                                       <field name="partner_id" />
+                                               </group>
+                                       </sheet>
+                               </form>
+                       </field>
+               </record>
+
+       </data>
+</openerp>
