@@ -6,7 +6,7 @@
             name="Brand Products"
             res_model="product.template"
             view_type="form"
-            view_mode="kanban,form,tree"
+            view_mode="tree,kanban,form"
             domain="[('panipat_brand_name', '=', active_id)]"/>
 		
 		
@@ -30,9 +30,9 @@
 							<field name="barcode_no"/>
 							<field name='seq'/>							
 						</group>
-						<label for = "vol_count"/>
+						<label for = "vol_ids"/>
 						<div>
-							<field name="vol_count">
+							<field name="vol_ids">
 								<tree string="Files/Volumes" editable='bottom'>
 									<field name="name"/>
 								</tree>
@@ -49,8 +49,9 @@
 			<field name="arch" type="xml">
 				<tree string="Brand Name">
 					<field name="name"/>
-					<field name="barcode_no"/>	
-											
+					<field name="barcode_no"/>
+					<field name="vol_count"/>
+					<field name="seq1" widget="handle"/>	
 				</tree>
 			</field>
 		</record>
@@ -61,6 +62,7 @@
             <field name="arch" type="xml">
             	<search string="Brand Names">
                     <field name="name" string="Name"/>
+                    <field name="vol_ids" string="File Names" domain="[('vol_ids.name','ilike',self)]"/>
                     <field name="barcode_no" string="Barcode No"/>
                 </search>
             </field>

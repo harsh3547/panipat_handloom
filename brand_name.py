@@ -12,15 +12,22 @@ class panipat_brand_name(models.Model):
     seq=fields.Many2one(comodel_name='ir.sequence', string="Sequence",readonly=True,copy=False)
     product_ids = fields.One2many('product.template','panipat_brand_name',string='Brand Products',)
     products_count = fields.Integer(string='Number of products',compute='_get_products_count',)
-    vol_count=fields.One2many(comodel_name='panipat.brand.vol', inverse_name="panipat_brand_name", string="Files / Volumes")
+    vol_ids=fields.One2many(comodel_name='panipat.brand.vol', inverse_name="panipat_brand_name", string="Files / Volumes")
+    vol_count=fields.Integer(string="Number Of Files",compute="_get_vol_count",store=True)
     _sql_constraints = [('name_uniq','UNIQUE (name)','Brand Name must be unique!')]
+    seq1=fields.Integer()
     
-    @api.one
     @api.depends('product_ids')
     def _get_products_count(self):
-        self.products_count = len(self.product_ids)
+        for rec in self:
+            rec.products_count = len(rec.product_ids)
     
-    
+    @api.depends('vol_ids')
+    def _get_vol_count(self):
+        #print "=-=-="
+        for rec in self:
+            rec.vol_count=len(rec.vol_ids)
+            
     @api.model
     def create(self,vals):
         vals['barcode_no']=self.env['ir.sequence'].get(code="panipat.1")
