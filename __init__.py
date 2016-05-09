@@ -13,3 +13,5 @@ import product
 import supplier_return
 import installation
 import stock_picking
+import purchase
+import company

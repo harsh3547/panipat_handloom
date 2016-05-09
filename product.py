@@ -71,5 +71,26 @@ class product_product(models.Model):
         #categ_seq=self.env['product.category'].browse(vals.get['categ_id'])
         return super(product_product, self).create(vals)
     
+class product_supplierinfo(models.Model):
+    _inherit="product.supplierinfo"
     
+    roll_rates=fields.One2many(comodel_name='roll.rates', inverse_name='roll_rate_partnerinfo', string="Roll Rates")
+    delay=fields.Integer(string='Delivery Lead Time', required=True, help="Lead time in days between the confirmation of the purchase order and the receipt of the products in your warehouse. Used by the scheduler for automatic computation of the purchase order planning.",default=0)
+        
+    
+class roll_rates(models.Model):
+    _name="roll.rates"
+    
+    name=fields.Many2one(comodel_name='roll.rate.name', string='Name')
+    rate=fields.Float(string="Roll rates",digits_compute=dp.get_precision('Product Price'))
+    roll_rate_partnerinfo=fields.Many2one(comodel_name='product.supplierinfo',string='one 2 many rel')
+    roll_rate_product=fields.Many2one(comodel_name='product.template', string='one 2 many rel')
+    
+class roll_rate_name(models.Model):
+    _name="roll.rate.name"    
+        
+    name=fields.Char(string="Name")    
+        
+    
+            
     
