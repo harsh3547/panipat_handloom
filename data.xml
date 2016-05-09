@@ -1,5 +1,5 @@
 <openerp>
-	<data noupdate="0">
+	<data noupdate="1">
         
         <record id="picking_type_posout_panipat" model="stock.picking.type">
             <field name="name">INVPOS Orders</field>
@@ -53,12 +53,22 @@
         <record id="panipat_sample_journal" model="account.journal">
         	<field name="name">Sample Journal</field>
         	<field name="code">SMP</field>
-        	<field name="type">sale</field>
+        	<field name="type">general</field>
         	<field name="update_posted">True</field>
         	<field name="user_id" ref="base.user_root"/>
         </record>
-        
-        
-        
+
 	</data>
+
+    <data>
+    	
+    	<record id="item11" model="product.pricelist.item">
+            <field name="price_version_id" ref="purchase.ver0"/>
+        	<field name="base" eval="int(-2)"/>
+            <field name="sequence">4</field>
+            <field name="name">Default Supplier Pricelist Line</field>
+        </record>
+    	
+        <menuitem id="mail.mail_feeds_main" sequence='490' groups="base.group_user" name='Messaging'/>
+    </data>
 </openerp>
