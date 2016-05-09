@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+<template id="report_accountvoucher_document">
+<!--    <t t-call="report.customize_internal_layout">-->
+        <div class="page">
+            <div class="oe_structure"/>
+            <div class="row">
+                <div class="col-xs-8">
+                    <span t-field="res_company.name"/>
+                    <t t-if="res_company.phone">,</t> Phone: <span t-field="res_company.phone"/>
+                    <t t-if="res_company.phone">,</t> Mobile: <span t-field="res_company.phone"/>
+                </div>
+                <div class="col-xs-4">
+                    <h3><strong><span t-field="o.number"/></strong></h3>
+                </div>
+            </div>
+            <br/>
+            <table class="col-xs-12">
+                <tr>
+                    <td><strong>Customer:</strong></td>
+                    <td><p t-field="o.partner_id.name"/></td>
+                    <td><strong>Date:</strong></td>
+                    <td><p t-field="o.date"/></td>
+                </tr>
+                <tr>
+                    <td><strong>Paid Amount:</strong></td>
+                    <td><p t-field="o.amount" t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}'/></td>
+                    <td><strong>Payment Ref:</strong></td>
+                    <td><p t-field="o.reference"/></td>
+                </tr>
+                <tr>
+                    <td><strong>Payment Method:</strong></td>
+                    <td><p t-field="o.journal_id.name"/></td>
+                    <td><strong>Memo:</strong></td>
+                    <td><p t-field="o.name"/></td>
+                </tr>
+            </table>
+        </div>
+<!--    </t>-->
+</template>
+
+<template id="report_account_voucher">
+    <t t-call="report.html_container">
+        <t t-foreach="doc_ids" t-as="doc_id">
+            <t t-raw="translate_doc(doc_id, doc_model, 'partner_id.lang', 'panipat_handloom.report_accountvoucher_document')"/>
+        </t>
+    </t>
+</template>
+</data>
+</openerp>
