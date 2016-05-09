@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<openerp>
+	<data>
+		
+		<record id ="view_partner_form_inherit" model ="ir.ui.view">
+			<field name="name">panipat_import_form</field>
+			<field name="model">res.partner</field>
+			<field name="inherit_id" ref="base.view_partner_form"/>	
+			<field name="arch" type="xml">
+				<xpath expr="//page[@name='sales_purchases']//field[@name='customer']" position="replace"/>
+				<xpath expr="//page[@name='sales_purchases']//field[@name='supplier']" position="replace"/>
+				<xpath expr="//field[@name='website']" position="after">
+					<field name="customer"/>
+					<field name="supplier"/>
+				</xpath>
+			</field>
+		</record>
+	</data>
+</openerp>
