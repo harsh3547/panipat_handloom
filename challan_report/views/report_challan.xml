@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+<template id="report_challan_document">
+	<div class="page">
+		<h1 class="text-center" t-if="o.type == 'out_invoice'">Challan</h1>
+        <h1 class="text-center" t-if="o.type == 'out_refund'">Refund Challan</h1>
+		<table class="table table-bordered">
+           <tr>
+               <td rowspan="2" width="50%">
+                   <strong><u>Buyer</u></strong>
+                   <strong><div t-field="o.partner_id.name"/></strong>
+                   <address t-field="o.partner_id"
+                       t-field-options='{"widget": "contact", "fields": ["address"], "no_marker": true}' />
+                   <span t-if="o.partner_id.buyer_vat_tin">TIN: <span t-field="o.partner_id.buyer_vat_tin"/></span>
+                   <div t-if="o.partner_id.mobile">MB: <span t-field="o.partner_id.mobile"/></div>
+               </td>
+               <td>Invoice No.<strong><div style="font-size:22px;" t-field="o.number"/></strong></td>
+               
+           </tr>
+           <tr>
+               <td>Dated<strong><div style="font-size:22px;" t-field="o.date_invoice"/></strong></td>
+           </tr>
+       </table>
+        <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>SI No.</th>
+                            <th>Description of Goods</th>
+                            <th class="text-center">TAX(%)</th>
+                            <th class="text-center">Quantity(Per)</th>
+                            <th class="text-center">Rate</th>
+                            <th class="text-right" groups="sale.group_discount_per_so_line">Disc (%)</th>
+                            <th class="text-right">Amount<br>(Untaxed,Discounted)</br></th>
+                        </tr>
+                    </thead>
+                    <tbody class="invoice_tbody">
+                        <t t-set="sr_no" t-value="0"/>
+                        <tr t-foreach="o.invoice_line" t-as="l" style="page-break-inside:avoid">
+                            <t t-set="sr_no" t-value="sr_no+1"/>
+                            <td><span t-esc="sr_no"/></td>
+                            <td><span t-field="l.name"/></td>
+                            <!--td class="text-right">
+                                <span t-esc="'%, '.join(map(lambda x: (x.amount * 10), l.invoice_line_tax_id))"/>
+                            </td-->
+							<td class="text-right">
+                                <span t-esc="', '.join(map(lambda x: x.name, l.invoice_line_tax_id))"/>
+                            </td>
+                            <td>
+                                <span t-field="l.quantity"/>
+                                <span t-field="l.uos_id"/>
+                            </td>
+                            <td class="text-right">
+                                <span t-field="l.price_unit"/>
+                            </td>
+                            <td class="text-right" groups="sale.group_discount_per_so_line"><span t-field="l.discount"/></td>
+                            <td class="text-right">
+                                <span t-field="l.price_subtotal" 
+                                    t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}'/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="row">
+                    <div class="col-xs-6">
+                        Amount Chargeable (in words)
+                        <strong>
+                            <div t-esc="amount_in_word(o.amount_total, o.currency_id.id)"/>
+                        </strong>
+                    </div>
+                    <div class="col-xs-4 pull-right">
+                        <table class="table table-condensed">
+                            <tr class="border-black">
+                                <td><strong>Total Without Taxes</strong></td>
+                                <td class="text-right">
+                                    <span t-field="o.amount_untaxed" t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}'/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Taxes</td>
+                                <td class="text-right">
+                                    <span t-field="o.amount_tax" t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}'/>
+                                </td>
+                            </tr>
+                            <tr class="border-black">
+                                <td><strong>Total</strong></td>
+                                <td class="text-right">
+                                     <span t-field="o.amount_total" t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}'/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+	</div>
+</template>
+
+
+<template id="report_challan">
+    <t t-call="report.html_container">
+        <t t-foreach="doc_ids" t-as="doc_id">
+            <t t-raw="translate_doc(doc_id, doc_model, 'partner_id.lang', 'panipat_handloom.report_challan_document')"/>
+        </t>
+    </t>
+</template>
+
+</data>
+</openerp>
