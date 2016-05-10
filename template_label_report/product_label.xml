@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<lots>
+    <lot-line type="fields" name="id">
+        <code type="field" name="default_code"/>
+        <product type="field" name="name"/>
+        <brand type="field" name="panipat_brand_name.name"/>
+        <file type="field" name="vol_file_name.name"/>
+		<design type="field" name="design_code"/>
+		<serial type="field" name="serial_no"/>
+		<shade type="field" name="shade_no"/>
+		<colorc type="field" name="color_code"/>
+    </lot-line>
+</lots>

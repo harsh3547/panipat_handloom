@@ -1,0 +1,7 @@
+<openerp>
+	<data>
+
+		<report id="report_product_template_label" model="product.template" name="product.template.label" string="Products Labels" xml="panipat_handloom/template_label_report/product_label.xml" xsl="panipat_handloom/template_label_report/product_label.xsl"/>
+
+    </data>
+</openerp>
