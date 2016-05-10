@@ -1,28 +1,99 @@
 <?xml version="1.0"?>
 <openerp>
        <data>
-               <record id="action_panipat_order_group" model="ir.actions.act_window">
-                       <field name="name">Order Groups</field>
-                       <field name="type">ir.actions.act_window</field>
-                       <field name="res_model">panipat.order.group</field>
-                       <field name="view_type">form</field>
-                       <field name="view_mode">form</field>
-               </record>
+          <record id="action_panipat_order_group" model="ir.actions.act_window">
+            <field name="name">Order Groups</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">panipat.order.group</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+          </record>
 
-               <record model="ir.ui.view" id="panipat_order_group_form">
-                       <field name="name">panipat.order.group.form</field>
-                       <field name="model">panipat.order.group</field>
-                       <field name="arch" type="xml">
-                               <form string="Leads">
-                                       <sheet>
-                                               <group>
-                                                       <field name="name" />
-                                                       <field name="partner_id" />
-                                               </group>
-                                       </sheet>
-                               </form>
-                       </field>
-               </record>
+		  <record model="ir.ui.view" id="panipat_order_group_tree">
+			<field name="name">Order Groups List</field>
+			<field name="model">panipat.order.group</field>
+			<field name="arch" type="xml">
+				<tree string="Order Group List" colors="gray:state == 'done'" create='false'>
+					<field name="name" />
+					<field name="partner_id" />
+					<field name="created_on"/>
+					<field name="state"/>
+				</tree>
+			</field>
+		</record>
+
+          <record model="ir.ui.view" id="panipat_order_group_form">
+            <field name="name">panipat.order.group.form</field>
+            <field name="model">panipat.order.group</field>
+            <field name="arch" type="xml">
+              <form string="Order Group" create='false' edit='false'>
+              	<header>
+              		<button name="button_done" string="Close" type="object" class="oe_highlight" attrs="{'invisible':[('state','=','done')]}" />
+					<field name="state" widget="statusbar" statusbar_visible="in_progress,done" />
+				</header>
+                 <sheet>
+                    <group col='4'>
+                       <field name="name" />
+                       <field name="partner_id" />
+                       <field name="created_on"/>
+                    </group>
+                    <group></group>
+                    <group></group>
+                    <group col="4">
+                    	<button class="oe_inline oe_stat_button" icon="fa-truck" name="do_view_leads"  type="object">
+							<field name='lead_count' widget='statinfo' string="Leads"/>
+						</button>
+						
+						
+						<label string=" - - - - - - > " attrs="{'invisible':[('allocation_count','=',10)]}"/>
+						<button class="oe_inline oe_stat_button" icon="fa-truck" name="do_view_allocation"  type="object" attrs="{'invisible':[('allocation_count','=',10)]}">
+							<field name='allocation_count' widget='statinfo' string="Allocation"/>
+						</button>
+						
+						<label string=" - - - - - - > " attrs="{'invisible':[('quotation_count','=',10)]}"/>
+						<button class="oe_inline oe_stat_button" icon="fa-truck" name="do_view_quotation"  type="object" attrs="{'invisible':[('quotation_count','=',10)]}">
+							<field name='quotation_count' widget='statinfo' string="Sale Order"/>
+						</button>
+						
+						<label string=" - - - - - - > " attrs="{'invisible':[('install_count','=',10)]}"/>
+						<button class="oe_inline oe_stat_button" icon="fa-truck" name="do_view_install"  type="object" attrs="{'invisible':[('install_count','=',10)]}">
+							<field name='install_count' widget='statinfo' string="Install Jobs"/>
+						</button>
+						
+
+
+					</group>
+					<group></group>
+					<group col="3">
+
+						<button class="oe_inline oe_stat_button" icon="fa-truck" name="do_view_purchase_order"  type="object" attrs="{'invisible':[('purchase_order_count','=',10)]}">
+							<field name='purchase_order_count' widget='statinfo' string="Purchase Orders"/>
+						</button>
+						
+						<button class="oe_inline oe_stat_button" icon="fa-truck" name="do_view_customer_invoice"  type="object" attrs="{'invisible':[('customer_invoice_count','=',10)]}">
+							<field name='customer_invoice_count' widget='statinfo' string="Customer Invoices"/>
+						</button>
+						
+						<button class="oe_inline oe_stat_button" icon="fa-truck" name="do_view_supplier_invoice"  type="object" attrs="{'invisible':[('supplier_invoice_count','=',10)]}">
+							<field name='supplier_invoice_count' widget='statinfo' string="Supplier Invoices"/>
+						</button>
+						
+						
+						
+                    </group>
+                    <group></group>
+                    <group>
+                    	<field name="notes"/>
+                    </group>
+                 </sheet>
+              </form>
+            </field>
+          </record>
+          
+        <menuitem id="panipat_order_menu_item" name="Order Group"
+			parent="panipat_main_menu" sequence="1"/>
+		<menuitem id="submenu_item_order_group" name="Order Group"
+			parent="panipat_order_menu_item" sequence="1" action="action_panipat_order_group" />
 
        </data>
 </openerp>
