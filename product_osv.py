@@ -142,7 +142,7 @@ class product_pricelist(osv.osv):
                     pass
 
             for rule in items:
-                print "rule==",rule
+                #print "rule==",rule
                 if rule.min_quantity and qty_in_product_uom < rule.min_quantity:
                     continue
                 if is_product_template:
@@ -208,7 +208,7 @@ class product_pricelist(osv.osv):
                             price_type.currency_id.id, pricelist.currency_id.id,
                             product_obj._price_get(cr, uid, [product], price_type.field, context=context)[product.id],
                             round=False, context=context)
-                    print "in9898989898===",cr, uid, [product], price_type.field, context,[price]
+                    #print "in9898989898===",cr, uid, [product], price_type.field, context,[price]
 
                 if price is not False:
                     price_limit = price
@@ -236,7 +236,7 @@ class product_pricelist(osv.osv):
                 # line added to check for further rules in pricelist version if price is false
                 if price is False:
                     continue
-                print "in price calculation by pricelist ",price," items=",items
+                #print "in price calculation by pricelist ",price," items=",items
                 break
 
             # Final price conversion to target UoM

@@ -65,7 +65,7 @@
     	<record id="item11" model="product.pricelist.item">
             <field name="price_version_id" ref="purchase.ver0"/>
         	<field name="base" eval="int(-2)"/>
-            <field name="sequence">4</field>
+            <field name="sequence">6</field>
             <field name="name">Default Supplier Pricelist Line</field>
         </record>
     	
