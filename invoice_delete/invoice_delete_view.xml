@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="inherit_account_invoice_form" model="ir.ui.view">
+			<field name="name">invoice.form</field>
+			<field name="model">account.invoice</field>
+			<field name="priority" eval="8" />
+			<field name="inherit_id" ref="account.invoice_form"></field>
+			<field name="arch" type="xml">
+				<xpath expr="//button[@name='invoice_proforma2']" position="after">
+					<button name="edit_paid_invoice" states="paid" string="Edit" type="object"/>
+					<button name="delete_paid_invoice" states="paid" string="Delete" type="object"/>
+				</xpath>
+			</field>
+		</record>
+		
+		<record id="inherit_account_invoice_form1" model="ir.ui.view">
+			<field name="name">invoice.form1</field>
+			<field name="model">account.invoice</field>
+			<field name="priority" eval="8" />
+			<field name="inherit_id" ref="account.invoice_supplier_form"></field>
+			<field name="arch" type="xml">
+				<xpath expr="//button[@name='action_cancel_draft']" position="after">
+					<button name="edit_paid_invoice" states="paid" string="Edit" type="object"/>
+					<button name="delete_paid_invoice" states="paid" string="Delete" type="object"/>
+				</xpath>
+			</field>
+		</record>
+
+        <record id="inherit_account_company_form" model="ir.ui.view">
+			<field name="name">invoice.form</field>
+			<field name="model">res.company</field>
+			<field name="priority" eval="8" />
+			<field name="inherit_id" ref="base.view_company_form"></field>
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='currency_id']" position="after">
+					<field name="write_off_income_ac_id"/>
+					<field name="write_off_expense_ac_id"/>
+					<field name="write_off_journal_id"/>
+				</xpath>
+			</field>
+		</record>
+		
+		<!-- Invoice Deleted View -->
+		<record id="account_invoice_deleted_form" model="ir.ui.view">
+			<field name="name">account.invoice.deleted.form</field>
+			<field name="model">account.invoice.deleted</field>
+			<field name="arch" type="xml">
+			    <form string="Invoice Deleted">
+			        <header>
+			        </header>
+			        <sheet>
+			            <group col="4">
+			                <field name="invoice_no" invisible="1"/>
+			                <field name="invoice_pdf" filename="invoice_no"/>
+			                <field name="vouchar_no"/>
+			                <field name="vouchar_pdf" filename="vouchar_no"/>
+			            </group>
+			        </sheet>
+				</form>
+			</field>
+		</record>
+
+        <record id="account_invoice_deleted_tree" model="ir.ui.view">
+			<field name="name">account.invoice.deleted.tree</field>
+			<field name="model">account.invoice.deleted</field>
+			<field name="arch" type="xml">
+			    <tree string="Account Invoice Deleted">
+			        <field name="invoice_no"/>
+			        <field name="invoice_pdf" filename="invoice_no"/>
+			        <field name="vouchar_no"/>
+			        <field name="vouchar_pdf" filename="vouchar_no"/>
+			    </tree>
+			</field>
+		</record>
+		
+		<record id="action_invoice_deleted" model="ir.actions.act_window">
+		    <field name="name">Invoices Deleted</field>
+            <field name="res_model">account.invoice.deleted</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="account_invoice_deleted_tree"/>
+		</record>
+		
+		<menuitem id="menu_finance_invoice_deleted" name="Invoice Deleted" parent="account.menu_finance_configuration" action="action_invoice_deleted"/>
+
+    </data>
+</openerp>
