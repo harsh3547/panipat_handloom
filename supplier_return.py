@@ -3,15 +3,6 @@ from openerp import models, fields, api ,osv
 from openerp.exceptions import except_orm
 from datetime import datetime
 
-'''class stock_picking(models.Model):
-    _inherit="stock.picking"
-    
-    def _search(self, cr, user, args, offset=0, limit=None, order=None, context=None, count=False, access_rights_uid=None):
-        print "==== in search ===args,context= in stock_picking****==",self,args,context
-        ids= super(stock_picking,self)._search(cr, user, args, offset, limit, order, context, count, access_rights_uid)
-        print "in search of stock_picking returnig ids ",ids
-        return ids
-'''
     
 class stock_transfer_details_items(models.TransientModel):
     _inherit = 'stock.transfer_details_items'
