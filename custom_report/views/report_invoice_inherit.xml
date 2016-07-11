@@ -2,7 +2,7 @@
 <openerp>
 <data>
 		<template id="report_customer_invoice_document">
-                <div class="page">
+		        <div class="page">
                     <h1 class="text-center" t-if="o.type == 'out_invoice'">Invoice</h1>
                     <h1 class="text-center" t-if="o.type == 'out_refund'">Refund Invoice</h1>
                     <table class="table table-bordered">
@@ -14,39 +14,35 @@
                                 <div t-if="res_company.partner_id.phone">Tel: <span t-field="res_company.partner_id.phone"/></div>
                                 <div t-if="res_company.partner_id.email">Email: <span t-field="res_company.partner_id.email"/></div>
                             </td>
-                            <td>Invoice No.<strong><div style="font-size:22px;" t-field="o.number"/></strong></td>
-                            <td>Dated<strong><div style="font-size:22px;" t-field="o.date_invoice"/></strong></td>
+                            <td>Invoice No.<strong><div style="font-size:18px;" t-field="o.number"/></strong></td>
+                            <td>Dated<strong><div style="font-size:18px;" t-field="o.date_invoice"/></strong></td>
                         </tr>
                         <tr>
-                            <td>Buyer's Order No.</td>
-                            <td>Dated</td>
+                            <td>Buyer's Order No.:<div t-field="o.name"/></td>
+                            <td>Despatched Document No.:<div t-field="o.dispatch_doc"/></td>
                         </tr>
                         <tr>
-                            <td rowspan="2">
+                            <td>
                                 <strong><u>Buyer</u></strong>
                                 <strong><div t-field="o.partner_id.name"/></strong>
                                 <address t-field="o.partner_id"
                                     t-field-options='{"widget": "contact", "fields": ["address"], "no_marker": true}' />
                                 <span t-if="o.partner_id.buyer_vat_tin">TIN: <span t-field="o.partner_id.buyer_vat_tin"/></span>
-                                <div t-if="o.partner_id.mobile">MB: <span t-field="o.partner_id.mobile"/></div>
+                                <span t-if="o.partner_id.mobile">, MB: <span t-field="o.partner_id.mobile"/></span>
                             </td>
-                            <td>Despatched Document No.</td>
-                            <td>Dated</td>
-                        </tr>
-                        <tr>
-                            <td>Despatched through</td>
-                            <td>Destination</td>
+                            <td>Despatched Through:<div t-field="o.dispatch_thru"/></td>
+                            <td>Destination:<div t-field="o.destination"/></td>
                         </tr>
                     </table>
                     
                     <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>SI No.</th>
-                            <th>Description of Goods</th>
-                            <th class="text-center">TAX(%)</th>
-                            <th class="text-center">Quantity(Per)</th>
-                            <th class="text-center">Rate</th>
+                            <th class="text-left">No.</th>
+                            <th class="text-center">Description of Goods</th>
+                            <th class="text-left">TAX(%)</th>
+                            <th class="text-right">Quantity(Per)</th>
+                            <th class="text-right">Rate</th>
                             <th class="text-right" groups="sale.group_discount_per_so_line">Disc (%)</th>
                             <th class="text-right">Amount<br>(Untaxed,Discounted)</br></th>
                         </tr>
@@ -80,13 +76,13 @@
                 </table>
                 
                 <div class="row">
-                    <div class="col-xs-6">
+                    <div class="col-xs-6" style="page-break-inside:avoid">
                         Amount Chargeable (in words)
                         <strong>
                             <div t-esc="amount_in_word(o.amount_total, o.currency_id.id)"/>
                         </strong>
                     </div>
-                    <div class="col-xs-4 pull-right">
+                    <div class="col-xs-4 pull-right" style="page-break-inside:avoid">
                         <table class="table table-condensed">
                             <tr class="border-black">
                                 <td><strong>Total Without Taxes</strong></td>
@@ -110,7 +106,7 @@
                     </div>
                 </div>
                 
-                <table width="40%">
+                <table width="40%" style="page-break-inside:avoid">
                     <tr>
                         <td>Company's VAT TIN</td>
                         <td>:&#160;&#160;</td>
@@ -127,7 +123,7 @@
                         <td><span t-field="res_company.company_pan_no"/></td>
                     </tr>
                 </table>
-                <table class="mt32" width="100%">
+                <table class="mt32" width="100%" style="page-break-inside:avoid">
                     <tr height="50px;">
                         <td rowspan="2" width="50%">
                             Declaration<br/>
