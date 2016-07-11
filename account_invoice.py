@@ -6,6 +6,11 @@ class account_invoice(models.Model):
 
     is_pos = fields.Boolean('Retail Invoice',default=False)
     picking_id = fields.Many2one('stock.picking','Picking Orders',copy=False)
+    name = fields.Char(string='Buyer Order No./ Reference', index=True,
+        readonly=True, states={'draft': [('readonly', False)]})
+    dispatch_doc=fields.Char(string="Dispatch Doc. No.")
+    dispatch_thru=fields.Char(string="Dispatch Through")
+    destination=fields.Char(string="Destination")
     
     @api.multi
     def action_cancel(self):

@@ -16,7 +16,11 @@
                 <xpath expr = "/form/sheet//field[@name='move_id']" position = "after">
                 	<field name = "picking_id" readonly="1"/>
                 </xpath>
-                
+				<xpath expr="//field[@name='fiscal_position']" position="after">
+					<field name="dispatch_doc" attrs="{'readonly':[('state','in',('paid'))]}"/>
+					<field name="dispatch_thru" attrs="{'readonly':[('state','in',('paid'))]}"/>
+					<field name="destination" attrs="{'readonly':[('state','in',('paid'))]}"/>
+				</xpath> 
             </field>
         </record>		
 	</data></openerp>
