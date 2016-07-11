@@ -4,23 +4,23 @@
 
 <template id="report_challan_document">
 	<div class="page">
-		<h1 class="text-center" t-if="o.type == 'out_invoice'">Challan</h1>
-        <h1 class="text-center" t-if="o.type == 'out_refund'">Refund Challan</h1>
-		<table class="table table-bordered">
-           <tr>
+		<h1 class="text-center" t-if="o.type == 'out_invoice'">PHE</h1>
+        <h1 class="text-center" t-if="o.type == 'out_refund'">Refund PHE</h1>
+		<table class="table table-bordered" >
+           <tr style="font-size:14px;">
                <td rowspan="2" width="50%">
                    <strong><u>Buyer</u></strong>
                    <strong><div t-field="o.partner_id.name"/></strong>
                    <address t-field="o.partner_id"
                        t-field-options='{"widget": "contact", "fields": ["address"], "no_marker": true}' />
                    <span t-if="o.partner_id.buyer_vat_tin">TIN: <span t-field="o.partner_id.buyer_vat_tin"/></span>
-                   <div t-if="o.partner_id.mobile">MB: <span t-field="o.partner_id.mobile"/></div>
+                   <span t-if="o.partner_id.mobile"> ,MB: <span t-field="o.partner_id.mobile"/></span>
                </td>
-               <td>Invoice No.<strong><div style="font-size:22px;" t-field="o.number"/></strong></td>
+               <td>Invoice No : <strong><span style="font-size:14px;" t-field="o.number"/></strong></td>
                
            </tr>
-           <tr>
-               <td>Dated<strong><div style="font-size:22px;" t-field="o.date_invoice"/></strong></td>
+           <tr style="font-size:14px;">
+               <td>Dated : <strong><span style="font-size:14px;" t-field="o.date_invoice"/></strong></td>
            </tr>
        </table>
         <table class="table table-bordered">
@@ -99,6 +99,14 @@
 
 
 <template id="report_challan">
+    <t t-call="report.html_container">
+        <t t-foreach="doc_ids" t-as="doc_id">
+            <t t-raw="translate_doc(doc_id, doc_model, 'partner_id.lang', 'panipat_handloom.report_challan_document')"/>
+        </t>
+    </t>
+</template>
+
+<template id="report_challan_full_page">
     <t t-call="report.html_container">
         <t t-foreach="doc_ids" t-as="doc_id">
             <t t-raw="translate_doc(doc_id, doc_model, 'partner_id.lang', 'panipat_handloom.report_challan_document')"/>

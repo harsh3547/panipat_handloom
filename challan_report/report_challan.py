@@ -45,3 +45,9 @@ class challan_report_class(osv.AbstractModel):
     _template = 'panipat_handloom.report_challan'
     _wrapped_report_class = report_challan
 
+class challan_report_class_full_page(osv.AbstractModel):
+    _name = 'report.panipat_handloom.report_challan_full_page'
+    _inherit = 'report.abstract_report'
+    _template = 'panipat_handloom.report_challan_full_page'
+    _wrapped_report_class = report_challan
+
