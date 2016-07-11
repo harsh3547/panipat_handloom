@@ -10,14 +10,14 @@
             name="panipat_handloom.report_account_voucher" 
         />
 
-        <!-- <report 
+        <report 
             string="Picking" 
             id="stock.action_report_picking" 
             model="stock.picking" 
             report_type="qweb-pdf"
             name="panipat_handloom.report_picking" 
             file="panipat_handloom.report_picking" 
-        /> -->
+        />
 
         <record id="paperformat_custom" model="report.paperformat">
             <field name="name">Custom A4 Paper</field>
@@ -55,9 +55,9 @@
             <field name="paperformat_id" ref="paperformat_custom_voucher"/>
         </record>
 
-        <!-- <record id="stock.action_report_picking" model="ir.actions.report.xml">
+        <record id="stock.action_report_picking" model="ir.actions.report.xml">
             <field name="paperformat_id" ref="paperformat_custom"/>
-        </record> -->
+        </record>
 
     </data>
 </openerp>
