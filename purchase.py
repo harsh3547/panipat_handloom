@@ -1,36 +1,24 @@
+# -*- coding: utf-8 -*-
+from openerp import models, fields, api
+from openerp.exceptions import except_orm
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
-from openerp.osv import fields, osv
-from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP
+from openerp.tools.translate import _
 
-class procurement_order(osv.osv):
-    _inherit = 'procurement.order'
+class purchase_order(models.Model):
+    _inherit = "purchase.order"
+
+    @api.one
+    @api.depends()
+    def _get_order_group(self):
+        try:
+            self._cr.execute("select order_group from sale_order where procurement_group_id in (select distinct group_id from procurement_order where purchase_line_id in (select id from purchase_order_line where order_id=%s))",(self.id,))
+            ans=self._cr.fetchall()
+            self.order_group=ans[0][0] if ans else False
+        except:
+            self.order_group=False
+
+    order_group=fields.Many2one(compute="_get_order_group",comodel_name='panipat.order.group', string="Order Group")
     
-    def _get_purchase_schedule_date(self, cr, uid, procurement, company, context=None):
-        """Return the datetime value to use as Schedule Date (``date_planned``) for the
-           Purchase Order Lines created to satisfy the given procurement.
 
-           :param browse_record procurement: the procurement for which a PO will be created.
-           :param browse_report company: the company to which the new PO will belong to.
-           :rtype: datetime
-           :return: the desired Schedule Date for the PO lines
-        """
-        procurement_date_planned = datetime.strptime(procurement.date_planned, DEFAULT_SERVER_DATETIME_FORMAT)
-        seller_delay = int(procurement.product_id.seller_delay)
-        schedule_date = (procurement_date_planned + relativedelta(days=company.po_lead) + relativedelta(days=seller_delay))
-        return schedule_date
 
-    def _get_purchase_order_date(self, cr, uid, procurement, company, schedule_date, context=None):
-        """Return the datetime value to use as Order Date (``date_order``) for the
-           Purchase Order created to satisfy the given procurement.
-
-           :param browse_record procurement: the procurement for which a PO will be created.
-           :param browse_report company: the company to which the new PO will belong to.
-           :param datetime schedule_date: desired Scheduled Date for the Purchase Order lines.
-           :rtype: datetime
-           :return: the desired Order Date for the PO
-        """
-        procurement_date_planned = datetime.strptime(procurement.date_planned, DEFAULT_SERVER_DATETIME_FORMAT)
-        new_schedule_date = (procurement_date_planned + relativedelta(days=company.po_lead))
-        return new_schedule_date
     
