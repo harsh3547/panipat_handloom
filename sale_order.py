@@ -138,4 +138,26 @@ class sale_order(models.Model):
     picking_count=fields.Char(compute='_count_all')
     total_paid_amount =fields.Float(compute='_get_amount_paid',string="Payment")
     order_group = fields.Many2one(comodel_name='panipat.order.group', string="Order Group",copy=False,readonly=True)
+
+class sale_order_line(models.Model):
+    _inherit="sale.order.line"
+    
+    supplier=fields.Many2one(comodel_name="product.supplierinfo", string="Supplier")
+    
+    
+    
+        
+class product_supplierinfo(models.Model):
+    _inherit="product.supplierinfo"
+    
+    def _search(self, cr, user, args, offset=0, limit=None, order=None, context=None, count=False, access_rights_uid=None):
+        #print "==== in search ===args,context= in stock_picking****==",self,args,context
+        if context.get('sale_order_line_supplierinfo',False):
+            product_obj=self.pool.get('product.product').browse(cr,user,context['sale_order_line_supplierinfo'],context=context)
+            args=[('product_tmpl_id','=',product_obj.product_tmpl_id.id)]
+        ids= super(product_supplierinfo,self)._search(cr, user, args, offset, limit, order, context, count, access_rights_uid)
+        
+        #print "in search of product_supplierinfo returnig ids ",ids
+        return ids
+    
     
