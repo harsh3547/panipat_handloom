@@ -7,6 +7,70 @@ from openerp.tools.translate import _
 class sale_order(models.Model):
     _inherit = "sale.order"
     
+    @api.multi
+    def action_cancel(self):
+        for rec in self:
+            if rec.installation_job:
+                raise except_orm(('Error'),('Cancel and delete the Installation Job %s before cancelling this order !!'%(rec.installation_job.name)))
+        return super(sale_order, self).action_cancel()
+        
+    @api.multi
+    def button_install_job(self):
+        product_lines=[]
+        for picking in self.picking_ids:
+            if picking.state in ('cancel','draft'):
+                continue
+            for line in picking.move_lines:
+                line_id = {
+                'name':line.name or line.product_id.name_get()[0][1],
+                'product_uom_qty':line.product_uom_qty,
+                'product_lines_id': line.product_id.id,
+                'product_uom': line.product_uom.id,
+                    }
+                product_lines.append((0,0,line_id))
+            
+        vals={'origin':self.origin+":"+self.name if self.origin else self.name,
+              'schedule_date':False,
+              'order_group':self.order_group and self.order_group.id or False,
+              'customer':self.partner_id.id,
+              'product_lines':product_lines,
+              }
+        print "-----------vals===",vals
+        self.installation_job=self.env['panipat.install'].create(vals)
+        
+        return {
+                'name': 'Installation Works Invoice',
+                'view_type': 'form',
+                'view_mode': 'form,tree',
+                'res_model': 'panipat.install',
+                'type': 'ir.actions.act_window',
+                'res_id': self.installation_job.id,
+                }
+    
+    @api.multi
+    def view_install_job(self):
+        if self.installation_job:
+            return {
+                'name': 'Installation Works Invoice',
+                'view_type': 'form',
+                'view_mode': 'form,tree',
+                'res_model': 'panipat.install',
+                'type': 'ir.actions.act_window',
+                'res_id': self.installation_job.id,
+                }
+        else:
+            return {
+                    'type': 'ir.actions.client',
+                    'tag': 'action_warn',
+                    'name': 'Warning',
+                    'params': {
+                               'title': 'Warning!',
+                               'text': 'No Installation Job attached to this Sale Order.',
+                               }
+                    }
+    
+
+    
     def do_view_po(self, cr, uid, ids, context=None):
         '''
         This function returns an action that display the Purchase order related to this sales order
@@ -133,7 +197,7 @@ class sale_order(models.Model):
     
 
 
-
+    installation_job=fields.Many2one(comodel_name='panipat.install', string='Installation Job',readonly=True,copy=False)
     po_count=fields.Integer(compute='_count_all')
     picking_count=fields.Char(compute='_count_all')
     total_paid_amount =fields.Float(compute='_get_amount_paid',string="Payment")
