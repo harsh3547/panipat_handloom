@@ -28,6 +28,16 @@
 						</button>
                     </div>
             	</xpath>
+            	<xpath expr="//field[@name='order_line']/tree" position="attributes">
+                    <attribute name="editable">bottom</attribute>
+                </xpath>
+                
+            	<xpath expr="//field[@name='order_line']/form//field[@name='price_unit']" position="after">
+            		<field name="supplier" context="{'sale_order_line_supplierinfo':product_id}" options="{'create': False, 'create_edit': False }" />
+            	</xpath>
+            	<xpath expr="//field[@name='order_line']/tree//field[@name='price_unit']" position="after">
+            		<field name="supplier" context="{'sale_order_line_supplierinfo':product_id}" options="{'create': False, 'create_edit': False }" />
+            	</xpath>
         	</field>
         </record>
 

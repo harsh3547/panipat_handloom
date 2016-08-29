@@ -70,6 +70,17 @@ class sale_order(models.Model):
                     }
     
 
+    ## overridden from sale order
+    def action_wait(self, cr, uid, ids, context=None):
+        for o in self.browse(cr, uid, ids):
+            for rec in o.order_line:
+                qty=self.pool.get('product.uom')._compute_qty(cr, uid, rec.product_uom.id, rec.product_uom_qty, rec.product_id.uom_id.id)
+                if qty<=0.0:raise except_orm(_('Error!'), _('Qty of product %s cannot be zero'%(self.pool.get('product.product').name_get(cr,uid,rec.product_id.id,context)[0][1])))
+                if rec.product_id.type=='product' and rec.product_id.virtual_available<qty and len(rec.product_id.seller_ids)==0:
+                    raise except_orm(_('Error!'), _('Please add a Supplier to Product-- %s'%(self.pool.get('product.product').name_get(cr,uid,rec.product_id.id,context)[0][1])))
+
+        return super(sale_order,self).action_wait(cr,uid,ids,context)
+    
     
     def do_view_po(self, cr, uid, ids, context=None):
         '''
