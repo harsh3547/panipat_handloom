@@ -6,8 +6,14 @@
 			<field name="model">sale.order</field>
 			<field name="inherit_id" ref="sale.view_order_form" />
 			<field name="arch" type="xml">
+			
+				<xpath expr="//button[@name='action_cancel']" position="after">
+					<button name="button_install_job" string="Make Install Job" attrs="{'invisible': ['|',('installation_job', '!=', False),('state','not in',('manual','progress','invoice_except','done'))]}" class="oe_highlight" type="object"/>
+					<button name="view_install_job" string="View Install Job" attrs="{'invisible': [('installation_job', '=', False)]}" class="oe_highlight" type="object"/> 
+				</xpath>
 				<xpath expr="//field[@name='user_id']" position="after">
 					<field name="order_group" readonly="1" />
+					<field name="installation_job" readonly="1"/>
 					<field name="procurement_group_id" readonly="1" />
 				</xpath>
 				<xpath expr="/form/sheet/h1" position="inside">
