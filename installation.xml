@@ -8,17 +8,26 @@
 			<field name="arch" type="xml">
 				<form string="Install Works">
 					<header>
-						<button name="schedule_employee" string="Schedule Job" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','draft')]}" />
-						<button name="make_supplier_invoice" string="Create Supplier Invoice" type="object" class="oe_highlight" attrs="{'invisible':['|',('state','!=','confirm'),('supplier_invoice','!=','2binvoiced')]}" />
-						<button name="make_customer_invoice" string="Create Customer Invoice" type="object" class="oe_highlight" attrs="{'invisible':['|',('state','!=','confirm'),('customer_invoice','!=','2binvoiced')]}" />
-						<button name="view_invoices" string="View Supplier Invoices" type="object" class="oe_highlight" attrs="{'invisible':['|',('state','!=','confirm'),('supplier_invoice','!=','invoiced')]}" context="{'supplier':True}" />
-						<button name="view_invoices" string="View Customer Invoices" type="object" class="oe_highlight" attrs="{'invisible':['|',('state','!=','confirm'),('customer_invoice','!=','invoiced')]}" context="{'customer':True}" />
-						<field name="state" widget="statusbar" />
+						<button name="schedule_employee" string="Confirm Job" type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','draft')]}" />
+						
+						<button name="make_supplier_invoice" string="Create Supplier Invoice" type="object" class="oe_highlight" attrs="{'invisible':['|','|','|',('state','not in',('confirm','invoiced')),('supplier_invoice','!=',False),('supplier','=',False),('commission_invoice','!=',False)]}" />
+						<button name="view_invoices" string="View Supplier Invoices" type="object" attrs="{'invisible':[('supplier_invoice','=',False)]}" context="{'supplier':True}" />
+						
+						<button name="make_customer_invoice" string="Create Customer Invoice" type="object" class="oe_highlight" attrs="{'invisible':['|','|','|',('state','not in',('confirm','invoiced')),('customer_invoice','!=',False),('customer','=',False),('commission_invoice','!=',False)]}" />
+						<button name="view_invoices" string="View Customer Invoices" type="object" attrs="{'invisible':[('customer_invoice','=',False)]}" context="{'customer':True}" />
+						
+						<button name="cancel_job" string="Cancel Job" type="object" attrs="{'invisible':[('state','in',('cancel'))]}" />
+						
+						<button name="make_customer_invoice" string="Create Commission Invoice" type="object" class="oe_highlight" attrs="{'invisible':['|','|','|','|',('state','!=','confirm'),('customer_invoice','!=',False),('supplier_invoice','!=',False),('commission_invoice','!=',False),('supplier','=',False)]}" context="{'commission':True}"/>
+						<button name="view_invoices" string="View Commission Invoices" type="object" attrs="{'invisible':[('commission_invoice','=',False)]}" context="{'commission':True}" class="oe_highlight"/>
+						
+						<button name="button_to_draft" string="Reset To Draft" type="object" attrs="{'invisible':[('state','!=','cancel')]}" />
+						<field name="state" widget="statusbar" statusbar_visible="draft,confirm,invoiced" />
 					</header>
 					<sheet>
 						<div class="oe_title">
 							<h2>
-								<field name="desc" placeholder="Desciption of task"/>
+								<field name="desc" placeholder="Description of task"/>
 							</h2>
 						</div>
 						<div  class="oe_right">
@@ -29,12 +38,15 @@
 						<group col="4">
 							<group>
 								<field name="employee_add"/>
-								<field name="supplier" attrs="{'required':[('employee_add','!=',True)]}"/>
-								<field name='customer'/>
+								<field name="supplier" attrs="{'readonly':[('state','not in',('draft','confirm'))]}"/>
+								<field name='customer' attrs="{'readonly':[('state','!=','draft')]}"/>
 							</group>
 							<group>	
-								<field name="date"/>
-								<field name="schedule_date"/>
+								<field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
+								<label for="schedule_date" />
+								<h3>
+									<field name="schedule_date" attrs="{'readonly':[('state','not in',('draft','confirm'))]}" required="1"/>
+								</h3>
 								<field name="origin"/>
 							</group>
 						</group>
@@ -44,6 +56,7 @@
 								<tree editable="bottom">
 									<field name="employee_id" />
 									<field name="start_time" />
+									<field name="description"/>
 									<field name="delay_hours" widget="float_time"/>
 									<field name="end_time" />
 								</tree>
@@ -51,24 +64,30 @@
 						</div>
 						<notebook>
 	                        <page string="Service Lines">
-	                        	<field name="service_lines">
+	                        	<field name="service_lines" attrs="{'readonly':[('state','not in',('draft'))]}">
 	                        		<tree string="lines" editable="bottom">
 										<field name="sequence" widget="handle"/>
-	                        			<field name="product_id"/>
-	                        			<field name="name"/>
-	                        			<field name="product_uom_qty"/>
-	                        			<field name="product_uom"/>
+	                        			<field name="product_service_id" context="{'default_type':'service'}" options="{'create':False}"/>
+	                        			<field name="name" required="1"/>
+	                        			<field name="product_uom_qty" required="1"/>
+	                        			<field name="sale_price"/>
+	                        			<field name="cost_price"/>
+	                        			<field name="product_uom" required="1"/>
+	                        			
 	                        		</tree>
 	                        	</field>
+	                        	<group>
+			                     	<field name="notes" placeholder="Some internal notes"/>
+			                     </group>
 	                          </page>
 	                          <page string="Product Lines">
-	                          	<field name="product_lines">
+	                          	<field name="product_lines" attrs="{'readonly':[('state','not in',('draft'))]}">
 	                        		<tree string="lines" editable="bottom">
 										<field name="sequence" widget="handle"/>
-	                        			<field name="product_id"/>
+	                        			<field name="product_lines_id" options="{'create':False}"/>
 	                        			<field name="name"/>
 	                        			<field name="product_uom_qty"/>
-	                        			<field name="product_uom"/>
+	                        			<field name="product_uom" string="Unit"/>
 	                        		</tree>
 	                        	</field>
 	                          </page>
@@ -77,10 +96,9 @@
 			                     	<field name="order_group"/>
 			                     	<field name="supplier_invoice"/>
 			                     	<field name="customer_invoice"/>
+			                     	<field name="commission_invoice"/>
 			                     </group>
-			                     <group>
-			                     	<field name="notes" placeholder="Some internal notes"/>
-			                     </group>
+			                     
 	                          </page>
 	                      </notebook>
                      </sheet>
@@ -92,13 +110,14 @@
 			<field name="name">panipat_install_tree</field>
 			<field name="model">panipat.install</field>
 			<field name="arch" type="xml">
-				<tree string="Install Works">
+				<tree string="Install Works" colors="red:schedule_date &lt;= current_date and state=='confirm'">
 					<field name="name"/>
 					<field name="desc"/>
 					<field name="supplier" />
 					<field name="date"/>
 					<field name='customer'/>
 					<field name="schedule_date"/>
+					<field name="origin"/>
 					<field name="state"/>					
 				</tree>
 			</field>
