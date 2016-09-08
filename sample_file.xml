@@ -14,8 +14,7 @@
                         <div> 
                             <field name="sample_in_lines" attrs="{'invisible':[('sample_in_lines','=',[])]}">
 								<tree editable="bottom" create="false" delete="true">
-									<field name="brand_name" readonly="1"/>
-									<field name="vol_name" readonly="1" />
+									<field name="brand_vol_char" readonly="1" />
 								</tree>
 							</field>	
                         </div>
@@ -186,8 +185,7 @@
 			<field name="model">panipat.sample.lines</field>
 			<field name="arch" type="xml">
             	<tree editable="bottom">
-					<field name="brand_name"/>
-					<field name="vol_name" domain="[('panipat_brand_name','=',brand_name)]" />
+					<field name="brand_vol_char" required="1"/>
 				</tree>
 			</field>
 		</record>

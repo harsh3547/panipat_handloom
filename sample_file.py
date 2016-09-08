@@ -65,8 +65,8 @@ class panipat_sample(models.Model):
     
     @api.multi
     def send_sample(self):
-        for line in self.sample_out:
-            line.vol_name.qty=line.vol_name.qty-1
+        #for line in self.sample_out:
+        #    line.vol_name.qty=line.vol_name.qty-1
             
         self.write({'state':'sample_sent'})
         
@@ -166,8 +166,9 @@ class panipat_sample_lines(models.Model):
     _name="panipat.sample.lines"
     
     
-    brand_name=fields.Many2one(comodel_name='panipat.brand.name', string='Brand',required=True)
-    vol_name=fields.Many2one(comodel_name='panipat.brand.vol', string='File',required=True)
+    brand_name=fields.Many2one(comodel_name='panipat.brand.name', string='Brand',)#obsolete replaced by char field
+    vol_name=fields.Many2one(comodel_name='panipat.brand.vol', string='File',)#obsolete replaced by char field
+    brand_vol_char=fields.Char(string="Brand/Vol File Name")
     sample_out=fields.Many2one(comodel_name='panipat.sample')
     # sample_out if for one2many of samples_sent
     sample_in=fields.Many2one(comodel_name='panipat.sample',copy=False)
@@ -189,7 +190,7 @@ class panipat_pay_wizard(models.Model):
             return False 
     
     paid_amount=fields.Float('Paid Amount',required=True)
-    payment_method=fields.Many2one(comodel_name='account.journal', string='Payment Method',domain=[('type','=','cash')],required=True,default=_get_cash_journal)
+    payment_method=fields.Many2one(comodel_name='account.journal', string='Payment Method',domain=[('type','in',('bank','cash'))],required=True,default=_get_cash_journal)
     date=fields.Date('Date',default=fields.Date.today(),required=True)
     ref=fields.Char('Ref')
     
@@ -236,7 +237,7 @@ class panipat_sample_wizard(models.Model):
         
         for line in self.sample_in_lines:
             if line.sample_in_out_rel:
-                line.vol_name.qty +=1
+                #line.vol_name.qty +=1
                 self.pool.get('panipat.sample.lines').copy(self._cr,self._uid,line.id,default={'sample_wizard':False,'sample_in':self._context.get('active_id',False)},context=self._context)
             
             
@@ -314,10 +315,10 @@ class cancel_wizard(models.TransientModel):
     @api.multi
     def button_cancel(self):
         panipat_obj=self.env['panipat.sample'].browse(self._context.get('active_id',False))
-        for rec in panipat_obj.sample_out:
-            rec.vol_name.qty +=1
-        for rec in panipat_obj.sample_in:
-            rec.vol_name.qty -=1
+        #for rec in panipat_obj.sample_out:
+        #    rec.vol_name.qty +=1
+        #for rec in panipat_obj.sample_in:
+        #    rec.vol_name.qty -=1
         
         account_move_id=False
         for rec in panipat_obj.sample_out_account_lines:
