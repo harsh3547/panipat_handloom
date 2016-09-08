@@ -17,11 +17,11 @@ class panipat_sample(models.Model):
     
     name=fields.Char(string="Order No.",copy=False,default='draft',readonly=True)
     partner_id=fields.Many2one(comodel_name="res.partner", string="Customer",required=True)
-    date=fields.Date(string="Date")
+    date=fields.Date(string="Date",default=fields.Date.today())
     state=fields.Selection(selection=[('draft','Draft'),('confirm', 'Confirmed'),('sample_sent','Sample Sent'),('sample_returned','Sample Returned'),('done','Closed'),('cancel','Cancelled')],copy=False,default='draft')
     state_paid=fields.Selection(selection=[('deposit','Deposit Paid'),('deposit_returned','Deposit Returned'),('credit','Credited'),('done','Closed'),('cancel','Cancel')],copy=False)
-    sample_out=fields.One2many(comodel_name='panipat.sample.lines', inverse_name='sample_out', string="Outgoing Samples")
-    sample_in=fields.One2many(comodel_name='panipat.sample.lines', inverse_name='sample_in', string="Returned Samples")
+    sample_out=fields.One2many(comodel_name='panipat.sample.lines', inverse_name='sample_out', string="Outgoing Samples",copy=True)
+    sample_in=fields.One2many(comodel_name='panipat.sample.lines', inverse_name='sample_in', string="Returned Samples",copy=False)
     amount_paid=fields.Float('Amount Paid',readonly=True,copy=False)
     amount_returned=fields.Float('Amount Returned',readonly=True,copy=False)
     sample_in_account_lines=fields.One2many(comodel_name='account.move.line', inverse_name='sample_in', string='Sample Return Entries',copy=False)
@@ -65,38 +65,9 @@ class panipat_sample(models.Model):
     
     @api.multi
     def send_sample(self):
-        print "====context==send_sample===",self._context,self.env['account.period'].find().id
-        
-        partner_obj = self.env['res.partner']
-        move_obj = self.pool.get('stock.move')
-        user = self.env['res.users'].browse(self._uid)
-        res = self.env['stock.warehouse'].search([('company_id', '=', user.company_id.id)], limit=1)
-
-        default_stock_location = res.lot_stock_id.id
-        destination_id = partner_obj.default_get(['property_stock_customer'])['property_stock_customer']
-        move_list = []
         for line in self.sample_out:
-            if line.product_id and line.product_id.type == 'service':
-                continue
-
-            move_list.append(move_obj.create(self._cr, self._uid,{
-                'name': self.name,
-                'product_uom': line.product_id.uom_id.id,
-                'product_uos': line.product_id.uom_id.id,
-                'product_id': line.product_id.id,
-                'product_uos_qty': abs(line.qty),
-                'product_uom_qty': abs(line.qty),
-                'state': 'draft',
-                'location_id': default_stock_location,
-                'location_dest_id': destination_id,
-                'invoice_state':'none',
-                'procure_method':'make_to_stock',
-            }, context=self._context))
+            line.vol_name.qty=line.vol_name.qty-1
             
-        if move_list:
-            move_obj.action_confirm(self._cr, self._uid, move_list, context=self._context)
-            move_obj.force_assign(self._cr,self._uid, move_list, context=self._context)
-            move_obj.action_done(self._cr, self._uid, move_list, context=self._context)
         self.write({'state':'sample_sent'})
         
         income_account_id=self.env['product.category'].default_get(['property_account_income_categ'])['property_account_income_categ']
@@ -127,28 +98,21 @@ class panipat_sample(models.Model):
                                                   'date':self._context.get('date',False)
                                                   })
             account_move_id.button_validate()
-        self.write({'amount_paid':self._context.get('paid_amount',0.0),'state_paid':'deposit'})
+
+        self.write({'amount_paid':self._context.get('paid_amount',0.0),'state_paid':'deposit_returned' if self._context.get('paid_amount',0.0)==0.0 else 'deposit'})
         return True
 
     @api.multi
     def return_sample_wizard(self):
         print "-----in return sample wizard----"
         wizard_id=self.env['panipat.sample.wizard'].create({'state_paid':self.state_paid})
-        in_out_rel_ids=[[rec.sample_in_out_rel.id,rec.qty] for rec in self.sample_in]
-        # if the same line of products is returned less than original qty
-        # in_out_rel_ids_dict is for checking which line has received how much back
-        in_out_rel_ids_dict={}
-        for rec in in_out_rel_ids:
-            if in_out_rel_ids_dict.get(rec[0],False):
-                in_out_rel_ids_dict[rec[0]] += rec[1]
-            else: in_out_rel_ids_dict[rec[0]] = rec[1]
-            
-        print "=====in_out_rel_ids==",in_out_rel_ids,in_out_rel_ids_dict
+        in_out_rel_ids=[rec.sample_in_out_rel.id for rec in self.sample_in]
+        print "-=-=in_out_rel_ids-=",in_out_rel_ids
         for line in self.sample_out:
-            if line.product_id and line.product_id.type == 'service' or (in_out_rel_ids_dict.get(line.id,False) and in_out_rel_ids_dict.get(line.id,False)>=line.qty ):
+            if line.id in in_out_rel_ids:
                 continue
 
-            self.pool.get('panipat.sample.lines').copy(self._cr,self._uid,line.id,default={'sample_wizard':wizard_id.id,'sample_in_out_rel':line.id,'qty':line.qty-in_out_rel_ids_dict.get(line.id,0.0)},context=self._context)
+            self.pool.get('panipat.sample.lines').copy(self._cr,self._uid,line.id,default={'sample_wizard':wizard_id.id,'sample_out':False,'sample_in_out_rel':line.id},context=self._context)
         
         return {
                 'name': 'Sample Wizard Form',
@@ -164,29 +128,19 @@ class panipat_sample(models.Model):
     @api.multi
     def return_sample(self):
         print "=====in return sample====="
-        out_product_qty={}
-        in_product_qty={}
+        out_product_qty=[]
+        in_product_qty=[]
         if self.sample_out: # for conditions when sample out is empty
-            for rec in self.sample_out:
-                if out_product_qty.get(str(rec.product_id.id),False):
-                    out_product_qty[str(rec.product_id.id)] += rec.qty
-                else: out_product_qty[str(rec.product_id.id)] = rec.qty
-            
-            for rec in self.sample_in:
-                if in_product_qty.get(str(rec.product_id.id),False):
-                    in_product_qty[str(rec.product_id.id)] += rec.qty
-                else: in_product_qty[str(rec.product_id.id)] = rec.qty
-            
-            check=True
-            for key in out_product_qty:
-                if out_product_qty[key]>in_product_qty.get(key,-1):check=False
-            if check:self.write({'state':'sample_returned'})
+            out_product_qty=[rec.id for rec in self.sample_out]
+            in_product_qty=[rec.sample_in_out_rel.id for rec in self.sample_in]
+            check=set(out_product_qty)-set(in_product_qty)
+            if not check:self.write({'state':'sample_returned'})
             print "====out_product_qty={},,,in_product_qty={}====",out_product_qty,in_product_qty
         else:
             self.write({'state':'sample_returned'})
         vals={}
         vals['amount_returned']=self.amount_returned+self._context.get('amount_returned',0.0)
-        if self.amount_paid==self.amount_returned :vals['state_paid']='deposit_returned'
+        if self.amount_paid==vals['amount_returned'] :vals['state_paid']='deposit_returned'
         if self._context.get('diff_option',False)=='credit':vals['state_paid']='credit'
         self.write(vals)
         return True
@@ -211,14 +165,9 @@ class panipat_sample(models.Model):
 class panipat_sample_lines(models.Model):
     _name="panipat.sample.lines"
     
-    def _get_sample_categ(self):
-        return self.env.ref("panipat_handloom.panipat_sample_category")
     
-    
-    product_categ=fields.Many2one(comodel_name='product.category', string='Category',default=_get_sample_categ)
-    product_id=fields.Many2one(comodel_name='product.product', string='Product',required=True)
-    product_uom=fields.Many2one(comodel_name='product.uom', string='Unit',required=True)
-    qty=fields.Float(String='Quantity',digits= dp.get_precision('Product Unit of Measure'), required=True,default=1)
+    brand_name=fields.Many2one(comodel_name='panipat.brand.name', string='Brand',required=True)
+    vol_name=fields.Many2one(comodel_name='panipat.brand.vol', string='File',required=True)
     sample_out=fields.Many2one(comodel_name='panipat.sample')
     # sample_out if for one2many of samples_sent
     sample_in=fields.Many2one(comodel_name='panipat.sample',copy=False)
@@ -228,10 +177,6 @@ class panipat_sample_lines(models.Model):
     # sample_in_out_rel ..value of this is to link sample_in lines with sample_out lines for the wizard
     # and to know which samples have been returned 
     
-    
-    @api.onchange('product_id')
-    def _onchange_product_id(self):
-        self.product_uom=self.product_id.uom_id.id
     
 class panipat_pay_wizard(models.Model):
     _name='panipat.pay.wizard'
@@ -269,6 +214,7 @@ class panipat_sample_wizard(models.Model):
         else:
             return False 
     
+    @api.one
     @api.depends('return_amount')    
     def get_diff_amount(self):
         active_id_obj=self.env['panipat.sample'].browse(self._context.get('active_id'))
@@ -287,39 +233,12 @@ class panipat_sample_wizard(models.Model):
     def return_sample(self):
         print self._context
         panipat_obj=self.env['panipat.sample'].browse(self._context.get('active_id',False))
-        partner_obj = self.env['res.partner']
-        move_obj = self.pool.get('stock.move')
-        user = self.env['res.users'].browse(self._uid)
-        res = self.env['stock.warehouse'].search([('company_id', '=', user.company_id.id)], limit=1)
-
-        default_stock_location = res.lot_stock_id.id
-        destination_id = partner_obj.default_get(['property_stock_customer'])['property_stock_customer']
-        move_list = []
         
         for line in self.sample_in_lines:
-            self.pool.get('panipat.sample.lines').copy(self._cr,self._uid,line.id,default={'sample_in':self._context.get('active_id',False)},context=self._context)
+            if line.sample_in_out_rel:
+                line.vol_name.qty +=1
+                self.pool.get('panipat.sample.lines').copy(self._cr,self._uid,line.id,default={'sample_wizard':False,'sample_in':self._context.get('active_id',False)},context=self._context)
             
-            if line.product_id and line.product_id.type == 'service':
-                continue
-
-            move_list.append(move_obj.create(self._cr, self._uid,{
-                'name': panipat_obj.name,
-                'product_uom': line.product_id.uom_id.id,
-                'product_uos': line.product_id.uom_id.id,
-                'product_id': line.product_id.id,
-                'product_uos_qty': abs(line.qty),
-                'product_uom_qty': abs(line.qty),
-                'state': 'draft',
-                'location_id': destination_id,
-                'location_dest_id': default_stock_location,
-                'invoice_state':'none',
-                'procure_method':'make_to_stock',
-            }, context=self._context))
-            
-        if move_list:
-            move_obj.action_confirm(self._cr, self._uid, move_list, context=self._context)
-            move_obj.force_assign(self._cr,self._uid, move_list, context=self._context)
-            move_obj.action_done(self._cr, self._uid, move_list, context=self._context)
             
         
         income_account_id=self.env['product.category'].default_get(['property_account_income_categ'])['property_account_income_categ']
@@ -395,45 +314,10 @@ class cancel_wizard(models.TransientModel):
     @api.multi
     def button_cancel(self):
         panipat_obj=self.env['panipat.sample'].browse(self._context.get('active_id',False))
-        product_qty={}
         for rec in panipat_obj.sample_out:
-            if rec.product_id.type == 'service':continue
-            if product_qty.get(rec.product_id.id,False):product_qty['rec.product_id.id'] += rec.qty
-            else: product_qty['rec.product_id.id'] = rec.qty
+            rec.vol_name.qty +=1
         for rec in panipat_obj.sample_in:
-            if product_qty.get(rec.product_id.id,False):product_qty['rec.product_id.id'] -= rec.qty
-            else: product_qty['rec.product_id.id'] = -rec.qty
-        
-        product_obj = self.env['product.product']
-        partner_obj = self.env['res.partner']
-        move_obj = self.pool.get('stock.move')
-        user = self.env['res.users'].browse(self._uid)
-        res = self.env['stock.warehouse'].search([('company_id', '=', user.company_id.id)], limit=1)
-
-        default_stock_location = res.lot_stock_id.id
-        destination_id = partner_obj.default_get(['property_stock_customer'])['property_stock_customer']
-        move_list = []
-        
-        for line in product_qty:
-            if product_qty(line)==0:continue
-            move_list.append(move_obj.create(self._cr, self._uid,{
-                'name': panipat_obj.name+":cancel",
-                'product_uom': product_obj.browse(line).uom_id.id,
-                'product_uos': product_obj.browse(line).uom_id.id,
-                'product_id': line,
-                'product_uos_qty': abs(product_qty(line)),
-                'product_uom_qty': abs(product_qty(line)),
-                'state': 'draft',
-                'location_id': destination_id if product_qty(line)>0 else default_stock_location,
-                'location_dest_id': default_stock_location if product_qty(line) else destination_id,
-                'invoice_state':'none',
-                'procure_method':'make_to_stock',
-            }, context=self._context))
-            
-        if move_list:
-            move_obj.action_confirm(self._cr, self._uid, move_list, context=self._context)
-            move_obj.force_assign(self._cr,self._uid, move_list, context=self._context)
-            move_obj.action_done(self._cr, self._uid, move_list, context=self._context)
+            rec.vol_name.qty -=1
         
         account_move_id=False
         for rec in panipat_obj.sample_out_account_lines:

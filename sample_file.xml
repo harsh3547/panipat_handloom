@@ -12,7 +12,12 @@
             		</header>
                         <h3><label for="sample_in_lines"/></h3>
                         <div> 
-                            <field name="sample_in_lines" attrs="{'invisible':[('sample_in_lines','=',[])]}"/>
+                            <field name="sample_in_lines" attrs="{'invisible':[('sample_in_lines','=',[])]}">
+								<tree editable="bottom" create="false" delete="true">
+									<field name="brand_name" readonly="1"/>
+									<field name="vol_name" readonly="1" />
+								</tree>
+							</field>	
                         </div>
                         <group col="4">
                         	<group>
@@ -181,10 +186,8 @@
 			<field name="model">panipat.sample.lines</field>
 			<field name="arch" type="xml">
             	<tree editable="bottom">
-					<field name="product_categ"/>
-					<field name="product_id" context="{'default_categ_id':product_categ,'default_type':'product'}" domain="[('categ_id','child_of',product_categ)]"/>
-					<field name="product_uom"/>
-					<field name="qty"/>
+					<field name="brand_name"/>
+					<field name="vol_name" domain="[('panipat_brand_name','=',brand_name)]" />
 				</tree>
 			</field>
 		</record>
