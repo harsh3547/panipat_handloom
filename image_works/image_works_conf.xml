@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<openerp>
+	<data>
+		<record model="ir.ui.view" id="view_panipat_image_works_form">
+			<field name="name">Image works form</field>
+			<field name="model">panipat.image.works</field>
+			<field name="arch" type="xml">
+				<form string="Image Works">
+					<header>
+            <button name="test_paths" string="Test All Paths" type="object" class="oe_highlight" icon="gtk-network"/>
+          </header>
+          <group col="4" colspan="4">
+						<separator col="2" string="Image Match Configuration Details"/>
+						
+           			</group>
+           			
+           			<group>
+           				<label for="name"/>
+           				<h3>
+           					<field name='name'/>	
+           				</h3>
+           				<label for="path_main"/>
+           				<h3>
+           					<field name='path_main'/>
+           				</h3>
+           				<separator col="6" colspan="6" string="Folder names inside the Main Folder"/>
+           				<group>
+           					<label for="blinds"/>
+           					<h4>
+           						<field name="blinds"/>
+           					</h4>
+           					<label for="wallpaper"/>
+           					<h4>
+           						<field name="wallpaper"/>
+           					</h4>
+           					<label for="carpets"/>
+           					<h4>
+           						<field name="carpets"/>
+           					</h4>
+           					<label for="fabric"/>
+           					<h4>
+           						<field name="fabric"/>
+           					</h4>
+           					<label for="flooring"/>
+           					<h4>
+           						<field name="flooring"/>
+           					</h4>
+           					<label for="others"/>
+           					<h4>
+           						<field name="others"/>
+           					</h4>
+           					
+           				</group>
+           			</group>
+           		</form>
+           	</field>
+        </record>
+        
+        <record model="ir.ui.view" id="view_panipat_image_works_tree">
+			<field name="name">Image works tree</field>
+			<field name="model">panipat.image.works</field>
+			<field name="arch" type="xml">
+				<tree string="Image Works">
+					<field name='name'/>
+      				<field name='path_main'/>
+				</tree>
+			</field>
+		</record>  	
+
+		<record model="ir.actions.act_window" id="action_panipat_image_works">
+			<field name="name">Configure Image Works</field>
+			<field name="res_model">panipat.image.works</field>
+			<field name="view_type">form</field>
+			<field name='view_mode'>tree,form</field>
+		</record>
+
+		<menuitem parent="base.menu_config" action="action_panipat_image_works" id="menu_panipat_image_works"/>
+	
+	</data>
+</openerp>
+		
