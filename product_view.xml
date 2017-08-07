@@ -36,6 +36,38 @@
         <record model="ir.ui.menu" id="product.menu_products">
         	<field name="groups_id" eval="[(3,ref('base.group_no_one'))]"/>
     	</record>
+        <record id="product_template_image_links_view" model="ir.ui.view">
+            <field name="name">product.template.image.links</field>
+            <field name="model">panipat.product.image.links</field>
+            <field name="arch" type="xml">
+                <form string="Create Image Links with files">
+                    <h3>
+                        Enter the search path folder for the files to make search faster.
+                        (Leave empty to search in all paths)
+                    </h3>
+                    <group>
+                        <field name="search_path"/>
+                    </group>
+                    <div>
+                        <field name="all_path_values" readonly="1"/>
+                    </div>
+                    <footer>
+                        <button string="Make Image Links" name="button_image_links" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+
+
+        <act_window id="action_panipat_image_links"
+            multi="False" 
+            key2="client_action_multi" name="Create Image Links"
+            res_model="panipat.product.image.links" src_model="product.template"
+            view_mode="form" target="new" view_type="form" />
+
         
 	</data>
 </openerp>
