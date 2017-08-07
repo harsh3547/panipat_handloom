@@ -9,11 +9,35 @@
             <field name="view_mode">tree,form</field>
           </record>
 
+    	<record id="panipat_order_group_search" model="ir.ui.view">
+			<field name="name">Order Group Search</field>
+			<field name="model">panipat.order.group</field>
+			<field name="arch" type="xml">
+				<search string="Order Groups">
+					<field name="name" string="Group No." />
+					<field name="partner_id" operator="child_of" />
+					<field name="created_on" />
+					<filter string="In Progress" domain="[('state', '=', 'in_progress')]"/>
+					<filter string="Done" domain="[('state', '=', 'done')]"/>
+					<filter string="Cancelled" domain="[('state', '=', 'cancel')]"/>
+					<separator />
+					<group expand="0" string="Group By">
+						<filter string="Customer" help="Partner" domain="[]"
+							context="{'group_by':'partner_id'}" />
+						<filter string="Creation Month" domain="[]"
+							context="{'group_by':'created_on'}" />
+						<filter string="Creation Day" domain="[]"
+							context="{'group_by':'created_on:day'}" />
+					</group>
+				</search>
+			</field>
+		</record>
+
 		  <record model="ir.ui.view" id="panipat_order_group_tree">
 			<field name="name">Order Groups List</field>
 			<field name="model">panipat.order.group</field>
 			<field name="arch" type="xml">
-				<tree string="Order Group List" colors="gray:state == 'done'" create='false'>
+				<tree string="Order Group List" colors="black:state == 'done';red:state == 'in_progress';gray:state == 'cancel'" create='false'>
 					<field name="name" />
 					<field name="partner_id" />
 					<field name="created_on"/>
@@ -26,50 +50,56 @@
             <field name="name">panipat.order.group.form</field>
             <field name="model">panipat.order.group</field>
             <field name="arch" type="xml">
-              <form string="Order Group" create='false' edit='false'>
+              <form string="Order Group" create='false'>
               	<header>
-              		<button name="button_done" string="Close" type="object" class="oe_highlight" attrs="{'invisible':[('state','=','done')]}" />
+              		<button name="button_progress" string="Resume" type="object" attrs="{'invisible':[('state','in',('in_progress'))]}"/>
+              		<button name="button_done" string="Close" type="object" class="oe_highlight"  attrs="{'invisible':[('state','in',('cancel','done'))]}"/>
+              		<button name="button_cancel" string="Cancel" type="object" attrs="{'invisible':[('state','in',('cancel','done'))]}" />
 					<field name="state" widget="statusbar" statusbar_visible="in_progress,done" />
 				</header>
                  <sheet>
                     <group col='4'>
                        <field name="name" />
                        <field name="partner_id" />
-                       <field name="created_on"/>
+                       <field name="created_on" attrs="{'readonly':[('state','in',('cancel','done'))]}" />
                     </group>
                     <group></group>
                     <group></group>
-                    <group col="4">
+                    <group col="3">
                     	<button class="oe_inline oe_stat_button" icon="fa-truck" name="do_view_leads"  type="object">
 							<field name='lead_count' widget='statinfo' string="Leads"/>
-						</button>
-						
-						
-						<label string=" - - - - - - > " attrs="{'invisible':[('allocation_count','=',10)]}"/>
-						<button class="oe_inline oe_stat_button" icon="fa-truck" name="do_view_allocation"  type="object" attrs="{'invisible':[('allocation_count','=',10)]}">
-							<field name='allocation_count' widget='statinfo' string="Allocation"/>
+							
 						</button>
 						
 						<label string=" - - - - - - > " attrs="{'invisible':[('quotation_count','=',10)]}"/>
-						<button class="oe_inline oe_stat_button" icon="fa-truck" name="do_view_quotation"  type="object" attrs="{'invisible':[('quotation_count','=',10)]}">
-							<field name='quotation_count' widget='statinfo' string="Sale Order"/>
-						</button>
+						<div class="oe_button_box" name="buttons_sale">
+							<button class="oe_inline oe_stat_button" icon="fa-truck" name="do_view_quotation"  type="object" attrs="{'invisible':[('quotation_count','=',10)]}">
+								<field name='quotation_count' widget='statinfo' string="Sale Order"/>
+							</button>
+							<button class="oe_stat_button" icon="fa-truck" name="do_view_quotation"  type="object" context="{'delivery_count':True}" attrs="{'invisible':[('delivery_count','=',10)]}">
+								<field name='delivery_count' widget='statinfo' string="Delivery Job"/>
+							</button>
+						</div>
+					</group>
+					<group col="4">
+						<div class="oe_button_box" name="buttons_purchase">
+							<button class="oe_inline oe_stat_button" icon="fa-truck" name="do_view_purchase_order"  type="object" attrs="{'invisible':[('purchase_order_count','=',10)]}">
+								<field name='purchase_order_count' widget='statinfo' string="Purchase Orders"/>
+							</button>
+							<button class="oe_stat_button" icon="fa-truck" context="{'incoming_shipment_count':True}" name="do_view_purchase_order"  type="object" attrs="{'invisible':[('incoming_shipment_count','=',10)]}">
+								<field name='incoming_shipment_count'  widget='statinfo' string="Incoming Shipment"/>
+							</button>
+						</div>						
 						
 						<label string=" - - - - - - > " attrs="{'invisible':[('install_count','=',10)]}"/>
 						<button class="oe_inline oe_stat_button" icon="fa-truck" name="do_view_install"  type="object" attrs="{'invisible':[('install_count','=',10)]}">
 							<field name='install_count' widget='statinfo' string="Install Jobs"/>
 						</button>
-						
-
 
 					</group>
 					<group></group>
 					<group col="3">
 
-						<button class="oe_inline oe_stat_button" icon="fa-truck" name="do_view_purchase_order"  type="object" attrs="{'invisible':[('purchase_order_count','=',10)]}">
-							<field name='purchase_order_count' widget='statinfo' string="Purchase Orders"/>
-						</button>
-						
 						<button class="oe_inline oe_stat_button" icon="fa-truck" name="do_view_customer_invoice"  type="object" attrs="{'invisible':[('customer_invoice_count','=',10)]}">
 							<field name='customer_invoice_count' widget='statinfo' string="Customer Invoices"/>
 						</button>
@@ -77,10 +107,23 @@
 						<button class="oe_inline oe_stat_button" icon="fa-truck" name="do_view_supplier_invoice"  type="object" attrs="{'invisible':[('supplier_invoice_count','=',10)]}">
 							<field name='supplier_invoice_count' widget='statinfo' string="Supplier Invoices"/>
 						</button>
-						
-						
-						
+
+						<button class="oe_inline oe_stat_button" icon="fa-truck" name="do_view_commission_invoice"  type="object" attrs="{'invisible':[('commission_invoice_count','=',10)]}">
+							<field name='commission_invoice_count' widget='statinfo' string="Commission Invoice"/>
+						</button>
                     </group>
+                    <group></group>
+					<group col="2">
+
+						<button class="oe_inline oe_stat_button" icon="fa-male" name="do_view_lead_employee"  type="object" attrs="{'invisible':[('lead_employee_count','=',10)]}">
+							<field name='lead_employee_count' widget='statinfo' string="Employee for Measurement"/>
+						</button>
+						
+						<button class="oe_inline oe_stat_button" icon="fa-male" name="do_view_install_employee"  type="object" attrs="{'invisible':[('install_employee_count','=',10)]}">
+							<field name='install_employee_count' widget='statinfo' string="Employee for Installation"/>
+						</button>
+					
+					</group>
                     <group></group>
                     <group>
                     	<field name="notes"/>

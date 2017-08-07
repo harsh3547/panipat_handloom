@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data >
+        <!-- replacing original account.invoice report with challan -->
+        <report 
+            id="order_group_report_id"
+            model="panipat.order.group"
+            string="Order Group Report"
+            report_type="qweb-pdf"
+            name="panipat_handloom.order_group_report"
+            file="panipat_handloom.order_group_report_view"
+            attachment_use="False" 
+            attachment=""
+        />
+
+		<record id="order_group_report_paper" model="report.paperformat">
+            <field name="name">Custom Order Group Paper</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">7</field>
+            <field name="margin_bottom">7</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+        </record>
+
+
+        <record id="order_group_report_id" model="ir.actions.report.xml">
+		    <field name="paperformat_id" ref="order_group_report_paper"/>
+		</record>
+
+    </data>
+</openerp>

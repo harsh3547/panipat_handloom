@@ -1,0 +1,697 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+<template id="order_group_report">
+    <t t-call="report.html_container">
+    	
+    	<div class="page">
+    	    <h2 class="text-center">Order Groups Report</h2>
+	        <t t-foreach="docs" t-as="order">
+	        	<table class="table table-bordered table-condensed" style="page-break-inside: avoid;">
+	        		<tr style="background-color:#337ab7;color:white">
+	        			<td class="col-xs-6" style="font-size:18px;border-left:2px solid #337ab7;border-top:2px solid #337ab7;"><b><span t-field="order.partner_id.name"/></b>
+		        			<t t-if="order.partner_id.mobile"> (<span style="font-size:14px" t-field="order.partner_id.mobile"/>)</t>
+		        			<t t-if="not order.partner_id.mobile and order.partner_id.phone"> (<span style="font-size:14px" t-field="order.partner_id.phone"/>)</t>
+	        			</td>
+	        			<td class="col-xs-4" style="font-size:18px;border-top:2px solid #337ab7;"><b><span t-field="order.name"/> </b> (<span t-field="order.state"/>)</td>
+	        			<td class="col-xs-2" style="font-size:18px;border-right:2px solid #337ab7;border-top:2px solid #337ab7;"><b><span t-field="order.created_on"/></b></td>
+	        		</tr>
+	        		<tr>
+	        			<td colspan="3" style="border:2px solid #337ab7;padding-top:10px;">
+
+	        				<!-- LEAD start -->
+
+	        				<t t-set="lead_obj_val" t-value="lead_obj(order.id)"/>
+							<t t-if="lead_obj_val">
+								<div style="padding:5px;padding-top:10px;padding-bottom:10px;
+											background-color:#ffe4b3;
+											border-top:2px solid #ffb833;
+											border-left:2px solid #ffb833;
+											border-bottom:1px solid #ffb833;
+											border-right:1px solid #ffb833;
+											border-radius:5px;
+											page-break-inside:avoid">
+										
+									<div class="row" style="font-size:16px">
+										<div class="col-xs-5"><b><u>Lead : <span t-field="lead_obj_val.sequence"/></u></b></div>
+										<div class="col-xs-5 text-left"><u>State: (<span t-field="lead_obj_val.state"/>)</u></div>
+										<u><div class="col-xs-2 text-right" t-field="lead_obj_val.creation_date"/></u>
+									</div>
+								</div>
+								<t t-if="lead_obj_val.name"><div class="text-left" style="margin-top:5px;margin-bottom:5px;font-size:16px">- SUBJECT --: <span t-field="lead_obj_val.name"/></div></t>
+
+								<t t-if="lead_obj_val.state in ('draft','confirm')">
+								<t t-if="lead_obj_val.product_line">
+								<div class="text-left">- Products --:</div>
+									<t t-set="sr_no" t-value="0"/>
+									<table style="border: 1px solid lightgray;border-collapse: collapse;width:100%;page-break-inside: avoid;">
+					                        <tr>
+					                        	<td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">No.</td>
+					                            <td class="text-center" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Description of Goods</td>
+					                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Quantity</td>
+					                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Unit</td>
+					                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Unit Price</td>
+					                        </tr>
+					                        <tr t-foreach="lead_obj_val.product_line" t-as="l">
+				                                <t t-set="sr_no" t-value="sr_no+1"/>
+				                                <td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;"><span t-esc="sr_no"/></td>
+				                                <td style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;"><span t-field="l.description"/></td>
+				                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+				                                    <span t-field="l.product_uom_qty"/>
+				                                </td>
+				                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+				                                    <span t-field="l.product_uom"/>
+				                                </td>
+				                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+				                                    <span t-field="l.sale_price" 
+				                                        />
+				                                </td>
+					                        </tr>
+					                </table>
+					            </t>
+					            </t>
+					            <t t-if="lead_obj_val.employee_line">
+					            	<div class="text-left" style="margin-top:5px">- Employees for measurement --:</div>
+					            	<t t-set="sr_no" t-value="0"/>
+									<table style="border: 1px solid lightgray;border-collapse: collapse;width:100%;page-break-inside: avoid;">
+					                        <tr>
+					                        	<td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">No.</td>
+					                            <td class="text-center" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Employee</td>
+					                            <td class="text-center" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Time</td>
+					                            <td class="text-center" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Description</td>
+					                            <td class="text-center" style="border:1px solid lightgray;border-collapse:collapse;padding:3px;">Job(State)</td>
+					                        </tr>
+					                        <tr t-foreach="lead_obj_val.employee_line" t-as="l">
+				                                <t t-set="sr_no" t-value="sr_no+1"/>
+				                                <td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;"><span t-esc="sr_no"/></td>
+				                                <td class="text-center" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;"><span t-field="l.employee_id.name"/></td>
+				                                <td class="text-center" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+				                                    <span t-field="l.start_time"/>
+				                                </td>
+				                                <td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+				                                    <span t-field="l.description"/>
+				                                </td>
+				                                <td class="text-center" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+				                                    <span t-field="l.panipat_employee_link.state"/>
+				                                </td>
+					                        </tr>
+					                </table>
+								</t>
+								
+								<t t-if="lead_obj_val.description">
+									<div class="text-left" style="margin-top:5px">- Notes --:</div>
+									<div class="text-left" style="margin-top:2px" t-field="lead_obj_val.description"/>
+								</t>
+							</t>
+							<!-- LEAD end -->
+
+							<!-- SALE ORDER AND DELIVERY ORDERS start-->
+
+							<t t-set="sale_obj_val" t-value="sale_obj(order.id)"/>
+							<t t-if="sale_obj_val">
+							<br/>
+							<!--<hr style="border-top:3px double #8c8b8b; width:96%; margin-left:2%"/>-->
+							<br/>
+							
+								<t t-foreach="sale_obj_val" t-as="sale">
+									<t t-if="sale.state not in ('cancel')">
+										<div style="padding:5px;padding-top:10px;padding-bottom:10px;
+											background-color:#d9e6f2;
+											border-top:2px solid #a0c0de;
+											border-left:2px solid #a0c0de;
+											border-bottom:1px solid #a0c0de;
+											border-right:1px solid #a0c0de;
+											border-radius:5px;
+											margin-top:10px;
+											page-break-inside:avoid">
+											
+											<div class="row" style="font-size:16px">
+												<t t-if="sale.state in ('draft','sent')"><div class="col-xs-5"><b><u>Quotation : <span t-field="sale.name"/></u></b></div></t>
+												<t t-if="sale.state not in ('draft','sent')"><div class="col-xs-5"><b><u>Sale Order : <span t-field="sale.name"/></u></b></div></t>
+												
+												<div class="col-xs-5 text-left"><u>State: (<span t-field="sale.state"/>)</u></div>
+												<u><div class="col-xs-2 text-right"><span t-esc="time.strftime('%d/%m/%Y',time.strptime(sale.date_order,'%Y-%m-%d %H:%M:%S'))"/></div></u>
+											</div>
+										</div>
+										<t t-if="sale.state!='done'">
+										<t t-if="sale.order_line">
+										<div class="text-left" style="margin-top:5px">- Products --:</div>
+											<t t-set="sr_no" t-value="0"/>
+											<table style="border: 1px solid lightgray;border-collapse: collapse;width:100%;page-break-inside: avoid;">
+							                        <tr>
+							                        	<td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">No.</td>
+							                            <td class="text-center" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Description of Goods</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Quantity</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Unit</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Tax</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Unit Price</td>
+							                        </tr>
+							                        <tr t-foreach="sale.order_line" t-as="l">
+						                                <t t-set="sr_no" t-value="sr_no+1"/>
+						                                <td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;"><span t-esc="sr_no"/></td>
+						                                <td style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;"><span t-field="l.name"/></td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.product_uom_qty"/>
+						                                </td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.product_uom"/>
+						                                </td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.tax_id.name"/>
+						                                </td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.price_unit" 
+						                                        />
+						                                </td>
+							                        </tr>
+							                </table>
+							            </t>
+							        	</t>
+							            
+									</t>
+
+
+
+									<t t-set="delivery_obj_val" t-value="delivery_obj(sale)"/>
+									<t t-if="delivery_obj_val">
+										
+										<t t-foreach="delivery_obj_val" t-as="delivery">
+										<t t-if="delivery.state not in ('cancel')">
+											<br/>
+											<!--<hr style="background-color: #fff;border-top:2px dotted #8c8b8b; width:80%; margin-left:10%"/>-->
+											
+											<div style="padding:5px;padding-top:10px;padding-bottom:10px;background-color:#ecf2f8;
+											border-top:2px solid #b5cce3;
+											border-left:2px solid #b5cce3;
+											border-bottom:1px solid #b5cce3;
+											border-right:1px solid #b5cce3;
+											border-radius:5px;
+											width:96%;margin-left:2%;
+											margin-top:10px;
+											page-break-inside:avoid">
+
+												<div class="row" style="font-size:15px;">
+													<div class="col-xs-4"><b><u>Delivery : <span t-field="delivery.name"/></u></b></div>
+													
+													<div class="col-xs-4 text-right"><u>State: (<span t-field="delivery.state"/>)</u></div>
+													<u><div class="col-xs-4 text-right">Schedule Date:<span t-esc="time.strftime('%d/%m/%Y',time.strptime(delivery.min_date,'%Y-%m-%d %H:%M:%S'))"/></div></u>
+												</div>
+												<div class="row" style="font-size:15px;padding-top:2px">
+													<div class="col-xs-4 col-xs-offset-5 text-left"><u>Invoice:</u> <span t-field="delivery.invoice_state"/></div>
+												</div>
+											</div>
+											<t t-if="delivery.invoice_state!='invoiced'">
+											<t t-if="delivery.move_lines">
+											<div class="text-left" style="margin-left:3%;margin-top:5px">- Stock Moves --: <u>( from STOCK to CUSTOMER )</u></div>
+												<t t-set="sr_no" t-value="0"/>
+												<table style="border: 1px solid lightgray;border-collapse: collapse;width:94%;margin-left:3%;page-break-inside: avoid;">
+								                        <tr>
+								                        	<td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">No.</td>
+								                            <td class="text-center" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Description of Goods</td>
+								                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Quantity</td>
+								                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Unit</td>
+								                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">State</td>
+								                        </tr>
+								                        <tr t-foreach="delivery.move_lines" t-as="l">
+							                                <t t-set="sr_no" t-value="sr_no+1"/>
+							                                <td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;"><span t-esc="sr_no"/></td>
+							                                <td style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;"><span t-field="l.name"/></td>
+							                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+							                                    <span t-field="l.product_uom_qty"/>
+							                                </td>
+							                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+							                                    <span t-field="l.product_uom"/>
+							                                </td>
+							                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+							                                    <span t-field="l.state" 
+							                                        />
+							                                </td>
+								                        </tr>
+								                </table>
+								            </t>
+								        	</t>
+								            
+										</t>
+
+										</t>
+
+									</t>
+
+								</t>
+							</t>
+
+							<!-- SALE ORDER AND DELIVERY ORDERS end-->
+
+
+							
+							<!-- INSTALL start-->
+
+							<t t-set="install_obj_val" t-value="install_obj(order.id)"/>
+							<t t-if="install_obj_val">
+							<br/>
+							<!--<hr style="border-top:3px double #8c8b8b; width:96%; margin-left:2%"/>-->
+							<br/>
+							
+								<t t-foreach="install_obj_val" t-as="install">
+									<t t-if="install.state not in ('cancel')">
+										<div style="padding:5px;padding-top:10px;padding-bottom:10px;
+											background-color:#f1dade;
+											border-top:2px solid #e2b6bd;
+											border-left:2px solid #e2b6bd;
+											border-bottom:1px solid #e2b6bd;
+											border-right:1px solid #e2b6bd;
+											border-radius:5px;
+											margin-top:10px;
+											page-break-inside:avoid">
+											
+											<div class="row" style="font-size:16px">
+												<div class="col-xs-4"><b><u>Install : <span t-field="install.name"/></u></b></div>
+												
+												<div class="col-xs-4 text-right"><u>State: (<span t-field="install.state"/>)</u></div>
+												<u><div class="col-xs-4 text-right">Schedule Date:<span t-field="install.schedule_date"/></div></u>
+											</div>
+											<div class="row" style="font-size:16px;padding-top:2px">
+												<div class="col-xs-5 text-left pull-left"><u><b>Contractor</b></u> : <i><span t-field="install.supplier.name"/></i></div>
+												
+											</div>
+										</div>
+										<t t-if="install.desc"><div class="text-left" style="margin-top:5px;margin-bottom:5px;font-size:16px">- DESCRIPTION --: <span t-field="install.desc"/></div></t>
+										<t t-if="install.service_lines">
+										<div class="text-left" style="margin-top:5px">- Services --:</div>
+											<t t-set="sr_no" t-value="0"/>
+											<table style="border: 1px solid lightgray;border-collapse: collapse;width:100%;page-break-inside: avoid;">
+							                        <tr>
+							                        	<td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">No.</td>
+							                            <td class="text-center" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Description</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Quantity</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Sale Price</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Cost Price</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Unit</td>
+							                        </tr>
+							                        <tr t-foreach="install.service_lines" t-as="l">
+						                                <t t-set="sr_no" t-value="sr_no+1"/>
+						                                <td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;"><span t-esc="sr_no"/></td>
+						                                <td style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;"><span t-field="l.name"/></td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.product_uom_qty"/>
+						                                </td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.sale_price"/>
+						                                </td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.cost_price"/>
+						                                </td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.product_uom" 
+						                                        />
+						                                </td>
+							                        </tr>
+							                </table>
+							            </t>
+
+							            <t t-if="install.employees">
+							            	<div class="text-left" style="margin-top:5px">- Employees Installation Job--:</div>
+							            	<t t-set="sr_no" t-value="0"/>
+											<table style="border: 1px solid lightgray;border-collapse: collapse;width:100%;page-break-inside: avoid;">
+							                        <tr>
+							                        	<td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">No.</td>
+							                            <td class="text-center" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Employee</td>
+							                            <td class="text-center" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Time</td>
+							                            <td class="text-center" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Description</td>
+							                            <td class="text-center" style="border:1px solid lightgray;border-collapse:collapse;padding:3px;">Job(State)</td>
+							                        </tr>
+							                        <tr t-foreach="install.employees" t-as="l">
+						                                <t t-set="sr_no" t-value="sr_no+1"/>
+						                                <td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;"><span t-esc="sr_no"/></td>
+						                                <td class="text-center" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;"><span t-field="l.employee_id.name"/></td>
+						                                <td class="text-center" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.start_time"/>
+						                                </td>
+						                                <td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.description"/>
+						                                </td>
+						                                <td class="text-center" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.panipat_employee_link.state"/>
+						                                </td>
+							                        </tr>
+							                </table>
+										</t>
+										<t t-if="install.notes">
+											<div class="text-left" style="margin-top:5px">- Notes --:</div>
+											<div class="text-left" style="margin-top:2px" t-field="install.notes"/>
+										</t>
+
+									</t>
+
+
+
+								</t>
+							</t>
+
+							<!-- INSTALL end-->
+
+
+							<!-- CUSTOMER INVOICE AND COMMISSION INVOICE start -->
+
+
+							<t t-set="custinv_obj_val" t-value="custinv_obj(order.id)"/>
+							<t t-if="custinv_obj_val">
+							<br/>
+							<!--<hr style="border-top:3px double #8c8b8b; width:96%; margin-left:2%"/>-->
+							<br/>
+							
+								<t t-foreach="custinv_obj_val" t-as="custinv">
+									<t t-if="custinv.state not in ('cancel')">
+										<div style="padding:5px;padding-top:10px;padding-bottom:10px;
+											background-color:#d1bb94;
+											border-top:2px solid #b38d4d;
+											border-left:2px solid #b38d4d;
+											border-bottom:1px solid #b38d4d;
+											border-right:1px solid #b38d4d;
+											border-radius:5px;
+											margin-top:10px;
+											page-break-inside:avoid">
+											
+											<div class="row" style="font-size:16px">
+												<t t-if="not custinv.commission_invoice"><div class="col-xs-6"><b><u>Customer Invoice: <span t-field="custinv.number"/></u></b></div></t>
+												<t t-if="custinv.commission_invoice"><div class="col-xs-6"><b><u>Commission Invoice: <span t-field="custinv.number"/></u></b></div></t>
+												
+												<div class="col-xs-3 text-left"><u>State: (<span t-field="custinv.state"/>)</u></div>
+												<u><div class="col-xs-3 text-right">Date:<span t-field="custinv.date_invoice"/></div></u>
+											</div>
+											<div class="row" style="font-size:16px;padding-top:2px">
+												<t t-if="not custinv.commission_invoice"><div class="col-xs-6 text-left "><u><b>Customer</b></u> : <i><span t-field="custinv.partner_id.name"/></i></div></t>
+												<t t-if="custinv.commission_invoice"><div class="col-xs-6 text-left "><u><b>Contractor</b></u> : <i><span t-field="custinv.partner_id.name"/></i></div></t>
+												
+												<t t-if="custinv.state not in ('draft')">
+													<div class="col-xs-6 text-left "><u>Total (with tax)</u> : <i><span t-field="custinv.amount_total" t-field-options='{"widget": "monetary", "display_currency": "custinv.currency_id"}'/></i></div>
+												</t>
+											</div>
+										</div>
+										
+										<t t-if="custinv.invoice_line">
+										<div class="text-left" style="margin-top:5px">- Invoice Lines --:</div>
+											<t t-set="sr_no" t-value="0"/>
+											<table style="border: 1px solid lightgray;border-collapse: collapse;width:100%;page-break-inside: avoid;">
+							                        <tr>
+							                        	<td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">No.</td>
+							                            <td class="text-center" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Description</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Quantity</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Unit</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Sale Price</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Disc%</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Tax</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Amount</td>
+							                        </tr>
+							                        <tr t-foreach="custinv.invoice_line" t-as="l">
+							                        <t t-if="l.name!='Rounding-Off'">
+						                                <t t-set="sr_no" t-value="sr_no+1"/>
+						                                <td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;"><span t-esc="sr_no"/></td>
+						                                <td style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;"><span t-field="l.name"/></td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.quantity"/>
+						                                </td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.uos_id"/>
+						                                </td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.price_unit"/>
+						                                </td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.discount" 
+						                                        />
+						                                </td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.invoice_line_tax_id.name" 
+						                                        />
+						                                </td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.price_subtotal" 
+						                                        />
+						                                </td>
+						                            </t>
+							                        </tr>
+							                </table>
+							            </t>
+						            </t>
+						        </t>
+						    </t>
+						
+
+
+
+							<!-- CUSTOMER INVOICE end -->
+
+
+
+							<!-- PURCHASE ORDER AND INCOMING SHIPMENTS start-->
+
+							<t t-set="purchase_obj_val" t-value="purchase_obj(order.id)"/>
+							<t t-if="purchase_obj_val">
+							<br/>
+							<!--<hr style="border-top:3px double #8c8b8b; width:96%; margin-left:2%"/>-->
+							<br/>
+							
+								<t t-foreach="purchase_obj_val" t-as="po">
+									<t t-if="po.state not in ('cancel')">
+										<div style="padding:5px;padding-top:10px;padding-bottom:10px;
+											background-color:#99cc9b;
+											border-top:2px solid #55aa58;
+											border-left:2px solid #55aa58;
+											border-bottom:1px solid #55aa58;
+											border-right:1px solid #55aa58;
+											border-radius:5px;
+											margin-top:10px;
+											page-break-inside:avoid">
+											
+											<div class="row" style="font-size:16px">
+												<t t-if="po.state in ('draft','sent')"><div class="col-xs-5"><b><u>RFQ : <span t-field="po.name"/></u></b></div></t>
+												<t t-if="po.state not in ('draft','sent')"><div class="col-xs-5"><b><u>Purchase Order : <span t-field="po.name"/></u></b></div></t>
+												
+												<div class="col-xs-5 text-left"><u>State: (<span t-field="po.state"/>)</u></div>
+												<u><div class="col-xs-2 text-right"><span t-esc="time.strftime('%d/%m/%Y',time.strptime(po.date_order,'%Y-%m-%d %H:%M:%S'))"/></div></u>
+											</div>
+											<div class="row" style="font-size:16px;padding-top:2px">
+												<div class="col-xs-5 text-left pull-left"><u><b>Supplier</b></u> : <i><span t-field="po.partner_id.name"/></i></div>
+												
+											</div>
+										</div>
+										<t t-if="po.state not in ('approved','done')">
+										<t t-if="po.order_line">
+										<div class="text-left">- Products --:</div>
+											<t t-set="sr_no" t-value="0"/>
+											<table style="border: 1px solid lightgray;border-collapse: collapse;width:100%;page-break-inside: avoid;">
+							                        <tr>
+							                        	<td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">No.</td>
+							                            <td class="text-center" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Description of Goods</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Quantity</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Unit</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Tax</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Unit Price</td>
+							                        </tr>
+							                        <tr t-foreach="po.order_line" t-as="l">
+						                                <t t-set="sr_no" t-value="sr_no+1"/>
+						                                <td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;"><span t-esc="sr_no"/></td>
+						                                <td style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;"><span t-field="l.name"/></td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.product_qty"/>
+						                                </td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.product_uom"/>
+						                                </td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.taxes_id.name"/>
+						                                </td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.price_unit" 
+						                                        />
+						                                </td>
+							                        </tr>
+							                </table>
+							            </t>
+							        	</t>
+							            
+									</t>
+
+
+
+									<t t-set="incoming_obj_val" t-value="incoming_obj(po)"/>
+									<t t-if="incoming_obj_val">
+										
+										<t t-foreach="incoming_obj_val" t-as="incoming">
+										<t t-if="incoming.state not in ('cancel')">
+											<br/>
+											<!--<hr style="background-color: #fff;border-top:2px dotted #8c8b8b; width:80%; margin-left:10%"/>-->
+											
+											<div style="padding:5px;padding-top:10px;padding-bottom:10px;background-color:#bbddbc;
+											border-top:2px solid #77bb7a;
+											border-left:2px solid #77bb7a;
+											border-bottom:1px solid #77bb7a;
+											border-right:1px solid #77bb7a;
+											border-radius:5px;
+											width:96%;margin-left:2%;
+											margin-top:10px;
+											page-break-inside:avoid">
+
+												<div class="row" style="font-size:15px;">
+													<div class="col-xs-4"><b><u>Incoming : <span t-field="incoming.name"/></u></b></div>
+													
+													<div class="col-xs-4 text-right"><u>State: (<span t-field="incoming.state"/>)</u></div>
+													<u><div class="col-xs-4 text-right">Schedule Date:<span t-esc="time.strftime('%d/%m/%Y',time.strptime(incoming.min_date,'%Y-%m-%d %H:%M:%S'))"/></div></u>
+												</div>
+												<div class="row" style="font-size:15px;padding-top:2px">
+													<div class="col-xs-4 col-xs-offset-5 text-left"><u>Invoice:</u> <span t-field="incoming.invoice_state"/></div>
+												</div>
+											</div>
+											<t t-if="incoming.invoice_state!='invoiced'">
+											<t t-if="incoming.move_lines">
+											<div class="text-left" style="margin-left:3%;">- Stock Moves --:<u>( from SUPPLIER to STOCK )</u></div>
+												<t t-set="sr_no" t-value="0"/>
+												<table style="border: 1px solid lightgray;border-collapse: collapse;width:94%;margin-left:3%;page-break-inside: avoid;">
+								                        <tr>
+								                        	<td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">No.</td>
+								                            <td class="text-center" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Description of Goods</td>
+								                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Quantity</td>
+								                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Unit</td>
+								                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">State</td>
+								                        </tr>
+								                        <tr t-foreach="incoming.move_lines" t-as="l">
+							                                <t t-set="sr_no" t-value="sr_no+1"/>
+							                                <td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;"><span t-esc="sr_no"/></td>
+							                                <td style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;"><span t-field="l.name"/></td>
+							                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+							                                    <span t-field="l.product_uom_qty"/>
+							                                </td>
+							                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+							                                    <span t-field="l.product_uom"/>
+							                                </td>
+							                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+							                                    <span t-field="l.state" 
+							                                        />
+							                                </td>
+								                        </tr>
+								                </table>
+								            </t>
+								        	</t>
+								            
+										</t>
+
+										</t>
+
+									</t>
+								</t>
+							</t>
+							<!-- PURCHASE ORDER AND INCOMING SHIPMENTS end-->
+
+
+
+							<!-- SUPPLIER INVOICE start -->
+
+
+							<t t-set="supplier_obj_val" t-value="supplierinv_obj(order.id)"/>
+							<t t-if="supplier_obj_val">
+							<br/>
+							<!--<hr style="border-top:3px double #8c8b8b; width:96%; margin-left:2%"/>-->
+							<br/>
+							
+								<t t-foreach="supplier_obj_val" t-as="supplier">
+									<t t-if="supplier.state not in ('cancel')">
+										<div style="padding:5px;padding-top:10px;padding-bottom:10px;
+											background-color:#d1bb94;
+											border-top:2px solid #b38d4d;
+											border-left:2px solid #b38d4d;
+											border-bottom:1px solid #b38d4d;
+											border-right:1px solid #b38d4d;
+											border-radius:5px;
+											margin-top:10px;
+											page-break-inside:avoid">
+											
+											<div class="row" style="font-size:16px">
+												<div class="col-xs-6"><b><u>Supplier Invoice: <span t-field="supplier.number"/></u></b></div>
+												
+												<div class="col-xs-3 text-left"><u>State: (<span t-field="supplier.state"/>)</u></div>
+												<u><div class="col-xs-3 text-right">Date:<span t-field="supplier.date_invoice"/></div></u>
+											</div>
+											<div class="row" style="font-size:16px;padding-top:2px">
+												<div class="col-xs-6 text-left "><u><b>Supplier</b></u> : <i><span t-field="supplier.partner_id.name"/></i></div>
+												<t t-if="supplier.state not in ('draft')">
+													<div class="col-xs-6 text-left "><u>Total (with tax)</u> : <i><span t-field="supplier.amount_total" t-field-options='{"widget": "monetary", "display_currency": "supplier.currency_id"}'/></i></div>
+												</t>
+											</div>
+										</div>
+										
+										<t t-if="supplier.invoice_line">
+										<div class="text-left" style="margin-top:5px">- Invoice Lines --:</div>
+											<t t-set="sr_no" t-value="0"/>
+											<table style="border: 1px solid lightgray;border-collapse: collapse;width:100%;page-break-inside: avoid;">
+							                        <tr>
+							                        	<td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">No.</td>
+							                            <td class="text-center" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Description</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Quantity</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Unit</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Sale Price</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Disc%</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Tax</td>
+							                            <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">Amount</td>
+							                        </tr>
+							                        <tr t-foreach="supplier.invoice_line" t-as="l">
+							                        <t t-if="l.name!='Rounding-Off'">
+						                                <t t-set="sr_no" t-value="sr_no+1"/>
+						                                <td class="text-left" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;"><span t-esc="sr_no"/></td>
+						                                <td style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;"><span t-field="l.name"/></td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.quantity"/>
+						                                </td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.uos_id"/>
+						                                </td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.price_unit"/>
+						                                </td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.discount" 
+						                                        />
+						                                </td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.invoice_line_tax_id.name" 
+						                                        />
+						                                </td>
+						                                <td class="text-right" style="border: 1px solid lightgray;border-collapse: collapse;padding:3px;">
+						                                    <span t-field="l.price_subtotal" 
+						                                        />
+						                                </td>
+						                            </t>
+							                        </tr>
+							                </table>
+							            </t>
+						            </t>
+						        </t>
+						    </t>
+						
+
+
+
+							<!-- SUPPLIER INVOICE end -->
+
+
+
+
+
+	        			</td>
+	        		</tr>
+	        	</table>
+	        <hr style="border: 0;
+	        	border-bottom: 3px dashed #000;
+	        	background: #999;"/>
+	        <br/>
+	        <br/>
+	        <br/>
+	        </t>
+		</div>
+
+
+    </t>
+</template>
+
+</data>
+</openerp>
