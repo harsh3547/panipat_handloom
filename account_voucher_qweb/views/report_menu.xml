@@ -3,12 +3,22 @@
     <data>
         <report 
             id="report_account_voucher1"
-            string="Voucher"
+            string="Voucher (A4)"
             model="account.voucher" 
             report_type="qweb-pdf"
             file="panipat_handloom.report_account_voucher" 
             name="panipat_handloom.report_account_voucher" 
         />
+
+        <report 
+            id="report_account_voucher_POS"
+            string="Voucher (POS)"
+            model="account.voucher" 
+            report_type="qweb-pdf"
+            file="panipat_handloom.report_account_voucher" 
+            name="panipat_handloom.report_account_voucher_POS_doc" 
+        />
+
 
         <report 
             string="Picking" 
@@ -38,9 +48,9 @@
         <record id="paperformat_custom_voucher" model="report.paperformat">
             <field name="name">Custom Voucher Paper</field>
             <field name="default" eval="True" />
-            <field name="format">custom</field>
-            <field name="page_height">149</field>
-            <field name="page_width">210</field>
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
             <field name="orientation">Portrait</field>
             <field name="margin_top">20</field>
             <field name="margin_bottom">20</field>
@@ -51,9 +61,31 @@
             <field name="dpi">90</field>
         </record>
 
+        <record id="paperformat_custom_voucher_POS" model="report.paperformat">
+            <field name="name">Custom Voucher Paper POS</field>
+            <field name="default" eval="True" />
+            <field name="format">custom</field>
+            <field name="page_height">297</field>
+            <field name="page_width">80</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">0</field>
+            <field name="margin_bottom">0</field>
+            <field name="margin_left">0</field>
+            <field name="margin_right">0</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+        </record>
+
+
         <record id="report_account_voucher1" model="ir.actions.report.xml">
             <field name="paperformat_id" ref="paperformat_custom_voucher"/>
         </record>
+
+        <record id="report_account_voucher_POS" model="ir.actions.report.xml">
+            <field name="paperformat_id" ref="paperformat_custom_voucher_POS"/>
+        </record>
+
 
         <record id="stock.action_report_picking" model="ir.actions.report.xml">
             <field name="paperformat_id" ref="paperformat_custom"/>
