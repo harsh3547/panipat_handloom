@@ -6,6 +6,7 @@ from openerp.report import report_sxw
 from openerp.tools.translate import _
 from openerp.osv import osv
 from openerp.tools.amount_to_text_en import amount_to_text
+from openerp.tools.float_utils import float_round, float_compare
 import string
 
 class report_challan(report_sxw.rml_parse):
@@ -14,7 +15,8 @@ class report_challan(report_sxw.rml_parse):
         super(report_challan, self).__init__(cr, uid, name, context=context)
         self.localcontext.update( {
             'time': time,
-            'amount_in_word': self._amount_to_text
+            'amount_in_word': self._amount_to_text,
+            'round_off_fmt':self._round_off_fmt,
         })
         self.context = context
 
@@ -38,6 +40,12 @@ class report_challan(report_sxw.rml_parse):
             amout_str = string.replace(amout_str, 'Cents', 'Paisa')
             amout_str = string.replace(amout_str, 'Cent', 'Paisa')
         return amout_str
+
+    def _round_off_fmt(self,round_off,context=None):
+        prec=self.pool.get('decimal.precision').precision_get(self.cr, self.uid, 'Account')
+        round_off_fmt = "%.{0}f".format(prec)%round_off
+        return round_off_fmt
+        
 
 class challan_report_class(osv.AbstractModel):
     _name = 'report.panipat_handloom.report_challan'
