@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+<template id="report_file_template_doc">
+   
+        <div class="page" style="margin:5px;padding:10px; border:2px solid #ccc; border-radius:10px;">
+            <h3 style="text-align:center;"> 
+                <span>Sample File Voucher</span> -- <span t-field="o.name"/>
+            </h3>
+                
+            <div class="row">
+                <div class="col-xs-12 text-left">
+                    <p>
+                        <strong><span t-field="o.partner_id.company_id"/></strong>
+                        <br/>
+                         <span t-field="o.partner_id.company_id.partner_id.contact_address"/>
+                         <span t-if="o.partner_id.company_id.partner_id.phone">, Phone: <span t-field="o.partner_id.company_id.partner_id.phone"/></span>
+                         <span t-if="o.partner_id.company_id.partner_id.mobile">, Mobile: <span t-field="o.partner_id.company_id.partner_id.mobile"/></span>
+                        
+                    </p>                   
+                </div>
+                <div class="col-xs-12">
+                    <p>
+                        <strong>
+                            <span>Given to:</span>
+                        </strong>
+                        <span t-field="o.partner_id"/> - Address:
+                        <span t-field="o.partner_id.contact_address"/>
+                    </p>               
+                </div>      
+                <div class="col-xs-3">
+                    <strong> Date:</strong>
+                    <p t-field="o.date"/>
+                </div>
+                <div class="col-xs-3">
+                    <strong>Amount Paid:</strong>
+                    <p t-field="o.amount_paid"/>
+                </div>
+                <t t-if="o.amount_returned != 0">
+                    <div class="col-xs-3">
+                        <strong>Amount Returned:</strong>
+                        <p t-field="o.amount_returned"/>
+                    </div>
+                </t>
+                <t t-if="o.state_paid in ('credit','done','cancel')">
+                    <div class="col-xs-3">
+                        <strong>Status:</strong>
+                        <p t-field="o.state_paid"/>
+                    </div>
+                </t>
+            </div>
+            
+            <div class="row">
+                <div class="col-xs-6">
+                    <table style="padding:2px;border: 1px solid gray;width:100%">
+                    <thead>
+                      <tr>
+                        <th style="padding:4px;border: 1px solid gray;text-align:center">Outgoing Samples</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr t-foreach="o.sample_out" t-as="so">
+                        <td style="padding:4px;border: 1px solid gray;"><span t-field="so.brand_vol_char"/></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <t t-if="o.sample_in">
+                <div class="col-xs-6">
+                    <table style="padding:2px;border: 1px solid gray;width:100%">
+                    <thead>
+                      <tr>
+                        <th style="padding:4px;border: 1px solid gray;text-align:center">Returned Samples</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr t-foreach="o.sample_in" t-as="si">
+                        <td style="padding:4px;border: 1px solid gray;"><span t-field="si.brand_vol_char"/></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                </t>
+
+            </div>
+
+        </div>
+
+</template>
+
+<template id="report_file_template">
+    <t t-call="report.html_container">
+        <t t-foreach="doc_ids" t-as="doc_id">
+            <t t-raw="translate_doc(doc_id, doc_model, 'partner_id.lang', 'panipat_handloom.report_file_template_doc')"/>
+        </t>
+    </t>
+</template>
+
+</data>
+</openerp>

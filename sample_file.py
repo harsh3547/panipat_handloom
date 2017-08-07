@@ -178,6 +178,8 @@ class panipat_sample_lines(models.Model):
     # sample_in_out_rel ..value of this is to link sample_in lines with sample_out lines for the wizard
     # and to know which samples have been returned 
     
+    #query to run----->
+    #UPDATE panipat_sample_lines SET brand_vol_char=subquery.brand_vol_char FROM (SELECT psl.id,pbn.name as BRAND_NAME,pbv.name as VOL_NAME,(pbn.name || ',' || pbv.name) as brand_vol_char FROM panipat_sample_lines psl INNER JOIN panipat_brand_name pbn ON psl.brand_name=pbn.id INNER JOIN panipat_brand_vol pbv ON pbv.id=psl.vol_name) AS subquery WHERE panipat_sample_lines.id=subquery.id;
     
 class panipat_pay_wizard(models.Model):
     _name='panipat.pay.wizard'

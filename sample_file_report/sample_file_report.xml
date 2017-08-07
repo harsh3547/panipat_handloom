@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data >
+        <report 
+            id="sample_file_report_id"
+            model="panipat.sample"
+            string="Report"
+            report_type="qweb-pdf"
+            name="panipat_handloom.report_file_template"
+            file="panipat_handloom.report_file"
+            attachment_use="False" 
+            attachment=""
+        />
+
+        <record id="sample_file_report_paper" model="report.paperformat">
+            <field name="name">Sample File Full Paper</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">10</field>
+            <field name="margin_bottom">3</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+        </record>
+
+
+
+        <record id="sample_file_report_id" model="ir.actions.report.xml">
+            <field name="paperformat_id" ref="sample_file_report_paper"/>
+        </record>
+
+    </data>
+</openerp>
