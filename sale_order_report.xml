@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+	<template id="report_quotation_inherit_demo" inherit_id="sale.report_saleorder_document">
+		<xpath expr="//p[@t-field='o.note']" position="before">
+			<div class="text-right">
+				Remaining Unadjusted Advance : <span t-field="o.partner_id.unreconciled_balance"/><span t-field="o.company_id.currency_id.symbol"/>
+			</div>
+        </xpath>
+
+	</template>
+
+</data>
+</openerp>
