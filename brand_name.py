@@ -7,6 +7,8 @@ from openerp.tools.translate import _
 class panipat_brand_name(models.Model):
     _name='panipat.brand.name'
     
+    _order='name,barcode_no'
+    
     name=fields.Char('Brand Name',required=True)
     barcode_no=fields.Char('Barcode Prefix',readonly=True,copy=False)
     seq=fields.Many2one(comodel_name='ir.sequence', string="Sequence",readonly=True,copy=False)
@@ -44,7 +46,9 @@ class panipat_brand_name(models.Model):
     
 class panipat_brand_vol(models.Model):
     _name='panipat.brand.vol'
+    _order='name'
     
     panipat_brand_name=fields.Many2one(comodel_name='panipat.brand.name', string='Brand Name',required=True)
-    name=fields.Char('Vol/File No.')
+    name=fields.Char('Vol/File No.',required=True)
+    qty=fields.Integer('Quantity',default=1)
         

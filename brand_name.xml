@@ -89,7 +89,7 @@
 						<sheet>
 							<group>
 								<field name="name"/>
-								<field name="panipat_brand_name"/>								
+								<field name="panipat_brand_name"/>	
 							</group>
 						</sheet>
 				</form>
@@ -102,7 +102,7 @@
 			<field name="arch" type="xml">
 				<tree string="Brand Volumes">
 					<field name="name"/>
-					<field name="panipat_brand_name"/>	
+					<field name="panipat_brand_name"/>
 				</tree>
 			</field>
 		</record>

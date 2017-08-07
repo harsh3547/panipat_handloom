@@ -3,7 +3,7 @@
 	<data>
 		
 		<record id ="view_partner_form_inherit" model ="ir.ui.view">
-			<field name="name">panipat_import_form</field>
+			<field name="name">panipat_handloom_form</field>
 			<field name="model">res.partner</field>
 			<field name="inherit_id" ref="base.view_partner_form"/>	
 			<field name="arch" type="xml">
@@ -12,6 +12,17 @@
 				<xpath expr="//field[@name='website']" position="after">
 					<field name="customer"/>
 					<field name="supplier"/>
+				</xpath>
+			</field>
+		</record>
+
+		<record id ="view_partner_tree_inherit" model ="ir.ui.view">
+			<field name="name">panipat_handloom_tree</field>
+			<field name="model">res.partner</field>
+			<field name="inherit_id" ref="base.view_partner_tree"/>	
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='phone']" position="before">
+					<field name="mobile"/>
 				</xpath>
 			</field>
 		</record>

@@ -7,9 +7,6 @@
             <field name="arch" type="xml">
                 <form string="Panipat Settings" class="oe_form_configuration">
                     <header>
-                        <button string="Apply" type="object" name="execute" class="oe_highlight"/>
-                        or
-                        <button string="Cancel" type="object" name="cancel" class="oe_link"/>
                     </header>
                     <separator string="Restart Server"/>
                     <group>
