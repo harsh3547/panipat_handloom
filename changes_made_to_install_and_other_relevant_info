@@ -1,0 +1,5 @@
+postgres to be installed separately not working with the odoo pachaged install
+on panipat computer port of postgres changed to 5433
+give logon on rights to odoo service in services.msc to panipathandloom\panipat handloom - so that auto backups can create files
+
+in purchase pricelist , default supplier pricelist line removed ....price will be taken only from cost price of product
