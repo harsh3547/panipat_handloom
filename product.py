@@ -99,7 +99,36 @@ class roll_rate_name(models.Model):
         
     name=fields.Char(string="Name")    
         
+class panipat_product_template_duplicate(models.TransientModel):
+    _name="panipat.product.template.duplicate"
     
+    duplicates_to_create = fields.Integer(string="Duplicates To Create",default=0)
+
+    @api.multi
+    def duplicate_product(self):
+        product_id=self._context.get('active_id',False)
+        if product_id:
+            copy_ids=[product_id]
+            for i in range(self.duplicates_to_create):
+                copy_ids.append(self.pool.get('product.template').copy(self._cr,self._uid,product_id,context=self._context))
+            if len(copy_ids)==1:return True
+            return{
+                   'view_type': 'form',
+                   'view_mode': 'tree,form,kanban',
+                   'res_model': 'product.template',
+                   'type': 'ir.actions.act_window',
+                   'domain':[('id','in',copy_ids)],
+                   }
+        return True
+
+    def view_init(self, cr, uid, fields_list, context=None):
+        if context is None:
+            context = {}
+        res = super(panipat_product_template_duplicate, self).view_init(cr, uid, fields_list, context=context)
+        active_ids = context.get('active_ids',[])
+        if len(active_ids) > 1:
+            raise except_orm(_('ERROR!'), _('Cannot Duplicate More Than 1 Product at Once'))
+        return res
             
 class panipat_product_image_links(models.TransientModel):
     _name="panipat.product.image.links"
