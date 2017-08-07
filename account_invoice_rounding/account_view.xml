@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_invoice_customer_rounding" model="ir.ui.view">
+            <field name="name">account.invoice.customer.rounding</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='invoice_line']/tree//field[@name='sequence']" position="after">
+                	<field name='is_rounding' invisible="1"/>
+                </xpath>
+                <xpath expr="//field[@name='invoice_line']/tree" position="attributes">
+                    <attribute name="colors">White:is_rounding == True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='amount_untaxed']" position="attributes">
+                	<attribute name='invisible'>1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='amount_untaxed']" position="after">
+                	<field name="amount_untaxed_wo_rndoff"  widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                </xpath>
+                <xpath expr="//field[@name='amount_tax']" position="after">
+                	<field name="rndoff"  widget="monetary" options="{'currency_field': 'currency_id'}"   attrs="{'readonly':[('type','in',('out_invoice','out_refund'))]}"/>
+                </xpath>
+                <xpath expr="//button[@name='button_reset_taxes']" position="attributes">
+                	<attribute name='class'>oe_link</attribute>
+                </xpath>               
+            </field>
+        </record>
+
+        <record id="view_invoice_supplier_rounding" model="ir.ui.view">
+            <field name="name">account.invoice.supplier.rounding</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_supplier_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='invoice_line']/tree//field[@name='sequence']" position="after">
+                	<field name='is_rounding' invisible="1"/>
+                </xpath>
+                <xpath expr="//field[@name='invoice_line']/tree" position="attributes">
+                    <attribute name="colors">White:is_rounding == True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='amount_untaxed']" position="attributes">
+                	<attribute name='invisible'>1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='amount_untaxed']" position="after">
+                	<field name="amount_untaxed_wo_rndoff"  widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                </xpath>
+                <xpath expr="//field[@name='amount_tax']" position="after">
+                	<field name="rndoff"  widget="monetary" options="{'currency_field': 'currency_id'}"   attrs="{'readonly':['|',('state','in',('open','paid','cancel')),('type','in',('out_invoice','out_refund'))]}"/>
+                </xpath>
+                <xpath expr="//button[@name='button_reset_taxes']" position="attributes">
+                	<attribute name='class'>oe_link</attribute>
+                </xpath>               
+            </field>
+        </record>
+
+    </data>
+</openerp>
