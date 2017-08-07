@@ -2,36 +2,113 @@
 <openerp>
 <data>
 		<template id="report_customer_invoice_document">
-		        <div class="page">
-                    <h1 class="text-center" t-if="o.type == 'out_invoice'">Invoice</h1>
-                    <h1 class="text-center" t-if="o.type == 'out_refund'">Refund Invoice</h1>
+
+<div class="page">
+                    <div style="text-align:center">
+                    <t t-if="not o.journal_id.custom_company">
+                    <span style="font-size:14px;position:absolute">GSTIN No: <span t-field="res_company.company_gst_tin"/></span>
+                    </t>
+
+                    <t t-if="o.journal_id.custom_company">
+                    <span style="font-size:14px;position:absolute">GSTIN No: <span t-field="o.journal_id.custom_company.company_gst_tin"/></span>
+                    </t>
+
+                    <span style="font-size:14px;" t-if="o.type == 'out_invoice'"><u>TAX INVOICE</u></span>
+                    <span style="font-size:14px;" t-if="o.type == 'out_refund'"><u>REFUND INVOICE</u></span>
+                    </div>
+                    <t t-if="not o.journal_id.custom_company">
+                        <strong><div style="font-size:30px;text-align:center;text-transform: uppercase;" t-field="res_company.name"/></strong>
+                        <div style="text-align:center;text-transform: uppercase;" t-field="res_company.report_header_text"/>
+                        <div style="text-align:center">
+                            <div style="text-align:center">
+                            <span t-field="res_company.street"/>
+                            <span t-field="res_company.street2"/>
+                            <span t-field="res_company.city"/>
+                            <span t-field="res_company.state_id.name"/>
+                            <span t-field="res_company.zip"/>
+                            </div>
+                            
+                            <t t-if="res_company.partner_id.phone">Tel: <span t-field="res_company.partner_id.phone"/></t>
+                            <t t-if="res_company.partner_id.email">Email: <span t-field="res_company.partner_id.email"/></t>
+                            <t t-if="res_company.partner_id.email">Email: <span t-field="res_company.partner_id.email"/></t>
+                        </div>
+                    </t>
+                    <t t-if="o.journal_id.custom_company">
+                        <strong><div style="font-size:30px;font-weight: bold;text-align:center;text-transform: uppercase;" t-field="o.journal_id.custom_company.name"/></strong>
+                        <div style="text-align:center;text-transform: uppercase;" t-field="o.journal_id.custom_company.report_header_text"/>
+                        <div style="text-align:center">
+                            <div style="text-align:center">
+                            <span t-field="o.journal_id.custom_company.street"/>
+                            <span t-field="o.journal_id.custom_company.street2"/>
+                            <span t-field="o.journal_id.custom_company.city"/>
+                            <span t-field="o.journal_id.custom_company.state_id.name"/>
+                            <span t-field="o.journal_id.custom_company.zip"/>
+                            </div>
+                            <t t-if="o.journal_id.custom_company.phone">Tel: <span t-field="o.journal_id.custom_company.phone"/></t>
+                            <t t-if="o.journal_id.custom_company.email">Email: <span t-field="o.journal_id.custom_company.email"/></t>
+                        </div>
+                    
+                    </t>
+                    <br/>
                     <table class="table table-bordered">
                         <tr>
-                            <td rowspan="2" width="50%">
-                                <strong><div t-field="res_company.name"/></strong>
-                                <address t-field="res_company.partner_id"
-                                    t-field-options='{"widget": "contact", "fields": ["address"], "no_marker": true}' />
-                                <div t-if="res_company.partner_id.phone">Tel: <span t-field="res_company.partner_id.phone"/></div>
-                                <div t-if="res_company.partner_id.email">Email: <span t-field="res_company.partner_id.email"/></div>
+                            <td colspan="2">
+                                <strong><div style="text-align:center;font-size:16px;">Details of Receiver</div></strong>
                             </td>
-                            <td>Invoice No.<strong><div style="font-size:18px;" t-field="o.number"/></strong></td>
-                            <td>Dated<strong><div style="font-size:18px;" t-field="o.date_invoice"/></strong></td>
                         </tr>
                         <tr>
-                            <td>Buyer's Order No.:<div t-field="o.name"/></td>
-                            <td>Despatched Document No.:<div t-field="o.dispatch_doc"/></td>
+                            <td width="50%">
+                                <div><b>Name: </b><span t-field="o.partner_id.name"/></div>
+                                <div><b>Address: </b>
+                                    <span t-field="o.partner_id.street"/>
+                                    <t t-if="o.partner_id.street">,</t>
+                                    <span t-field="o.partner_id.street2"/>
+                                    <t t-if="o.partner_id.street2">,</t>
+                                    <span t-field="o.partner_id.city"/>
+                                    <t t-if="o.partner_id.city">,</t>
+                                    <span t-field="o.partner_id.zip"/>
+                                </div>
+                                <div><b>MB/PH: </b>
+                                    <span t-field="o.partner_id.mobile"/>
+                                    <t t-if="o.partner_id.phone">,</t>
+                                    <span t-field="o.partner_id.phone"/>
+                                </div>
+                                <div><b>State: </b><span t-field="o.partner_id.state_id.name"/></div>
+                                <div><b>State Code: </b><span t-field="o.partner_id.state_id.code"/></div>
+                                <div><b>GSTIN: </b><span t-field="o.partner_id.buyer_gst_tin"/></div>
+                            </td>
+
+
+                            <td>
+                                <div><b>Shipping Address: </b>
+                                </div>
+                                <br/>
+                                <div><b>State: </b></div>
+                                <div><b>State Code: </b></div>
+                            </td>
+                            
                         </tr>
+
+                        
                         <tr>
                             <td>
-                                <strong><u>Buyer</u></strong>
-                                <strong><div t-field="o.partner_id.name"/></strong>
-                                <address t-field="o.partner_id"
-                                    t-field-options='{"widget": "contact", "fields": ["address"], "no_marker": true}' />
-                                <span t-if="o.partner_id.buyer_vat_tin">TIN: <span t-field="o.partner_id.buyer_vat_tin"/></span>
-                                <span t-if="o.partner_id.mobile">, MB: <span t-field="o.partner_id.mobile"/></span>
+                                <div><b>Invoice No: </b><span t-field="o.number"/></div>
+                                <div><b>Invoice Date: </b><span t-field="o.date_invoice"/></div>
+                                <div>GST Payable on Reverse Charge: 
+                                    <t t-if="o.reverse_charge">
+                                        <span><b>YES</b></span>
+                                    </t>
+                                    <t t-if="not o.reverse_charge">
+                                        <span><b>NO</b></span>
+                                    </t>
+                                </div>
                             </td>
-                            <td>Despatched Through:<div t-field="o.dispatch_thru"/></td>
-                            <td>Destination:<div t-field="o.destination"/></td>
+                            <td>
+                                <div><b>GR No: </b><span t-field="o.gr_no"/></div>
+                                <div><b>GR Date: </b><span t-field="o.gr_date"/></div>
+                                <div><b>Through: </b></div>
+                                <br/>
+                            </td>
                         </tr>
                     </table>
                     
@@ -40,37 +117,44 @@
                         <tr>
                             <th class="text-left">No.</th>
                             <th class="text-center">Description of Goods</th>
+                            <th class="text-center">HSN Code</th>
                             <th class="text-left">TAX(%)</th>
-                            <th class="text-right">Quantity(Per)</th>
+                            <th class="text-right">Quantity (Per)</th>
                             <th class="text-right">Rate</th>
                             <th class="text-right" groups="sale.group_discount_per_so_line">Disc (%)</th>
-                            <th class="text-right">Amount<br>(Untaxed,Discounted)</br></th>
+                            <th class="text-right">Taxable<br>Amount</br></th>
                         </tr>
                     </thead>
                     <tbody class="invoice_tbody">
                         <t t-set="sr_no" t-value="0"/>
+                        <t t-set="round_off" t-value="0"/>
                         <tr t-foreach="o.invoice_line" t-as="l" style="page-break-inside:avoid">
-                            <t t-set="sr_no" t-value="sr_no+1"/>
-                            <td><span t-esc="sr_no"/></td>
-                            <td><span t-field="l.name"/></td>
-                            <!--td class="text-right">
-                                <span t-esc="'%, '.join(map(lambda x: (x.amount * 10), l.invoice_line_tax_id))"/>
-                            </td-->
-							<td class="text-right">
-                                <span t-esc="', '.join(map(lambda x: x.name, l.invoice_line_tax_id))"/>
-                            </td>
-                            <td>
-                                <span t-field="l.quantity"/>
-                                <span t-field="l.uos_id"/>
-                            </td>
-                            <td class="text-right">
-                                <span t-field="l.price_unit"/>
-                            </td>
-                            <td class="text-right" groups="sale.group_discount_per_so_line"><span t-field="l.discount"/></td>
-                            <td class="text-right">
-                                <span t-field="l.price_subtotal" 
-                                    t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}'/>
-                            </td>
+                            <t t-if="not l.is_rounding">
+                                <t t-set="sr_no" t-value="sr_no+1"/>
+                                <td class="text-left"><span t-esc="sr_no"/></td>
+                                <td><span t-field="l.name"/></td>
+                                <!--td class="text-right">
+                                    <span t-esc="'%, '.join(map(lambda x: (x.amount * 10), l.invoice_line_tax_id))"/>
+                                </td-->
+                                <td><span t-field="l.hsn_code.name"/></td>
+                                <td class="text-left">
+                                    <span t-esc="', '.join(map(lambda x: x.name, l.invoice_line_tax_id))"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="l.quantity"/>
+                                    (<span t-field="l.uos_id"/>)
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="l.price_unit"/>
+                                </td>
+                                <td class="text-right" groups="sale.group_discount_per_so_line"><span t-field="l.discount"/></td>
+                                <td class="text-right">
+                                    <span t-field="l.price_subtotal" t-field-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: &quot;o.currency_id&quot;}"/>
+                                </td>
+                            </t>
+                            <t t-if="l.is_rounding">
+                                <t t-set="round_off" t-value="l.price_subtotal"/>
+                            </t>
                         </tr>
                     </tbody>
                 </table>
@@ -87,50 +171,72 @@
                             <tr class="border-black">
                                 <td><strong>Total Without Taxes</strong></td>
                                 <td class="text-right">
-                                    <span t-field="o.amount_untaxed" t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}'/>
+                                    <span t-field="o.amount_untaxed_wo_rndoff" t-field-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: &quot;o.currency_id&quot;}"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td>Taxes</td>
+                                <td>SGST Value</td>
                                 <td class="text-right">
-                                    <span t-field="o.amount_tax" t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}'/>
+                                    <span t-esc="tax_amt('SGST')"/> <span t-field="o.currency_id.symbol"/>
                                 </td>
                             </tr>
+                            <tr>
+                                <td>CGST Value</td>
+                                <td class="text-right">
+                                    <span t-esc="tax_amt('CGST')"/> <span t-field="o.currency_id.symbol"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>IGST Value</td>
+                                <td class="text-right">
+                                    <span t-esc="tax_amt('IGST')"/> <span t-field="o.currency_id.symbol"/>
+                                </td>
+                            </tr>
+                            <t t-if="not round_off==0.0">
+                                <tr>
+                                    <td>Rnd-Off</td>
+                                    <td class="text-right">
+                                        <span t-esc="round_off_fmt(round_off)"/><span> </span><span t-field="o.currency_id.symbol"/>
+                                    </td>
+                                </tr>
+                            </t>
+                            
                             <tr class="border-black">
-                                <td><strong>Total</strong></td>
+                                <td><strong>Grand Total</strong></td>
                                 <td class="text-right">
-                                     <span t-field="o.amount_total" t-field-options='{"widget": "monetary", "display_currency": "o.currency_id"}'/>
+                                     <span t-field="o.amount_total" t-field-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: &quot;o.currency_id&quot;}"/>
                                 </td>
                             </tr>
+                            <t t-if="o.reverse_charge">
+                                <tr>
+                                    <td>GST on Reverse Charge</td>
+                                    <td class="text-right">
+                                        <span t-field="o.amount_tax" t-field-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: &quot;o.currency_id&quot;}"/>
+                                    </td>
+                                </tr>
+                            </t>
                         </table>
                     </div>
                 </div>
                 
-                <table width="40%" style="page-break-inside:avoid">
-                    <tr>
-                        <td>Company's VAT TIN</td>
-                        <td>:&#160;&#160;</td>
-                        <td><span t-field="res_company.company_vat_tin"/></td>
-                    </tr>
-                    <tr>
-                        <td>Company's CST No.</td>
-                        <td>:&#160;&#160;</td>
-                        <td><span t-field="res_company.company_cst_no"/></td>
-                    </tr>
-                    <tr>
-                        <td>Company's PAN</td>
-                        <td>:&#160;&#160;</td>
-                        <td><span t-field="res_company.company_pan_no"/></td>
-                    </tr>
-                </table>
+                
                 <table class="mt32" width="100%" style="page-break-inside:avoid">
                     <tr height="50px;">
                         <td rowspan="2" width="50%">
                             Declaration<br/>
+                            Goods once sold cannot be exchanged or returned.<br/>
                             We declare that this invoice shows the actual price of the goods 
                             described and that all particulars are true and correct.
+
                         </td>
-                        <td class="text-right" style="padding-left:10px;"><strong>for <span t-field="res_company.name"/></strong></td>
+                        <td class="text-right" style="padding-left:10px;"><strong>for 
+                            <t t-if="not o.journal_id.custom_company">
+                            <span t-field="res_company.name"/>
+                            </t>
+                            <t t-if="o.journal_id.custom_company">
+                            <span t-field="o.journal_id.custom_company.name"/>
+                            </t></strong>
+                        </td>
                     </tr>
                     <tr>
                         <td class="text-right">Authorised Signatory</td>
@@ -139,6 +245,8 @@
                 
                 <p class="text-center">This is a Computer Generated Invoice</p>
                 </div>
+
+
 </template>
 
 <template id="customer_report_invoice">

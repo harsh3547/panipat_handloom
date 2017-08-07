@@ -10,6 +10,13 @@
                     <field name="company_vat_tin"/>
                     <field name="company_cst_no"/>
                     <field name="company_pan_no"/>
+                    <field name="company_gst_tin"/>
+                </xpath>
+                <xpath expr="//group[@string='Bank Accounts']" position="before">
+                    <div>
+                        <label for="report_header_text"/>
+                        <field name="report_header_text"/>
+                    </div>
                 </xpath>
             </field>
         </record>
@@ -21,6 +28,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='title']" position="after">
                     <field name="buyer_vat_tin"/>
+                    <field name="buyer_gst_tin"/>
                 </xpath>
             </field>
         </record>
