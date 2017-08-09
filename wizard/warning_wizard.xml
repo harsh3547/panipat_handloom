@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="warning_wizard_sale_view" model="ir.ui.view">
+            <field name="name">Warning Wizard</field>
+            <field name="model">warning.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Warning Wizard">
+                    <group>
+                       	<h3>Please Cancel Quotation/Sale Order <field class='oe_inline' name='sale_order'/> after cancelling this job</h3>
+                    </group>
+                    <footer>
+                        <button name="call_method" string="Ok" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        
+        <record id="warning_wizard_invoice_view" model="ir.ui.view">
+            <field name="name">Warning Wizard</field>
+            <field name="model">warning.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Warning Wizard">
+                    <group col="1">
+                       	<h3 attrs="{'invisible':[('customer_invoice','=',False)]}" >Please Cancel Customer <field class='oe_inline' name='customer_invoice'/> after cancelling this job</h3>
+                       	<h3 attrs="{'invisible':[('commission_invoice','=',False)]}" >Please Cancel Commission <field class='oe_inline' name='commission_invoice'/> after cancelling this job</h3>
+                       	<h3 attrs="{'invisible':[('supplier_invoice','=',False)]}" >Please Cancel <field class='oe_inline' name='supplier_invoice'/> after cancelling this job</h3>
+                    </group>
+                    <footer>
+                        <button name="call_method" string="Ok" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</openerp>
