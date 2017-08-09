@@ -7,7 +7,12 @@ from openerp.tools.translate import _
 class panipat_order_group(models.Model):
     _name="panipat.order.group"
     _order='state desc,name desc'
-    
+
+    def _get_custom_company_default(self):
+    value= self.env.user.company_id
+    #print value
+    return value
+
     @api.one
     @api.depends()
     def _count_all(self):
@@ -387,7 +392,8 @@ class panipat_order_group(models.Model):
     supplier_invoice_count=fields.Integer(compute='_count_all',default=0)
     purchase_order_count=fields.Integer(compute='_count_all',default=0)
     state = fields.Selection(string="State",selection=[('in_progress','Progress'),('done','Done'),('cancel','Cancel')],default='in_progress',copy=False)
-    
+    custom_company=fields.Many2one(comodel_name='res.company',string="Company",required=True,default=_get_custom_company_default)
+        
     
     @api.model
     def create(self,vals):

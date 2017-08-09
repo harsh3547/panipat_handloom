@@ -9,7 +9,13 @@ class panipat_crm_lead(models.Model):
     _name = "panipat.crm.lead"
     _rec_name = 'sequence'
     _order = 'sequence desc'
-    
+
+
+    def _get_custom_company_default(self):
+        value= self.env.user.company_id
+        #print value
+        return value
+
     
     def _get_amount_paid(self):
         amount_paid=0.0
@@ -157,6 +163,8 @@ class panipat_crm_lead(models.Model):
         employee_ids=map(int,self.browse(cr,uid,id).employee_line or [])
         self.pool.get('panipat.employee.schedule').create_employee_from_schedule(cr,uid,employee_ids,override_vals={'state':'confirm','origin':lead_obj.sequence or '/'},context=context)
         self.write(cr,uid,id,vals,context=None)
+        if lead_obj.order_group:
+            self.pool.get("panipat.order.group").write(cr,uid,lead_obj.order_group.id,{'custom_company':lead_obj.custom_company.id},context=context)
         return True
     
     def button_to_draft(self,cr,uid,id,context=None):
@@ -253,7 +261,7 @@ class panipat_crm_lead(models.Model):
         return return_check
                 
                 
-    
+    custom_company=fields.Many2one(comodel_name='res.company',string="Company",required=True,default=_get_custom_company_default)
     partner_name = fields.Char(compute='_get_partner_details',string="Company Name")
     partner_id = fields.Many2one('res.partner', 'Partner',track_visibility='onchange',
         select=True)
