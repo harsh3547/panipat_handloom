@@ -58,6 +58,21 @@
                                 </div>
                             </div>
                             <group colspan="6">
+                                <field name="custom_caption_boolean"/>
+                            </group>
+                            <group>
+                                <div>
+                                    <label for = "caption" />
+                                    <field name = "caption" />
+                                </div>
+                                <div attrs="{'invisible': [('custom_caption_boolean', '=', False)]}">
+                                    <label for = "custom_caption" />
+                                    <field name = "custom_caption" />
+                                </div>
+                            </group>
+
+                        </group>
+                    </page>
                     <page string="Full Image">
                         <div style="max-width:100%;height:auto">
                             <field name="image" widget="image" class="my_image_custom" edit='False'/>

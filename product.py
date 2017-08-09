@@ -117,6 +117,33 @@ class product_template(models.Model):
         if self.image:
             return self.image
         return False
+
+    @api.multi
+    @api.depends('name','default_code','panipat_brand_name','vol_file_name','serial_no','shade_no','design_code','color_code','other_code','color_name')
+    def _get_caption_value(self):
+        for p_obj in self:
+            attrs=''
+            attrs=(('['+p_obj.default_code+'] ') if p_obj.default_code else '' ) + (p_obj.name or '')
+            attrs=(attrs + ' '+str(p_obj.panipat_brand_name.name)) if p_obj.panipat_brand_name.name else ''
+            attrs=(attrs + ';'+str(p_obj.vol_file_name.name)) if p_obj.vol_file_name.name else ''
+            if p_obj.serial_no:
+                attrs=attrs + ' (S/No-'+str(p_obj.serial_no)+')'
+            if p_obj.shade_no:
+                attrs=attrs + ' (Sh/No-'+str(p_obj.shade_no)+')'
+            if p_obj.design_code:
+                attrs=attrs + ' (D/No-'+str(p_obj.design_code)+')'
+            if p_obj.color_code:
+                attrs=attrs + ' (Co/Co-'+str(p_obj.color_code)+')'
+            if p_obj.other_code:
+                attrs=attrs + ' (Ot/Co-'+str(p_obj.other_code)+')'
+            if p_obj.color_name:
+                attrs=attrs + ' COLOR-'+str(p_obj.color_name)+''
+            p_obj.caption=p_obj.custom_caption if (p_obj.custom_caption_boolean and p_obj.custom_caption) else attrs            
+
+    caption=fields.Text(string="Image Caption",compute=_get_caption_value)
+    custom_caption=fields.Text(string="Custom Caption")
+    custom_caption_boolean = fields.Boolean(string='Insert Custom Caption',)
+    uom_id=fields.Many2one(comodel_name='product.uom',string= 'Unit of Measure', required=True,default=False, help="Default Unit of Measure used for all stock operation.")
     panipat_brand_name=fields.Many2one(comodel_name='panipat.brand.name', string='Brand Name')
     vol_file_name=fields.Many2one(comodel_name='panipat.brand.vol', string='Vol/File No.')
     ean13=fields.Char(readonly=True,copy=False)
