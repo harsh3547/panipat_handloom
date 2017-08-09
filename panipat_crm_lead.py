@@ -41,11 +41,15 @@ class panipat_crm_lead(models.Model):
         lead_obj = self.browse(cr,uid,id,context)
         values=[]
         vals={}
+        if context is None:context={}
         if lead_obj.product_line :
             for i in lead_obj.product_line :
                 values.append((0,0,{'product_id':i.product_id.id,
                                     'name':i.description or self.pool.get('product.product').name_get(cr,uid,[i.product_id.id],context)[0][1] or "",
                                     'product_uom_qty':i.product_uom_qty,
+                                    'product_uom':i.product_uom.id,
+                                    'price_unit':i.sale_price,
+                                    
                                     }))
             vals.update({'order_line':values})
                 
@@ -53,28 +57,18 @@ class panipat_crm_lead(models.Model):
             vals.update({'partner_id':lead_obj.partner_id.id}) 
         vals['order_group'] = lead_obj.order_group.id
         vals['origin']=lead_obj.sequence
-        print "---------vals in make_qutaion crm.lead.allocated==========",vals
+        vals['client_order_ref']=lead_obj.client_order_ref
+        print "---------vals in make_qutaion ==========",vals
         quotation_id = self.pool.get('sale.order').create(cr,uid,vals,context=None)
-        self.write(cr,uid,id,{'state':'quotation'},context=None)
-        return True
-    
-    
-    def view_quotation(self,cr,uid,id,context=None):
-        vals = {}
-        order_group = self.browse(cr,uid,id,context=None).order_group.id
-        sale_ids = self.pool.get('sale.order').search(cr,uid,[('order_group','=',order_group)],context=None)
-        if sale_ids :
-            if len(sale_ids) == 1 :
-                return {
+        self.write(cr,uid,id,{'state':'quotation','sale_order':quotation_id},context=None)
+        return {
                 'name': 'Sale Order Form',
                 'view_type': 'form',
                 'view_mode': 'form',
                 'res_model': 'sale.order',
                 'type': 'ir.actions.act_window',
-                'res_id': sale_ids[0],
+                'res_id': quotation_id,
                 }
-            else :
-                return {
                 'name': 'Sale Order Form',
                 'view_type': 'form',
                 'view_mode': 'tree,form',
