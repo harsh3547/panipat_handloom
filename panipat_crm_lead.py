@@ -42,7 +42,8 @@ class panipat_crm_lead(models.Model):
         if lead_obj.product_line :
             for i in lead_obj.product_line :
                 values.append((0,0,{'product_id':i.product_id.id,
-                                    'name':i.description or self.pool.get('product.product').name_get(cr,uid,[i.product_id.id],context=context)[0][1] or "",
+                                    'name':i.description or self.pool.get('product.product').name_get(cr,uid,[i.product_id.id],context)[0][1] or "",
+                                    'product_uom_qty':i.product_uom_qty,
                                     }))
             vals.update({'order_line':values})
                 

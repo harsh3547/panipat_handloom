@@ -35,30 +35,43 @@ class product_product(osv.Model):
     
     def name_get(self, cr, uid, ids, context=None):
         res = super(product_product, self).name_get(cr, uid, ids, context)
+        #print "-=-=in name_get product_product=-=-",context,res
         res_new=[]
+        if context.get('cust_inv_name_get',False):
+            for rec in res:
+                if rec and not rec[1]:continue
+                attrs=''
+                p_obj=self.pool.get('product.product').browse(cr,uid,rec[0],context)
+                attrs=(attrs +str(p_obj.panipat_brand_name.name)) if p_obj.panipat_brand_name.name else ''
+                new_name=rec[1] +' ['+attrs+']' if attrs else rec[1]
+                res_new.append((rec[0],new_name))
+            #print "--res_new=-=in name_get product_product=-=-",res_new
+            if res_new:return res_new
+
         for rec in res:
+            if rec and not rec[1]:continue
             attrs=''
             p_obj=self.pool.get('product.product').browse(cr,uid,rec[0],context)
             attrs=(attrs + ' '+str(p_obj.panipat_brand_name.name)) if p_obj.panipat_brand_name.name else ''
-            attrs=(attrs + ' '+str(p_obj.vol_file_name.name)) if p_obj.vol_file_name.name else ''
+            attrs=(attrs + ';'+str(p_obj.vol_file_name.name)) if p_obj.vol_file_name.name else ''
             if p_obj.serial_no:
-                attrs=attrs + ' '+str(p_obj.serial_no)
-            elif p_obj.shade_no:
-                attrs=attrs + ' '+str(p_obj.shade_no)
-            elif p_obj.design_code:
-                attrs=attrs + ' '+str(p_obj.design_code)
-            elif p_obj.color_code:
-                attrs=attrs + ' '+str(p_obj.color_code)
-            elif p_obj.other_code:
-                attrs=attrs + ' '+str(p_obj.other_code)
-            else:
-                pass
-            new_name=rec[1] +' ['+attrs+']' 
+                attrs=attrs + ' (S/No-'+str(p_obj.serial_no)+')'
+            if p_obj.shade_no:
+                attrs=attrs + ' (Sh/No-'+str(p_obj.shade_no)+')'
+            if p_obj.design_code:
+                attrs=attrs + ' (D/No-'+str(p_obj.design_code)+')'
+            if p_obj.color_code:
+                attrs=attrs + ' (Co/Co-'+str(p_obj.color_code)+')'
+            if p_obj.other_code:
+                attrs=attrs + ' (Ot/Co-'+str(p_obj.other_code)+')'
+            if not (p_obj.serial_no and p_obj.shade_no and p_obj.design_code and p_obj.color_code and p_obj.other_code) and  p_obj.color_name:
+                attrs=attrs + ' (Color-'+str(p_obj.color_name)+')'
+            new_name=rec[1] +' ['+attrs+']' if attrs else rec[1]
             res_new.append((rec[0],new_name))
-            
-        #print "-=-=in name_get product_product=-=-",res_new
-        return res_new
-    
+        #print "--res_new=-=in name_get product_product=-=-",res_new
+        if res_new:return res_new
+        return res
+        
 class product_pricelist(osv.osv):
     inherit="product.pricelist"
     

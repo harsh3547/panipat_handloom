@@ -145,4 +145,23 @@ class account_invoice(models.Model):
             move_obj.action_done(self._cr, self._uid, move_list, context=self._context)
         return picking_id or False
 
-        
+            @api.multi
+    @api.multi
+    def product_id_change(self, product, uom_id, qty=0, name='', type='out_invoice',
+            partner_id=False, fposition_id=False, price_unit=False, currency_id=False,
+            company_id=None):
+    
+        res = super(account_invoice_line, self).product_id_change(product, uom_id, qty, name, type, partner_id, fposition_id, price_unit, currency_id, company_id)
+        if product and type in ('in_invoice', 'in_refund'):
+            if res.get('value',False) and res['value'].get('name',False):
+                new_name=self.pool.get('product.product').name_get(self._cr, self._uid, [product], self._context)
+                if new_name:res['value']['name']=new_name[0][1]
+
+        if product and type in ('out_invoice', 'out_refund'):
+            if res.get('value',False) and res['value'].get('name',False):
+                ctx=self._context.copy()
+                ctx['cust_inv_name_get']=True
+                new_name=self.pool.get('product.product').name_get(self._cr, self._uid, [product], context=ctx)
+                if new_name:res['value']['name']=new_name[0][1]
+
+        res['value']['hsn_code']=self.pool.get("product.product").browse(self._cr, self._uid,product,context=self._context).product_tmpl_id.hsn_code
