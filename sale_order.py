@@ -76,11 +76,35 @@ class sale_order(models.Model):
             for rec in o.order_line:
                 qty=self.pool.get('product.uom')._compute_qty(cr, uid, rec.product_uom.id, rec.product_uom_qty, rec.product_id.uom_id.id)
                 if qty<=0.0:raise except_orm(_('Error!'), _('Qty of product %s cannot be zero'%(self.pool.get('product.product').name_get(cr,uid,rec.product_id.id,context)[0][1])))
-                if rec.product_id.type=='product' and rec.product_id.virtual_available<qty and len(rec.product_id.seller_ids)==0:
+                '''if rec.product_id.type=='product' and rec.product_id.virtual_available<qty and len(rec.product_id.seller_ids)==0:
                     raise except_orm(_('Error!'), _('Please add a Supplier to Product-- %s'%(self.pool.get('product.product').name_get(cr,uid,rec.product_id.id,context)[0][1])))
+                '''
 
         return super(sale_order,self).action_wait(cr,uid,ids,context)
     
+    ## overridden from sale order
+    def copy_quotation(self, cr, uid, ids, context=None):
+        print "==============================-=-=-=-=-=-"
+        obj=self.browse(cr, uid, ids[0], context)
+        id_new = self.copy(cr, uid, ids[0],default={'order_group':obj.order_group.id}, context=context)
+        if obj.order_group:
+            lead_search=self.pool.get('panipat.crm.lead').search(cr,uid,[('sale_order','=',ids[0])],context=context)
+            if lead_search:
+                self.pool.get('panipat.crm.lead').write(cr,uid,lead_search[0],{'sale_order':id_new},context=context)
+            self.write(cr, uid, ids[0],{'order_group':False}, context=context)
+        view_ref = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'sale', 'view_order_form')
+        view_id = view_ref and view_ref[1] or False,
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Sales Order'),
+            'res_model': 'sale.order',
+            'res_id': id_new,
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': view_id,
+            'target': 'current',
+            'nodestroy': True,
+        }
     
     def do_view_po(self, cr, uid, ids, context=None):
         '''
@@ -183,7 +207,7 @@ class sale_order(models.Model):
                             'form_view_ref':'account_voucher.view_vendor_receipt_form',
                             'default_partner_id': obj.partner_id.parent_id.id if obj.partner_id.parent_id else obj.partner_id.id,
                             # customer payment only done by company if company exists for the contact
-                            'default_name':obj.name+':'+obj.order_group.name if obj.order_group else obj.name,
+                            'default_name':obj.name+':'+(obj.order_group.name if obj.order_group else obj.name) +':'+'ADVANCE (sale order)',
                             'order_group':obj.order_group and obj.order_group.id or False,
                             'search_disable_custom_filters': False
                             }
@@ -213,6 +237,7 @@ class sale_order(models.Model):
     picking_count=fields.Char(compute='_count_all')
     total_paid_amount =fields.Float(compute='_get_amount_paid',string="Payment")
     order_group = fields.Many2one(comodel_name='panipat.order.group', string="Order Group",copy=False,readonly=True)
+    client_order_ref=fields.Char('Buyer Order No./Ref', copy=False)
 
 class sale_order_line(models.Model):
     _inherit="sale.order.line"
