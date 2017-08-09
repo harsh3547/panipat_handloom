@@ -21,7 +21,7 @@ def ean_checksum(eancode):
     total=0
     eanvalue=eancode
     finalean=eanvalue[::-1]
-    print finalean
+    #print finalean
     for i in range(len(finalean)):
         if i % 2 == 0:
             oddsum += int(finalean[i])
@@ -267,11 +267,19 @@ class product_template(models.Model):
         return super(product_template, self).write(vals)
         
     
+    @api.multi
+    def remove_barcode(self):
+        self.write({'default_code':''})
+        return True
+    
+    @api.multi
+    def display_barcode(self):
+        self.write({'default_code':str(int(self.ean13))})
+        return True
+                
 class product_product(models.Model):
     _inherit="product.product"
     
-    ean13=fields.Char(readonly=True)
-    default_code=fields.Char(readonly=True)
     
     def get_valid_ean(self,brand_obj_id=False):
         if not brand_obj_id:
@@ -282,9 +290,9 @@ class product_product(models.Model):
             brand_barcode=brand_obj_id.barcode_no
         no_of_zeroes=12-len(str(brand_barcode)+str(product_barcode))
         ean_12=no_of_zeroes*"0"+str(brand_barcode)+str(product_barcode)
-        print "=====ean12====",ean_12
+        #print "=====ean12====",ean_12
         final_barcode=ean_12+str(ean_checksum(ean_12))
-        print "final barcode======",final_barcode,int(final_barcode)
+        #print "final barcode======",final_barcode,int(final_barcode)
         return final_barcode
     
     @api.model
