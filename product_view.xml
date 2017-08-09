@@ -22,13 +22,43 @@
             <field name="inherit_id" ref="product.product_template_form_view" />
             <field name="arch" type="xml">
 			<!-- Adding fields width and height -->
-				<xpath expr="//field[@name='list_price']" position="after">
-					<label for = "panipat_brand_name"/>
-					<div>
-						<field name = "panipat_brand_name" placeholder="Brand Name"/>
-						<field name = "vol_file_name" placeholder="Vol No./File No." attrs="{'invisible':[('panipat_brand_name','=',False)]}" class="oe_inline" domain="[('panipat_brand_name', '=', panipat_brand_name)]" context="{'default_panipat_brand_name':panipat_brand_name}"/>
-					</div>
-				</xpath>
+                <xpath expr="//field[@name='list_price']" position="after">
+					<field name = "panipat_brand_name" placeholder="Brand Name"/>
+                    <field name = "vol_file_name" placeholder="Vol No./File No." attrs="{'invisible':[('panipat_brand_name','=',False)]}" domain="[('panipat_brand_name', '=', panipat_brand_name)]" context="{'default_panipat_brand_name':panipat_brand_name}"/>
+                <xpath expr="//page[@string='Information']/group" position='after'>
+                    <group col="4">
+                            <field name="serial_no"/>
+                            <field name="design_code"/>
+                            <field name="shade_no"/>
+                            <field name="color_code"/>
+                            <field name="other_code"/>
+                            <field name="material"/>
+                            <field name="pattern"/>
+                            <field name="color_name"/>
+                            <field name="size"/>
+                            <field name="panipat_product_type"/>
+                        </group>
+                </xpath>
+                <xpath expr="//group[@name='procurement_uom']" position='attributes'>
+                    <attribute name='invisible'>1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='uom_po_id']" position='replace'/>
+                <xpath expr="//field[@name='standard_price']" position='after'>
+                    <field name='uom_po_id' groups='product.group_uom'/>
+                </xpath>
+                <xpath expr="//group[@name='general']" position='after'>
+                    <group>
+                        <div>
+                            <label for='roll_rates' class='oe_bold'/>
+                            <field name='roll_rates'>
+                                <tree string='Roll Rates' editable='bottom'>
+                                    <field name='name'/>
+                                    <field name='rate'/>
+                                </tree>
+                            </field>
+                        </div>
+                    </group>
+                </xpath>
                 <xpath expr="//page[@name='sales']" position="before">
                     <page string="Images">
                         <button string="Update Image" type="object" name='button_main_image' class="oe_highlight"/>
@@ -104,6 +134,74 @@
                 
 			</field>
 		</record>		
+
+
+
+        <record id="panipat_product_template_only_form_view" model="ir.ui.view">
+            <field name="name">product.template.product.form.panipat</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='variants']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_template_form_roll_rates" model="ir.ui.view">
+            <field name="name">product.template.panipat.roll.rates</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="stock.view_template_property_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@string='Supply Chain Information']" position='attributes'>
+                    <attribute name='invisible'>1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='route_ids']" position='replace'/>
+                <field name="uom_po_id" position='after'>
+                    <field name='route_ids' widget="many2many_checkboxes" attrs="{'invisible': [('type', '=', 'service')]}" groups="base.group_user"/>
+                </field>
+            </field>
+        </record>   		
+		
+		
+		<record id="view_template_form_category" model="ir.ui.view">
+            <field name="name">product.template.panipat.categ</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="account.product_template_form_view"/>
+            <field name="arch" type="xml">
+            	<xpath expr="//label[@for='categ_id']" position='replace'/>
+                <xpath expr="//field[@name='categ_id']" position='replace'/>
+            	<xpath expr="/form/sheet/div/div[@name='options']" position='after'>
+                   <div class="oe_left">
+                   		<label for="categ_id"/>
+                       	<field name="categ_id"/>
+                   </div>
+				</xpath>
+            </field>
+        </record>	
+
+        <record id="panipat_product_template_tree_view" model="ir.ui.view">
+            <field name="name">panipat.product.template.tree</field>
+            <field name="model">product.template</field>
+            <field name="priority" eval="6" />
+            <field name="arch" type="xml">
+                <tree string="Product" colors="black:True" class="my_custom_css">
+                    <field name="default_code" string="Code"/>
+                    <field name="categ_id" string="Category"/>
+                    <field name="name" string="Name"/>
+                    <field name="panipat_brand_name" string="Brand"/>
+                    <field name="vol_file_name" string="File" />
+                    <field name="serial_no" string="S/No. "/>
+                    <field name="design_code" string="D/No. "/>
+                    <field name="shade_no" string="Sh/No. "/>
+                    <field name="color_code" string="Co/Co. "/>
+                    <field name="other_code" string="Ot/Co. "/>
+                    <field name="color_name" sring="Color"/>
+                </tree>
+            </field>
+        </record>
+		
+		
 		
 		  <record id="product_template_brand_search_view" model="ir.ui.view">
             <field name="name">product.template.search.brand.view</field>
@@ -112,17 +210,107 @@
             <field name="arch" type="xml">
             	<field name="name" position="after">
                    <field name="panipat_brand_name" string="Brand Name"/>
+                   <field name="vol_file_name" string="File Name" />
+                   <field name="design_code" string="Attributes" filter_domain="['|','|','|','|',('design_code','ilike',self),('serial_no','ilike',self),('shade_no','ilike',self),('color_code','ilike',self),('other_code','ilike',self)]"/>
+                   <field name="serial_no" string="Serial/Page No."/>
+                   <field name="design_code" string="Design/Item Code"/>
+                   <field name="shade_no" string="Shade No."/>
+                   <field name="color_code" string="Color Code"/>
+                   <field name="other_code" string="Other Code"/>
+                   <field name="color_name" sring="Color"/>
                 </field>
+                <xpath expr="//field[@name='company_id']" position="replace"/>
                 <xpath expr="//group[@string='Group by...']" position="inside">
                     <filter string='Brand Name' name="panipat_brand_name" domain="[]" context="{'group_by' : 'panipat_brand_name'}"/>
+                    <filter string='File Name' name="vol_file_name" domain="[]" context="{'group_by' : 'vol_file_name'}"/>
+                    <filter string="Color" name='color' context="{'group_by':'color_name'}"/>
+                    <filter string="Material" name='material' context="{'group_by':'material'}"/>
+                    <filter string="Pattern" name='pattern' context="{'group_by':'pattern'}"/>
+                    <filter string="Pattern Type" name='type' context="{'group_by':'panipat_product_type'}"/>
                 </xpath>
             </field>
         </record>
         
+
+        <!-- adding roll rates in supplier prices -->
+        <record id="product_supplierinfo_form_view_inherit1" model="ir.ui.view">
+            <field name="name">product.supplierinfo.form.view.inherit1</field>
+            <field name="model">product.supplierinfo</field>
+            <field name="inherit_id" ref="product.product_supplierinfo_form_view"/>
+            <field name="arch" type="xml">
+            	<xpath expr="//field[@name='delay']" position='after'>
+            		<field name="roll_rates">
+            			<tree string='Roll Rates' editable='bottom'>
+            				<field name='name'/>
+            				<field name='rate'/>
+            			</tree>
+            		</field>
+            	</xpath>
+            	<xpath expr="/form/p" position='after'>
+            		<p groups="product.group_purchase_pricelist">For cut rate put qty=0 and the enter unit price</p>
+            	</xpath>
+            </field>
+        </record>
+
+        <record id="purchase.product_normal_action_puchased" model="ir.actions.act_window">
+            <field name="name">Product Main</field>
+            <field name="view_mode">tree,kanban,form</field>
+        </record>
+        <menuitem name="Product Main" id="purchase.menu_procurement_partner_contact_form" action="purchase.product_normal_action_puchased"
+          parent="purchase.menu_procurement_management_product"/>
+
+
+        <record id="product.product_template_action" model="ir.actions.act_window">
+            <field name="name">Product Main</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="view_id" ref="panipat_product_template_tree_view"/>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.template</field>
+            <field name="view_type">form</field>
+            <field name="context">{"search_default_filter_to_sell":0}</field>
+        </record>
+        <menuitem action="product.product_template_action"
+            id="product.menu_product_template_action"
+            parent="base.menu_product" name="Product Main" sequence="1" />
+
+
+		<record id="panipat_product_product_tree_view" model="ir.ui.view">
+            <field name="name">panipat.product.product.tree</field>
+            <field name="model">product.product</field>
+            <field eval="6" name="priority"/>
+            <field name="arch" type="xml">
+
+                <tree string="Product Main 2" class="my_custom_css" colors="red:virtual_available&lt;0;blue:virtual_available&gt;=0 and state in ('draft', 'end', 'obsolete');black:virtual_available&gt;=0 and state not in ('draft', 'end', 'obsolete')">
+                    <field name="default_code" string="Code" />
+                    <field name="categ_id" string="Category"/>
+                    <field name="name"/>
+					<field name="type"/>
+                    <field name="lst_price" string="Sale Price"/>
+                    <field name="standard_price" />
+                    <field name="qty_available"/>
+                    <field name="virtual_available"/>
+                    <field name="uom_id" string="Unit"/>
+                    <field name="state" invisible="1"/>
+                    <field name="product_tmpl_id" invisible="1"/>
+
+                </tree>
+            </field>
+        </record>
+
+        
+        <record id="product.product_normal_action_sell" model="ir.actions.act_window">
+            <field name="name">Product Main 2</field>
+            <field name="view_id" ref="panipat_product_product_tree_view"/>
+            <field name="context">{"search_default_filter_to_sell":0}</field>
+        </record>
+
+        <menuitem id="product.menu_products" action="product.product_normal_action_sell" parent="base.menu_product" groups="base.group_no_one" sequence="10" name="Product Main 2"/>
+
         <!-- changing visibility of product variants menuitem -->
         <record model="ir.ui.menu" id="product.menu_products">
-        	<field name="groups_id" eval="[(3,ref('base.group_no_one'))]"/>
-    	</record>
+            <field name="groups_id" eval="[(3,ref('base.group_no_one'))]"/>
+        </record>
+
 
 
         <record id="product_template_duplicate_view" model="ir.ui.view">
@@ -186,5 +374,13 @@
             view_mode="form" target="new" view_type="form" />
 
         
+	</data>
+	
+	<data>
+		<template id="assets_backend" name="panipat_handloom_assets" inherit_id="web.assets_backend">
+			<xpath expr="." position="inside">
+				<link rel="stylesheet" href="/panipat_handloom/static/src/css/my_custom_css.css"/>
+			</xpath>
+		</template>
 	</data>
 </openerp>

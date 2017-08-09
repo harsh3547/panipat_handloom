@@ -9,6 +9,24 @@ from openerp.exceptions import except_orm
 class product_template(osv.Model):
     _inherit = 'product.template'
     
+    def _get_default_code_csv(self, cr, uid, ids, name, args, context=None):
+        result = dict.fromkeys(ids, False)
+        for obj in self.browse(cr, uid, ids, context=context):
+            result[obj.id] = obj.default_code
+        return result
+
+    def _set_default_code_csv(self, cr, uid, id, name, value, args, context=None):
+        return True
+
+    _columns = {'ean13': fields.related('product_variant_ids', 'ean13', type='char', string='EAN13 Barcode',store=True,copy=False,readonly=True),
+        'default_code': fields.related('product_variant_ids', 'default_code', type='char', string='Internal Reference',store=True,copy=False,readonly=True,select=True),
+        'default_code_csv': fields.function(_get_default_code_csv,fnct_inv=_set_default_code_csv, type='char', string='Barcode'),
+
+                }
+    
+    
+    
+       
     # setting default routes in product templates == buy and MTO
     def _get_routes(self, cr, uid, context=None):
         
@@ -26,11 +44,35 @@ class product_template(osv.Model):
         'route_ids': _get_routes,
     }
     
+    
+    def onchange_type(self, cr, uid, ids, type):
+        res = super(product_template, self).onchange_type(cr, uid, ids, type)
+        if type in ('consu', 'service'):
+            res = {'value': {'route_ids': []}}
+        if type in ('product'):
+            res = {'value': {'route_ids': self._get_routes(cr, uid, context=None)}}
+        return res
+    
+    
 class product_product(osv.Model):
     _inherit = 'product.product'
     
+    _columns = {'ean13': fields.char('EAN13 Barcode', size=13, help="International Article Number used for product identification.",copy=False,readonly=True),
+        'default_code' : fields.char('Internal Reference', select=True,copy=False,readonly=True),
+        
+                }
+    
+    def onchange_type(self, cr, uid, ids, type):
+        res = super(product_product, self).onchange_type(cr, uid, ids, type)
+        if type in ('consu', 'service'):
+            res = {'value': {'route_ids': []}}
+        if type in ('product'):
+            res = {'value': {'route_ids': self.pool.get('product.template')._get_routes(cr, uid, context=None)}}
+        return res
+    
+
     def copy(self, cr, uid, id, default=None, context=None):
-        raise except_orm(('Forbidden'),("Please Duplicate Record From 'Products' Menu"))
+        raise except_orm(('Forbidden'),("Please Duplicate Record From \"Product Main\" Menu"))
         return super(product_product, self).copy(cr, uid, id, default=default, context=context)
     
     def name_get(self, cr, uid, ids, context=None):

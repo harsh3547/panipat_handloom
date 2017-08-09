@@ -1,0 +1,14 @@
+.my_custom_css [data-field="default_code"]
+
+{
+
+text-decoration: underline
+
+}
+
+.my_image_custom > img {
+  max-width: 100%;
+  height: auto;
+
+}
+

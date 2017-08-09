@@ -146,8 +146,21 @@ class product_template(models.Model):
     uom_id=fields.Many2one(comodel_name='product.uom',string= 'Unit of Measure', required=True,default=False, help="Default Unit of Measure used for all stock operation.")
     panipat_brand_name=fields.Many2one(comodel_name='panipat.brand.name', string='Brand Name')
     vol_file_name=fields.Many2one(comodel_name='panipat.brand.vol', string='Vol/File No.')
-    ean13=fields.Char(readonly=True,copy=False)
-    default_code=fields.Char(readonly=True,copy=False)
+    serial_no=fields.Char(string="Serial No./Page No.(S/No.)",select=True)
+    design_code=fields.Char(string="Design/Item Code(D/No.)",select=True)
+    shade_no=fields.Char(string="Shade No.(Sh/No.)",select=True)
+    color_code=fields.Char(string="Color Code(Co/Co.)",select=True)
+    material=fields.Char(string="Material")
+    pattern=fields.Char(string="Pattern")
+    color_name=fields.Char(string="Color",select=True)
+    size=fields.Char(string="Size")
+    panipat_product_type=fields.Char(string="Type")
+    other_code=fields.Char(string="Other Code(Ot/Co.)")
+    type = fields.Selection([('product', 'Stockable Product'),('consu', 'Consumable'),('service','Service')], 'Product Type', required=True, help="Consumable are product where you don't manage stock, a service is a non-material product provided by a company or an individual.",default='product')  
+    sale_delay= fields.Float('Customer Lead Time', help="The average delay in days between the confirmation of the customer order and the delivery of the finished products. It's the time you promise to your customers.",default=0)
+    roll_rates=fields.One2many(comodel_name='roll.rates', inverse_name='roll_rate_product', string="Roll Rates",copy=True)
+    seller_ids=fields.One2many(comodel_name='product.supplierinfo', inverse_name='product_tmpl_id', string='Supplier',copy=True)
+
     image_1_img=fields.Binary(compute='_get_image_1_img',store=True,copy=False)
     image_1_path=fields.Binary(default=_get_image_1,copy=False)
     image_1_file_name=fields.Char(compute='_get_img_1_file_name',store=True,copy=False)
@@ -297,18 +310,23 @@ class product_product(models.Model):
     
     @api.model
     def create(self,vals):
-        print "=====vals create product.product===",vals
+        #print "--------------in product.product create-------------",vals
         if vals.get('product_tmpl_id',False):
-            print "=====vals create product.product===",vals
             tmpl_obj=self.env['product.template'].browse(vals['product_tmpl_id'])
             vals['ean13']=self.get_valid_ean(brand_obj_id=tmpl_obj.panipat_brand_name or False)
             vals['default_code']=int(vals['ean13'])
+            #print "--------------in product.product create-------------",vals
+            res = super(product_product, self).create(vals)
+            # writing on related fields
+            self.pool.get('product.template').write(self._cr, self._uid, vals['product_tmpl_id'], {'ean13':vals['ean13'],'default_code':vals['default_code']} ,context=self._context)
         else:
             brand_obj_id=self.env['panipat.brand.name'].browse(vals.get('panipat_brand_name',False))
             vals['ean13']=self.get_valid_ean(brand_obj_id or False)
             vals['default_code']=int(vals['ean13'])
-        #categ_seq=self.env['product.category'].browse(vals.get['categ_id'])
-        return super(product_product, self).create(vals)
+            #print "--------------in product.product create-------------",vals
+            res = super(product_product, self).create(vals)
+        return res
+    
     
 class product_supplierinfo(models.Model):
     _inherit="product.supplierinfo"
