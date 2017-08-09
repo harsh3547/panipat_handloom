@@ -327,6 +327,28 @@ class product_product(models.Model):
             res = super(product_product, self).create(vals)
         return res
     
+class product_hsn_code(models.Model):
+    _name="hsn.code"
+    name=fields.Char(string="HSN Code")
+
+    _sql_constraints = [
+                     ('name_unique', 
+                      'unique(name)',
+                      'Value already Exists - HSN Code has to be unique!')
+]
+
+    @api.model
+    def create(self,vals):
+        print "====hsn code create context ===",self._context,vals
+        res = super(product_hsn_code, self).create(vals)
+        print res
+        prod_temp_obj = self.env['product.product'].browse(self._context.get('product_id',False))
+        if self._context.get('product_id',False):
+            prod_temp_obj.product_tmpl_id.hsn_code=res.id
+            print prod_temp_obj.product_tmpl_id.hsn_code
+        return res
+
+
     
 class product_supplierinfo(models.Model):
     _inherit="product.supplierinfo"

@@ -4,14 +4,19 @@ class account_invoice(models.Model):
     _inherit = "account.invoice"
     _description = "Panipat POS Account"
 
-    is_pos = fields.Boolean('Retail Invoice',default=False)
+    is_pos = fields.Boolean('Walk-In Customer',default=False)
     picking_id = fields.Many2one('stock.picking','Picking Orders',copy=False)
     name = fields.Char(string='Buyer Order No./ Reference', index=True,
         readonly=True, states={'draft': [('readonly', False)]})
-    dispatch_doc=fields.Char(string="Dispatch Doc. No.")
-    dispatch_thru=fields.Char(string="Dispatch Through")
+    dispatch_doc=fields.Char(string="Dispatch Doc. No.") # deprecated
+    dispatch_thru=fields.Char(string="Dispatch Through") # deprecated
     destination=fields.Char(string="Destination")
-    
+    commission_invoice=fields.Boolean(default=False)
+    gr_no=fields.Char(string="GR No")
+    gr_date=fields.Date(string="GR Date")
+    reverse_charge=fields.Boolean(string="Reverse Charge")
+
+   
     @api.multi
     def action_cancel(self):
         for inv in self:
@@ -21,7 +26,11 @@ class account_invoice(models.Model):
     
     @api.onchange("is_pos")
     def onchange_is_pos(self):
-        if self.is_pos:self.partner_id=self.env.ref("panipat_handloom.panipat_pos_default_customer")
+        if self.is_pos:
+            self.partner_id=self.env.ref("panipat_handloom.panipat_pos_default_customer")
+            #rt_journal=self.env['account.journal'].search([('name','ilike','retail'),('type','=','sale')])
+            #if rt_journal:
+            #    self.journal_id=map(int,rt_journal or [])[0]
         
     def _get_default_location(self, cr, uid, context=None):
         wh_obj = self.pool.get('stock.warehouse')
@@ -56,26 +65,12 @@ class account_invoice(models.Model):
     def transfer_product(self):
         self.ensure_one()
         if all(not t.product_id for t in self.invoice_line):
-            return {
-                    'type': 'ir.actions.client',
-                    'tag': 'action_warn',
-                    'name': 'Warning',
-                    'params': {
-                               'title': _('Warning!'),
-                               'text': _("There are no 'Product' in invoice lines."),
-                               }
-                    }
+            self.write({'is_pos':False})
+            return True
         
         if all(not t.product_id or (t.product_id and t.product_id.type == 'service') for t in self.invoice_line):
-            return {
-                    'type': 'ir.actions.client',
-                    'tag': 'action_warn',
-                    'name': 'Warning',
-                    'params': {
-                               'title': _('Warning!'),
-                               'text': _('All the products are of type service.'),
-                               }
-                    }
+            self.write({'is_pos':False})
+            return True
         
         
         picking_id=self.create_picking()
@@ -145,7 +140,18 @@ class account_invoice(models.Model):
             move_obj.action_done(self._cr, self._uid, move_list, context=self._context)
         return picking_id or False
 
-            @api.multi
+class account_invoice_line(models.Model):
+    _inherit="account.invoice.line"
+
+    #discount_amount=fields.Float(string="Discount Amt.", digits= dp.get_precision('Discount'), default=0.0)
+    hsn_code=fields.Many2one("hsn.code",string="HSN Code")
+
+    @api.one
+    @api.constrains('product_id','hsn_code')
+    def _check_description(self):
+        print "****************************",self.product_id , self.hsn_code
+        self.product_id.product_tmpl_id.hsn_code=self.hsn_code.id
+    
     @api.multi
     def product_id_change(self, product, uom_id, qty=0, name='', type='out_invoice',
             partner_id=False, fposition_id=False, price_unit=False, currency_id=False,
@@ -165,3 +171,6 @@ class account_invoice(models.Model):
                 if new_name:res['value']['name']=new_name[0][1]
 
         res['value']['hsn_code']=self.pool.get("product.product").browse(self._cr, self._uid,product,context=self._context).product_tmpl_id.hsn_code
+        return res
+    
+    

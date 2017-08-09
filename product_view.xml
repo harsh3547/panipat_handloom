@@ -25,6 +25,8 @@
                 <xpath expr="//field[@name='list_price']" position="after">
 					<field name = "panipat_brand_name" placeholder="Brand Name"/>
                     <field name = "vol_file_name" placeholder="Vol No./File No." attrs="{'invisible':[('panipat_brand_name','=',False)]}" domain="[('panipat_brand_name', '=', panipat_brand_name)]" context="{'default_panipat_brand_name':panipat_brand_name}"/>
+                     <field name="hsn_code"/>
+                </xpath>
                 <xpath expr="//page[@string='Information']/group" position='after'>
                     <group col="4">
                             <field name="serial_no"/>
