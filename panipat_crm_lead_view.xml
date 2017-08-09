@@ -30,31 +30,38 @@
 							
 							<button name="button_confirm" string="Confirm Lead"
 								type="object" class="oe_highlight" states="draft" />
+							<button name="button_cancel" string="Cancel Job"
+								type="object" attrs="{'invisible':[('state','in',('cancel'))]}" />
+							<button name="button_to_draft" string="Reset To Draft" class="oe_highlight"
+								type="object" attrs="{'invisible':[('state','!=','cancel')]}" />
 							
 							
 							<field name="state" widget="statusbar" statusbar_visible="draft,confirm" />
 						</div>
 					</header>
 					<sheet>
-						<div class="oe_right oe_button_box" name="buttons">
+						<div class="col-sm-5">
+                           <label for="name" class="oe_edit_only" />
+                           <h2>
+                               <field name="name" placeholder="Describe the lead..."/>
+                           </h2>
+                       </div>
+
+						<div class="col-sm-7" name="buttons">
 							<button name="lead_amount_paid_records" class="oe_inline oe_stat_button"
-								type="object" icon="fa-money">
+								type="object" icon="fa-money" attrs="{'invisible':[('state','in',('draft','cancel'))]}">
 								<div>
 									<strong>
 										<field name="total_paid_amount" widget="monetary" />
 									</strong>
 									<br />
-									<strong>Advance</strong>
+									<strong>Total Advance</strong>
 								</div>
 							</button>
 						</div>
-						<div class="oe_title">
-							<label for="name" class="oe_edit_only" />
-							<h2>
-								<field name="name" placeholder="Describe the lead..."
-									attrs="{'readonly':[('state','!=','draft')]}" />
-							</h2>
-						</div>
+						
+
+						
 						<group>
 							<group>
 								<label for="sequence" />
@@ -63,7 +70,7 @@
 								</h3>
 								<field name="partner_name" string="Company Name" />
 								<field name="partner_id" string="Customer"
-									attrs="{'readonly':[('state','!=','draft')]}" />
+									attrs="{'readonly':[('state','!=','draft')]}" required="1"/>
 								<label for="street" string="Address" />
 								<div>
 									<field name="street" placeholder="Street..." />
@@ -78,11 +85,12 @@
 										options='{"no_open": True, "no_create": True}' />
 								</div>
 								<field name="user_id" attrs="{'readonly':[('state','!=','draft')]}" />
+								<field name="client_order_ref" attrs="{'readonly':[('state','in',('quotation','install','cancel'))]}" />
 							</group>
 							<group>
-								<label for="create_date" />
+								<label for="creation_date"  />
 								<h3>
-									<field name="create_date" attrs="{'readonly':[('state','!=','draft')]}" />
+									<field name="creation_date" attrs="{'readonly':[('state','not in',('draft','confirm'))]}" />
 								</h3>
 								<label for="contact_name" />
 								<div>
@@ -95,8 +103,8 @@
 								<field name="email_from" widget="email" />
 								<field name="phone" />
 								<field name="mobile" />
-								<field name="fax" />
 								<field name="priority" widget="priority" />
+								<field name='order_group' />
 							</group>
 
 						</group>
@@ -105,10 +113,11 @@
 							<field name="product_line" attrs="{'readonly':[('state','!=','draft')]}">
 								<tree editable="bottom">
 									<field name="sequence" widget="handle" />
-									<field name="product_id" />
+									<field name="product_id" options="{'create':False}"/>
 									<field name="description" />
 									<field name="product_uom_qty"/>
-	                        		<field name="product_uom"/>
+	                        		<field name="product_uom" required="1"/>
+	                        		<field name="sale_price"/>
 								</tree>
 							</field>
 							<label for="employee_line"/>
@@ -121,6 +130,7 @@
 									<field name="end_time" />
 								</tree>
 							</field>
+						
 						</div>
 						<notebook colspan="4">
 							<page string="Notes">
@@ -130,7 +140,8 @@
 							</page>
 							<page string="Extra Info">
 								<group>
-									<field name='order_group' />
+									<field name="sale_order"/>
+									<field name='install_id' />
 								</group>
 							</page>
 						</notebook>
@@ -145,9 +156,9 @@
 			<field name="name">Leads</field>
 			<field name="model">panipat.crm.lead</field>
 			<field name="arch" type="xml">
-				<tree string="Leads">
+				<tree string="Leads" colors="blue:state=='draft';red:state=='confirm';black:state=='install';black:state=='quotation';gray:state == 'cancel'">
 					<field name="sequence" />
-					<field name="create_date" />
+					<field name="creation_date" />
 					<field name="name" />
 					<field name="partner_id" string="Customer" />
 					<field name="priority" />
@@ -162,26 +173,32 @@
 			<field name="model">panipat.crm.lead</field>
 			<field name="arch" type="xml">
 				<search string="Search Leads">
-					<field name="sequence" />
-					<field name="name" string="Lead / Customer"
-						filter_domain="['|','|','|',('partner_name','ilike',self),('email_from','ilike',self),('contact_name','ilike',self),('name','ilike',self)]" />
-					<field name="user_id" />
-					<field name="partner_id" operator="child_of" />
-					<field name="create_date" />
-					<field name="country_id" />
 					<separator />
-					<filter string="My Leads" domain="[('user_id','=',uid)]"
-						help="Leads that are assigned to me" />
-					<filter string="Unassigned" name="unassigned" domain="[('user_id','=', False)]"
+					
+					<filter string="No Salesperson" name="unassigned" domain="[('user_id','=', False)]"
 						help="No salesperson" />
+					<filter string="Draft" name="draft" domain="[('state','=','draft')]" />
+					<filter string="Confirm" name="confirm" domain="[('state','=','confirm')]" />
+					<filter string="Quotation" name="Quotation" domain="[('state','=','quotation')]" />
+					<filter string="Install" name="Install" domain="[('state','=','install')]" />
+					
 					<separator />
+					<field name="sequence" />
+					<field name="partner_id" operator="child_of" string="Lead / Customer"/>
+					<field name="user_id" />
+					<field name="creation_date" />
+					<field name="country_id" />
+					
+
 					<group expand="0" string="Group By">
 						<filter string="Salesperson" domain="[]"
 							context="{'group_by':'user_id'}" />
 						<filter string="Customer" help="Partner" domain="[]"
 							context="{'group_by':'partner_id'}" />
 						<filter string="Creation Month" domain="[]"
-							context="{'group_by':'create_date'}" />
+							context="{'group_by':'creation_date'}" />
+						<filter string="State" domain="[]"
+							context="{'group_by':'state'}" />
 					</group>
 				</search>
 			</field>
@@ -190,7 +207,7 @@
 
 		<menuitem id="panipat_main_menu" sequence="1" name="Panipat Handloom" />
 		<menuitem id="panipat_main_menu_item" name="Panipat Handloom"
-			parent="panipat_main_menu" />
+			parent="panipat_main_menu" sequence="2"/>
 		<menuitem id="submenu_item_leads" name="Leads"
 			parent="panipat_main_menu_item" sequence="1" action="action_panipat_crm_lead" />
 
