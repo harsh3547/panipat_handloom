@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<openerp>
+	<data>
+		
+		<record id="purchase_order_panipat_form" model="ir.ui.view">
+			<field name="name">purchase.order.panipat.form</field>
+			<field name="model">purchase.order</field>
+			<field name="inherit_id" ref="purchase.purchase_order_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='shipped']" position="after">
+					<field name="order_group" />
+				</xpath>
+			</field>
+		</record>		
+		
+	</data>
+</openerp>
