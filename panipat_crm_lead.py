@@ -18,6 +18,8 @@ class panipat_crm_lead(models.Model):
     
     def lead_amount_paid_records(self,cr,uid,id,context=None):
         obj = self.browse(cr,uid,id,context=None)
+        abc=(obj.sequence or '') + (obj.order_group and ':') + (obj.order_group and obj.order_group.name or '') +':'+'ADVANCE (lead)'
+        print "-=-=-=-=-=",abc
         return {
                     'view_type': 'form',
                     'view_mode': 'form',
@@ -26,7 +28,7 @@ class panipat_crm_lead(models.Model):
                     'context': {
                             'form_view_ref':'account_voucher.view_vendor_receipt_form',
                             'default_partner_id': obj.partner_id.parent_id.id if obj.partner_id.parent_id else obj.partner_id.id,
-                            'default_name':obj.sequence+ obj.order_group and ':'+obj.order_group.name or '',
+                            'default_name':abc,
                             'order_group':obj.order_group.id,
                             'search_disable_custom_filters': False
                             }

@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<openerp>
+	<data>
+		<record id="view_voucher_tree" model="ir.ui.view">
+            <field name="name">account.voucher.tree</field>
+            <field name="model">account.voucher</field>
+            <field name="inherit_id" ref="account_voucher.view_voucher_tree"/>
+            <field name="arch" type="xml">
+				<xpath expr="//field[@name='reference']" position="after">
+					<field name="name" />
+				</xpath> 
+            </field>
+        </record>		
+	
+		<record id="view_voucher_search" model="ir.ui.view">
+            <field name="name">account.voucher.search</field>
+            <field name="model">account.voucher</field>
+            <field name="inherit_id" ref="account_voucher.view_voucher_filter_customer_pay"/>
+            <field name="arch" type="xml">
+				<field name='date' position="after">
+					<field name="reference" />
+					<field name="name"/>
+	            	<filter string="Advance" name="advance" domain="[('reference','ilike','ADVANCE')]" />
+	            </field>
+	       </field>
+        </record>		
+	
+		<menuitem action="account_voucher.action_vendor_receipt"
+			icon="STOCK_JUSTIFY_FILL" sequence="12"
+			id="menu_action_vendor_receipt_panipat" parent="panipat_main_menu_item" />
+		
+	</data>
+</openerp>
