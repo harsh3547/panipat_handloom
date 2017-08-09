@@ -219,6 +219,19 @@ class sale_order_line(models.Model):
     
     supplier=fields.Many2one(comodel_name="product.supplierinfo", string="Supplier")
     
+    def _prepare_order_line_invoice_line(self, cr, uid, line, account_id=False, context=None):
+        res=super(sale_order_line, self)._prepare_order_line_invoice_line(cr, uid, line, account_id, context)
+        print "===in _prepare_order_line_invoice_line==res_old=",res
+        if res.get('name',False) and line.product_id:
+            name_old=self.pool.get('product.product').name_get(cr, uid, [line.product_id.id], context=context)
+            if name_old and name_old[0][1]==res['name']:
+                ctx=context.copy()
+                ctx['cust_inv_name_get']=True
+                name_new=self.pool.get('product.product').name_get(cr, uid, [line.product_id.id], context=ctx)
+                if name_new:
+                    res['name'] = name_new[0][1]
+        print "===in _prepare_order_line_invoice_line==res_new=",res
+        return res
     
     
         
