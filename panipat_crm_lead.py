@@ -34,48 +34,6 @@ class panipat_crm_lead(models.Model):
                     }
 
     
-    def button_allocate(self,cr,uid,id,context=None):
-        self.write(cr,uid,id,{'state':'employee'},context=None)
-        carry_fields = self.browse(cr,uid,id,context=None)
-        vals = {'partner_id':carry_fields.partner_id.id,'order_group':carry_fields.order_group.id,
-                'origin':carry_fields.sequence}
-        allocated_id=self.pool.get('crm.lead.allocated').create(cr,uid,vals,context=None)
-        return True
-
-    def view_allocation_order(self,cr,uid,id,context=None):
-        order_group=self.browse(cr,uid,id,context=None).order_group.id
-        allocated_ids=self.pool.get('crm.lead.allocated').search(cr,uid,[('order_group','=',order_group)],context=None)
-        if allocated_ids :
-            if len(allocated_ids) == 1 :
-                return {
-                'name': 'CRM - Leads Allocated Form',
-                'view_type': 'form',
-                'view_mode': 'form',
-                'res_model': 'crm.lead.allocated',
-                'type': 'ir.actions.act_window',
-                'res_id': allocated_ids[0],
-                }
-            else :
-                return {
-                'name': 'CRM - Leads Allocated Form',
-                'view_type': 'form',
-                'view_mode': 'tree,form',
-                'res_model': 'crm.lead.allocated',
-                'type': 'ir.actions.act_window',
-                'domain':[('id','in',allocated_ids)],
-                }
-        else :
-            return {
-                    'type': 'ir.actions.client',
-                    'tag': 'action_warn',
-                    'name': 'Warning',
-                    'params': {
-                               'title': 'Warning!',
-                               'text': 'Allocated Lead is not available .',
-                               }
-                    }
-    
-
 
     def button_quote(self,cr,uid,id,context=None):
         lead_obj = self.browse(cr,uid,id,context)
@@ -135,10 +93,6 @@ class panipat_crm_lead(models.Model):
 
 
 
-    def button_redesign(self,cr,uid,id,context=None):
-        self.write(cr,uid,id,{'state':'redesign'},context=None)
-        return True
-    
     def button_install(self,cr,uid,id,context=None):
         lead_obj = self.browse(cr,uid,id,context)
         values=[]
@@ -242,6 +196,7 @@ class panipat_crm_lead(models.Model):
     user_id = fields.Many2one('res.users', 'Salesperson', select=True, track_visibility='onchange')
     current_date = fields.Datetime('Date',Readonly=True)
     product_line = fields.One2many('panipat.crm.product','crm_lead_id',string="Products",copy=True)
+    employee_line = fields.One2many('panipat.employee.schedule','crm_lead_id',string="Employees for Measurement",copy=True)
     street = fields.Char(compute='_get_partner_details',string='Street')
     street2 = fields.Char(compute='_get_partner_details',string='Street2')
     zip = fields.Char(compute='_get_partner_details',string='Zip', change_default=True, size=24)

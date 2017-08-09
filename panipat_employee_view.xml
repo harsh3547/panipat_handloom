@@ -6,14 +6,22 @@
 			<field name="arch" type="xml">
 				<search string="Panipat Employee">
 					<field name="employee_id" />
-					<field name="crm_lead_allocated_id" />
+					<field name="crm_lead_id" />
 					<field name="start_time" />
 					<field name="install_id" />
-					<filter string="Confirmed" name="done_state_filter" domain="[('state','=','confirm')]"
-						help="Allocation Order that have been confirmed" />
+					<filter string="Pending" name="confirm_state_filter" domain="[('state','=','confirm')]"
+						help="Jobs that have been confirmed" />
+					<filter string="Done" name="done_state_filter" domain="[('state','=','done')]"
+						help="Completed Jobs" />
+					<filter string="Cancelled" name="cancel_state_filter" domain="[('state','=','cancel')]"
+						help="Cancelled Jobs" />
+					<filter string="Draft" name="draft_state_filter" domain="[('state','=','draft')]"
+						help="Jobs to be confirmed" />
 					<group expand="1" string="Group By">
 						<filter string="Employee" icon="terp-accessories-archiver"
 							context="{'group_by':'employee_id'}" name="group_by_employee" />
+						<filter string="State" icon="terp-accessories-archiver"
+							context="{'group_by':'state'}" name="group_by_state" />
 					</group>
 
 				</search>
@@ -26,8 +34,7 @@
 			<field name="res_model">panipat.employee</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">calendar,tree,form</field>
-			<field name="context">{'search_default_group_by_employee':
-				True,'search_default_done_state_filter':True}</field>
+			<field name="context">{'search_default_confirm_state_filter':True}</field>
 		</record>
 
 		<record id="panipat_employee_tree_view" model="ir.ui.view">
@@ -36,11 +43,11 @@
 			<field name="arch" type="xml">
 				<tree string="Panipat Employee tree View">
 					<field name="employee_id" />
-					<field name="crm_lead_allocated_id" />
+					<field name="crm_lead_id" />
 					<field name="install_id" />
 					<field name="start_time" />
+					<field name="description"/>
 					<field name="delay_hours" widget="float_time" />
-					<field name="end_time" />
 					<field name="state" />
 				</tree>
 			</field>
@@ -52,20 +59,28 @@
 			<field name="arch" type="xml">
 				<form string="Panipat Employee Form View">
 					<header>
-						<button name="schedule_employee" string="Schedule Employee"
+						<button name="button_confirm" string="Schedule Employee"
 							type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','draft')]}" />
-						<field name="state" widget="statusbar" />
+						<button name="button_done" string="Job Done"
+							type="object" class="oe_highlight" attrs="{'invisible':[('state','!=','confirm')]}" />
+						<button name="button_cancel" string="Job Cancel"
+							type="object" attrs="{'invisible':['|','|',('state','not in',('draft','confirm')),('crm_lead_id','!=',False),('install_id','!=',False)]}" />
+						<button name="button_to_draft" string="Reset to Draft"
+							type="object" class="oe_highlight" attrs="{'invisible':['|','|',('state','!=','cancel'),('crm_lead_id','!=',False),('install_id','!=',False)]}" />
+						<field name="state" widget="statusbar" statusbar_visible="draft,confirm,done" />
 					</header>
 					<sheet>
 						<group>
 							<field name="employee_id" />
-							<field name="crm_lead_allocated_id" options="{'create': false, 'create_edit': false}" attrs="{'invisible':[('install_id','!=',False)]}"/>
-							<field name="install_id" options="{'create': false, 'create_edit': false}" attrs="{'invisible':[('crm_lead_allocated_id','!=',False)]}"/>
+							<field name="crm_lead_id" options="{'create': false, 'create_edit': false}" attrs="{'invisible':[('install_id','!=',False)]}"/>
+							<field name="install_id" options="{'create': false, 'create_edit': false}" attrs="{'invisible':[('crm_lead_id','!=',False)]}"/>
+							<field name="description"/>
 							<field name="start_time" />
 							<field name="delay_hours" widget="float_time" />
-							<field name="end_time" />
+							<field name="end_time" readonly="1"/>
 							<field name="notes" />
 							<field name="origin"/>
+							<field name="schedule_employee_link" invisible="1"/>
 						</group>
 					</sheet>
 				</form>
@@ -78,12 +93,13 @@
 			<field name="model">panipat.employee</field>
 			<field name="arch" type="xml">
 				<calendar date_stop="end_time" date_start="start_time"
-					color="employee_id" display="
-		       , [employee_id], [crm_lead_allocated_id], [install_id]">
+					color="employee_id" event_open_popup="%(panipat_employee_form_view)s" display="
+		       , [employee_id], [crm_lead_id], [install_id],([state])">
 					<!-- Fields used for the text of display attribute -->
 					<field name="employee_id" />
-					<field name="crm_lead_allocated_id" />
+					<field name="crm_lead_id" />
 					<field name="install_id"/>
+					<field name="state"/>
 				</calendar>
 			</field>
 		</record>

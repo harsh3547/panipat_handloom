@@ -18,18 +18,10 @@
 				<form string="Leads Form">
 					<header>
 						<div>
-							<button name="button_allocate" string="Make Allocation"
-								type="object" class="oe_highlight" states="confirm" />
-							<button name="view_allocation_order" string="View Allocation Order"
-								type="object" class="oe_highlight" states="employee" />
-
 							<button name="button_quote" string="Make Quotation"
 								type="object" class="oe_highlight" states="confirm" />
 							<button name="view_quotation" string="View Quotation"
 								type="object" class="oe_highlight" states="quotation" />
-
-							<button name="button_redesign" string="Make Redesign Job"
-								type="object" class="oe_highlight" states="confirm" />
 
 							<button name="button_install" string="Make Installation Job"
 								type="object" class="oe_highlight" states="confirm" />
@@ -117,6 +109,16 @@
 									<field name="description" />
 									<field name="product_uom_qty"/>
 	                        		<field name="product_uom"/>
+								</tree>
+							</field>
+							<label for="employee_line"/>
+							<field name="employee_line" >
+								<tree editable="bottom">
+									<field name="employee_id" />
+									<field name="start_time" />
+									<field name="description"/>
+									<field name="delay_hours" widget="float_time" />
+									<field name="end_time" />
 								</tree>
 							</field>
 						</div>
