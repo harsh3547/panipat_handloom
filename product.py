@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from openerp import models, fields, api
+from openerp import models, fields, api , tools
 from openerp.exceptions import except_orm
 from datetime import datetime
 from openerp.tools.translate import _
@@ -12,8 +12,6 @@ except ImportError:
 from PIL import Image
 import os , fnmatch
 import time
-
-
 def ean_checksum(eancode):
     """returns the check value of an ean string of length 12, returns -1 if the string has the wrong length"""
     if len(eancode) != 12:
@@ -38,11 +36,209 @@ def ean_checksum(eancode):
 class product_template(models.Model):
     _inherit='product.template'
 
+    def _get_filetype(self,base64_source):
+        image_stream = StringIO.StringIO(base64_source.decode('base64'))
+        try:
+            image = Image.open(image_stream)
+        except:
+            raise except_orm(("ERROR !!"),("Invalid Image Type"))
+        # store filetype here, as Image.new below will lose image.format
+        filetype = None
+        filetype = (filetype or image.format).upper()
+        filetype = {
+            'BMP': 'PNG','JPEG':'JPG'
+        }.get(filetype, filetype)
+        return filetype.lower() or 'jpg'
+
+    @api.one
+    @api.depends('image_1_path')
+    def _get_img_1_file_name(self):
+        if self.image_1_path:
+            filetype=self._get_filetype(self.image_1_path)
+            self.image_1_file_name=str(int(self.ean13))+"_1"+"."+filetype
+
+    @api.one
+    @api.depends('image_2_path')
+    def _get_img_2_file_name(self):
+        if self.image_2_path:
+            filetype=self._get_filetype(self.image_2_path)
+            self.image_2_file_name=str(int(self.ean13))+"_2"+"."+filetype
+    
+    @api.one
+    @api.depends('image_3_path')
+    def _get_img_3_file_name(self):
+        if self.image_3_path:
+            filetype=self._get_filetype(self.image_3_path)
+            self.image_3_file_name=str(int(self.ean13))+"_3"+"."+filetype
+    
+    @api.one
+    @api.depends('image_4_path')
+    def _get_img_4_file_name(self):
+        if self.image_4_path:
+            filetype=self._get_filetype(self.image_4_path)
+            self.image_4_file_name=str(int(self.ean13))+"_4"+"."+filetype
+            
+    @api.one
+    @api.depends('image_1_path')
+    def _get_image_1_img(self):
+        if self.image_1_path:
+            self.image_1_img=self.check_and_resize_image_medium(self.image_1_path,size=(180,180))
+
+    @api.one
+    @api.depends('image_2_path')
+    def _get_image_2_img(self):
+        if self.image_2_path:
+            self.image_2_img=self.check_and_resize_image_medium(self.image_2_path,size=(180,180))
+
+    @api.one
+    @api.depends('image_3_path')
+    def _get_image_3_img(self):
+        if self.image_3_path:
+            self.image_3_img=self.check_and_resize_image_medium(self.image_3_path,size=(180,180))
+
+    @api.one
+    @api.depends('image_4_path')
+    def _get_image_4_img(self):
+        if self.image_4_path:
+            self.image_4_img=self.check_and_resize_image_medium(self.image_4_path,size=(180,180))
+
+
+    def check_and_resize_image_medium(self,base64_source,size=(None,None)):
+        if size==(None,None):size=(90,90)
+        image_stream = StringIO.StringIO(base64_source.decode('base64'))
+        try:
+            image = Image.open(image_stream)
+        except:
+            raise except_orm(("ERROR !!"),("Invalid Image Type"))
+        return tools.image_resize_image_medium(base64_source,size=size,avoid_if_small=True)
+
+
+    def _get_image_1(self):
+        if self.image:
+            return self.image
+        return False
     panipat_brand_name=fields.Many2one(comodel_name='panipat.brand.name', string='Brand Name')
     vol_file_name=fields.Many2one(comodel_name='panipat.brand.vol', string='Vol/File No.')
     ean13=fields.Char(readonly=True,copy=False)
     default_code=fields.Char(readonly=True,copy=False)
+    image_1_img=fields.Binary(compute='_get_image_1_img',store=True,copy=False)
+    image_1_path=fields.Binary(default=_get_image_1,copy=False)
+    image_1_file_name=fields.Char(compute='_get_img_1_file_name',store=True,copy=False)
+    image_1_true= fields.Boolean(string="Is this Main Image ?",default=True,copy=False)
+
+    image_2_img=fields.Binary(compute='_get_image_2_img',store=True,copy=False)
+    image_2_path=fields.Binary(copy=False)
+    image_2_file_name=fields.Char(compute='_get_img_2_file_name',store=True,copy=False)
+    image_2_true= fields.Boolean(string="Is this Main Image ?",default=False,copy=False)
+
+    image_3_img=fields.Binary(compute='_get_image_3_img',store=True,copy=False)
+    image_3_path=fields.Binary(copy=False)
+    image_3_file_name=fields.Char(compute='_get_img_3_file_name',store=True,copy=False)
+    image_3_true= fields.Boolean(string="Is this Main Image ?",default=False,copy=False)
+
+    image_4_img=fields.Binary(compute='_get_image_4_img',store=True,copy=False)
+    image_4_path=fields.Binary(copy=False)
+    image_4_file_name=fields.Char(compute='_get_img_4_file_name',store=True,copy=False)        
+    image_4_true= fields.Boolean(string="Is this Main Image ?",default=False,copy=False)
+
+    hsn_code=fields.Many2one("hsn.code",string="HSN Code")
+
     
+    @api.multi
+    def button_main_image(self):
+        if self.image_1_true and self.image_1_path:
+            self.image=self.image_1_path
+            self.image_1_file_name=str(int(self.ean13))+"_1."+self._get_filetype(self.image_1_path)
+        elif self.image_2_true and self.image_2_path:
+            self.image=self.image_2_path
+            self.image_2_file_name=str(int(self.ean13))+"_2."+self._get_filetype(self.image_2_path)
+        elif self.image_3_true and self.image_3_path:
+            self.image=self.image_3_path
+            self.image_3_file_name=str(int(self.ean13))+"_3."+self._get_filetype(self.image_3_path)
+        elif self.image_4_true and self.image_4_path:
+            self.image=self.image_4_path
+            self.image_4_file_name=str(int(self.ean13))+"_4."+self._get_filetype(self.image_4_path)
+        elif self.image_1_path:
+            self.image=self.image_1_path
+            self.image_1_true=True
+            self.image_1_file_name=str(int(self.ean13))+"_1."+self._get_filetype(self.image_1_path)
+        elif self.image and not self.image_1_path:
+            self.image_1_path=self.image
+            self.image_1_file_name=str(int(self.ean13))+"_1."+self._get_filetype(self.image)
+            self.image_1_true=True
+        else: return True
+            
+    @api.onchange('image_1_true')
+    def onchange_main_image_1(self):
+        if self.image_1_true:
+            self.image_2_true=False
+            self.image_3_true=False
+            self.image_4_true=False
+            
+    @api.onchange('image_2_true')
+    def onchange_main_image_2(self):
+        if self.image_2_true:
+            self.image_1_true=False
+            self.image_3_true=False
+            self.image_4_true=False
+
+    @api.onchange('image_3_true')
+    def onchange_main_image_3(self):
+        if self.image_3_true:
+            self.image_2_true=False
+            self.image_1_true=False
+            self.image_4_true=False
+
+    @api.onchange('image_4_true')
+    def onchange_main_image_4(self):
+        if self.image_4_true:
+            self.image_2_true=False
+            self.image_3_true=False
+            self.image_1_true=False
+
+
+    def check_and_resize_image_big(self,base64_source):
+        image_stream = StringIO.StringIO(base64_source.decode('base64'))
+        try:
+            image = Image.open(image_stream)
+        except:
+            raise except_orm(("ERROR !!"),("Invalid Image Type"))
+        return tools.image_resize_image_big(base64_source)
+
+    @api.model
+    def create(self,vals):
+        if vals.get('image_1_path',False):
+            vals['image_1_path']=self.check_and_resize_image_big(vals['image_1_path'])
+        if vals.get('image_2_path',False):
+            vals['image_2_path']=self.check_and_resize_image_big(vals['image_2_path'])
+        if vals.get('image_3_path',False):
+            vals['image_3_path']=self.check_and_resize_image_big(vals['image_3_path'])
+        if vals.get('image_4_path',False):
+            vals['image_4_path']=self.check_and_resize_image_big(vals['image_4_path'])
+        
+
+        #print "--------------in product template create-------------",vals
+        return super(product_template, self).create(vals)
+    
+    @api.multi
+    def write(self,vals):
+        for rec in self:
+            if vals.get('image_1_path',False):
+                vals['image_1_path']=rec.check_and_resize_image_big(vals['image_1_path'])
+                if not rec.image_1_true and not rec.image_2_true and not rec.image_3_true and not rec.image_4_true:
+                    vals['image']=vals['image_1_path']
+                    vals['image_1_true']=True
+                elif rec.image_1_true:vals['image']=vals['image_1_path']
+            if vals.get('image_2_path',False):
+                vals['image_2_path']=rec.check_and_resize_image_big(vals['image_2_path'])
+            if vals.get('image_3_path',False):
+                vals['image_3_path']=rec.check_and_resize_image_big(vals['image_3_path'])
+            if vals.get('image_4_path',False):
+                vals['image_4_path']=rec.check_and_resize_image_big(vals['image_4_path'])
+            
+        #print "-----------in product template write=------------",vals
+        return super(product_template, self).write(vals)
+        
     
 class product_product(models.Model):
     _inherit="product.product"
@@ -82,7 +278,7 @@ class product_product(models.Model):
 class product_supplierinfo(models.Model):
     _inherit="product.supplierinfo"
     
-    roll_rates=fields.One2many(comodel_name='roll.rates', inverse_name='roll_rate_partnerinfo', string="Roll Rates")
+    roll_rates=fields.One2many(comodel_name='roll.rates', inverse_name='roll_rate_partnerinfo', string="Roll Rates",copy=True)
     delay=fields.Integer(string='Delivery Lead Time', required=True, help="Lead time in days between the confirmation of the purchase order and the receipt of the products in your warehouse. Used by the scheduler for automatic computation of the purchase order planning.",default=0)
         
     
@@ -91,8 +287,8 @@ class roll_rates(models.Model):
     
     name=fields.Many2one(comodel_name='roll.rate.name', string='Name')
     rate=fields.Float(string="Roll rates",digits_compute=dp.get_precision('Product Price'))
-    roll_rate_partnerinfo=fields.Many2one(comodel_name='product.supplierinfo',string='one 2 many rel')
-    roll_rate_product=fields.Many2one(comodel_name='product.template', string='one 2 many rel')
+    roll_rate_partnerinfo=fields.Many2one(comodel_name='product.supplierinfo',string='one 2 many rel', ondelete='cascade',readonly=True)
+    roll_rate_product=fields.Many2one(comodel_name='product.template', string='one 2 many rel', ondelete='cascade',readonly=True)
     
 class roll_rate_name(models.Model):
     _name="roll.rate.name"    

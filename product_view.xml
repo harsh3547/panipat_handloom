@@ -15,8 +15,66 @@
 						<field name = "vol_file_name" placeholder="Vol No./File No." attrs="{'invisible':[('panipat_brand_name','=',False)]}" class="oe_inline" domain="[('panipat_brand_name', '=', panipat_brand_name)]" context="{'default_panipat_brand_name':panipat_brand_name}"/>
 					</div>
 				</xpath>
+                <xpath expr="//page[@name='sales']" position="before">
+                    <page string="Images">
+                        <button string="Update Image" type="object" name='button_main_image' class="oe_highlight"/>
+                        <group>
+                            <div>
+                                <field name="image_1_img" widget="image" class="oe_image_medium" readonly="1"/>
+                                <field name="image_1_path" filename="image_1_file_name"/>
+                                <field name="image_1_file_name" invisible="1"/>
+                                <div>
+                                    <label for = "image_1_true" class="oe_inline" attrs="{'invisible': [('image_1_path', 'in', (False,None,''))]}"/>
+                                    <field name = "image_1_true" class="oe_inline" attrs="{'invisible': [('image_1_path', 'in', (False,None,''))]}"/>
+                                </div>
+                            </div>
+                            <div>
+                                <field name="image_2_img" widget="image" class="oe_image_medium" readonly="1"/>
+                                <field name="image_2_path" filename="image_2_file_name" />
+                                <field name="image_2_file_name" invisible="1"/>
+                                <div>
+                                    <label for = "image_2_true" class="oe_inline" attrs="{'invisible': [('image_2_path', 'in', (False,None,''))]}"/>
+                                    <field name = "image_2_true" class="oe_inline" attrs="{'invisible': [('image_2_path', 'in', (False,None,''))]}"/>
+                                </div>
+                            </div>
+                            <group></group>
+                            <group></group>
+                            <div>
+                                <field name="image_3_img" widget="image" class="oe_image_medium" readonly="1"/>
+                                <field name="image_3_path" filename="image_3_file_name" />
+                                <field name="image_3_file_name" invisible="1"/>
+                                <div>
+                                    <label for = "image_3_true" class="oe_inline" attrs="{'invisible': [('image_3_path', 'in', (False,None,''))]}"/>
+                                    <field name = "image_3_true" class="oe_inline" attrs="{'invisible': [('image_3_path', 'in', (False,None,''))]}"/>
+                                </div>
+                            </div>
+                            <div>
+                                <field name="image_4_img" widget="image" class="oe_image_medium" readonly="1"/>
+                                <field name="image_4_path" filename="image_4_file_name" />
+                                <field name="image_4_file_name" invisible="1"/>
+                                <div>
+                                    <label for = "image_4_true" class="oe_inline" attrs="{'invisible': [('image_4_path', 'in', (False,None,''))]}"/>
+                                    <field name = "image_4_true" class="oe_inline" attrs="{'invisible': [('image_4_path', 'in', (False,None,''))]}"/>
+                                </div>
+                            </div>
+                            <group colspan="6">
+                    <page string="Full Image">
+                        <div style="max-width:100%;height:auto">
+                            <field name="image" widget="image" class="my_image_custom" edit='False'/>
+                        </div>
+                    </page>
+                </xpath>
+                <xpath expr="//group[@name='sale_condition']" position="after">
+                    <group>
+                        <field name="default_code_csv"/>
+                    </group>
+                </xpath>
+                <xpath expr="//field[@name='image_medium']" position="attributes">
+                    <attribute name="readonly">True</attribute>
+                </xpath>
+                
 			</field>
-		</record>			
+		</record>		
 		
 		  <record id="product_template_brand_search_view" model="ir.ui.view">
             <field name="name">product.template.search.brand.view</field>
