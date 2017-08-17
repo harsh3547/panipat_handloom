@@ -9,9 +9,9 @@ class panipat_order_group(models.Model):
     _order='state desc,name desc'
 
     def _get_custom_company_default(self):
-    value= self.env.user.company_id
-    #print value
-    return value
+        value= self.env.user.company_id
+        #print value
+        return value
 
     @api.one
     @api.depends()
